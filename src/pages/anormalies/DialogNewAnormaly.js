@@ -21,8 +21,8 @@ const DialogBox = () => {
                     </div>
                     <div className="py-2 d-flex flex-row justify-content-end">
                         <div className="">
-                            <button className="btn btn-light border mx-1" data-dismiss="modal">Cancel</button>
-                            <button className="btn btn-success mx-1">Submit Anomaly</button>
+                            <div className="btn btn-light border mx-1" data-dismiss="modal">Cancel</div>
+                            <div className="btn btn-success mx-1">Submit Anomaly</div>
                         </div>
                     </div>
                 </div>

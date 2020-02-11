@@ -57,7 +57,7 @@ const AnormalySidebar = () => {
 
                 <div className='d-flex py-3 justify-content-between'>
                     <div className=''>New Detection</div>
-                    <div type='button' className="px-1 rounded" value='text'>
+                    <div className="px-1 rounded" value='text'>
                         <i className="fa fa-plus-square" style={{ color: '#23c49e', fontSize: 16 }}></i>
                     </div>
                 </div>

@@ -164,9 +164,9 @@ const DropdownItem = ({ dateTime = '', percentage = '' }) => {
 const Icon = ({ icon = '' }) => {
     return (
         <div className='p-1'>
-            <button className="btn btn-sm px-1 py-0" style={{ backgroundColor: '#dfd8f0', cursor: "pointer" }}>
+            <div className="btn btn-sm px-1 py-0" style={{ backgroundColor: '#dfd8f0', cursor: "pointer" }}>
                 <i className={icon} style={{ color: '#5b3da1' }}></i>
-            </button>
+            </div>
         </div>
     )
 }

@@ -22,7 +22,7 @@ const DropdownContainerAnormaly = () => {
                         defaultValue={"Plant EMG"}
                         additionalValue={["Other action", "Other action", "Other action", "Other action", "Other action", "Other action", "Other action", "Other action", "Other action"]} />
                     <div className='d-flex flex-column justify-content-center'>
-                        <button className="btn" onClick={e => { e.stopPropagation(); return setShowEditAllDropdown(true) }}>Edit All <i className="fa fa-caret-down" /></button>
+                        <div className="btn" onClick={e => { e.stopPropagation(); return setShowEditAllDropdown(true) }}>Edit All <i className="fa fa-caret-down" /></div>
                     </div>
                 </div>
                 {showEditAllDropdown &&
