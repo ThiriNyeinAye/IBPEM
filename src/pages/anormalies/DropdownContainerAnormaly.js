@@ -12,15 +12,15 @@ const DropdownContainerAnormaly = () => {
                     <DropDown
                         label={"FAULT TYPE"}
                         defaultValue={"Refregerant Lean"}
-                        additionalValue={["Other action", "Other action", "Other action", "Other action", "Other action", "Other action", "Other action"]} />
+                        additionalValue={["Condenser Fouling", "Excess Oil", "Low Condenser Water Flow", "Non-Condensable", "Normal", "Reduced Condenser Flow", "Refrigerant Leak", "Refrigerant Overcharge", "Add custom"]} />
                     <DropDown
-                        label={"SEVRITY"}
+                        label={"SEVERITY"}
                         defaultValue={"Low"}
-                        additionalValue={["Other action", "Other action", "Other action", "Other action"]} />
+                        additionalValue={["1-Low", "2-Medium", "3-High"]} />
                     <DropDown
                         label={"SENSOR SIGNAL"}
                         defaultValue={"Plant EMG"}
-                        additionalValue={["Other action", "Other action", "Other action", "Other action", "Other action", "Other action", "Other action", "Other action", "Other action"]} />
+                        additionalValue={["Chiller KW", "Chiller Running Count", "CHW DP STPT", "CHW DP", "CHW KW", "CHW MIN", "CHW RL", "CHWP-VSD-OP", "CHWP-StageDNSP", "CHWP-StageINSP"]} />
                     <div className='d-flex flex-column justify-content-center'>
                         <div className="btn" onClick={e => { e.stopPropagation(); return setShowEditAllDropdown(true) }}>Edit All <i className="fa fa-caret-down" /></div>
                     </div>
@@ -33,21 +33,21 @@ const DropdownContainerAnormaly = () => {
                                 <DropDownBlock
                                     label={"FAULT TYPE"}
                                     defaultValue={"Refregerant Lean"}
-                                    additionalValue={["Other action", "Other action", "Other action", "Other action", "Other action", "Other action", "Other action"]}
+                                    additionalValue={["Condenser Fouling", "Excess Oil", "Low Condenser Water Flow", "Non-Condensable", "Normal", "Reduced Condenser Flow", "Refrigerant Leak", "Refrigerant Overcharge", "Add custom"]}
                                     showEditAllDropdown={showEditAllDropdown} />
                             </div>
                             <div className="bg-white border border-top-0 border-bottom-0 ">
                                 <DropDownBlock
                                     label={"SEVRITY"}
                                     defaultValue={"Low"}
-                                    additionalValue={["Other action", "Other action", "Other action", "Other action"]}
+                                    additionalValue={["1-Low", "2-Medium", "3-High"]}
                                     showEditAllDropdown={showEditAllDropdown} />
                             </div>
                             <div className="bg-white ">
                                 <DropDownBlock
                                     label={"SENSOR SIGNAL"}
                                     defaultValue={"Plant EMG"}
-                                    additionalValue={["Other action", "Other action", "Other action", "Other action", "Other action", "Other action", "Other action", "Other action", "Other action"]}
+                                    additionalValue={["Chiller KW", "Chiller Running Count", "CHW DP STPT", "CHW DP", "CHW KW", "CHW MIN", "CHW RL", "CHWP-VSD-OP", "CHWP-StageDNSP", "CHWP-StageINSP"]}
                                     showEditAllDropdown={showEditAllDropdown} />
                             </div>
                         </div>
@@ -65,11 +65,32 @@ const DropdownContainerAnormaly = () => {
                             <div className='dropdown-menu px-1'>
                                 <div className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1">
                                     <input type="checkbox" />
-                                    <div className="pl-2">Temperature</div>
+                                    <div className="pl-2">Option A</div>
                                 </div>
                                 <div className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1">
                                     <input type="checkbox" />
-                                    <div className="pl-2">Performance</div>
+                                    <div className="pl-2">Option B</div>
+                                </div>
+                                <div className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1">
+                                    <input type="checkbox" />
+                                    <div className="pl-2">Option C</div>
+                                </div>
+                                <div className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1">
+                                    <input type="checkbox" />
+                                    <div className="pl-2">Option D</div>
+                                </div>
+                                <div className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1">
+                                    <input type="checkbox" />
+                                    <div className="pl-2">Option E</div>
+                                </div>
+                                <div className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1">
+                                    <input type="checkbox" />
+                                    <div className="pl-2">Option F</div>
+                                </div>
+                                <div className=" d-flex flex-row justify-content-center pt-3">
+                                    <div className="btn text-white px-3" style={{ backgroundColor: '#23c49e' }} >
+                                        Show Graph
+                                    </div>
                                 </div>
                             </div>
                         </div>

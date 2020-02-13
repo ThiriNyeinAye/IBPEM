@@ -128,9 +128,31 @@ const AnormalyControlPanel = props => {
                         </div>
                         <DropdownItem dateTime="29.01.2019 16:00-16:03" percentage="20%" />
                         <DropdownItem dateTime="29.01.2019 16:00-16:03" percentage="60%" />
-                        <div className='dropdown-item py-3 text-center' style={{ cursor: "pointer" }}>
-                            View History
-                        </div>
+                        <div className='dropdown-item py-2 text-left' style={{ cursor: "pointer" }}>
+                            Suggested Labeling
+                            <div className='d-flex flex-wrap'>
+                                <div className='py-1'>
+                                    <div className='d-flex flex-row p-2 ' style={{backgroundColor:'#E9F8F1', borderColor:'#E9F8F1', borderRadius:10}}>
+                                        <div className='text-secondary'>
+                                            SEVERITY
+                                        </div>
+                                        <div className='px-2'>
+                                            Low
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className='py-1'>
+                                    <div className='d-flex flex-row p-2  rounded-lg' style={{backgroundColor:'#E9F8F1',borderColor:'#E9F8F1', borderRadius:10}}>
+                                        <div className='text-secondary'>
+                                            SENSOR SIGNAL
+                                        </div>
+                                        <div className='px-2'>
+                                            Plant EMG
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>  
                     </div>
                 </div>
             </div>

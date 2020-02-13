@@ -42,6 +42,12 @@ const SimpleSingleAreaChart = (props) => {
         },
         series : [
             {
+                zones:[
+                    {
+                        color:'#00BF8E'
+                    }
+                ],
+                type:'line',
                 name: 'Temperature',
                 data: props.data,
                 tooltip: {

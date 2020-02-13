@@ -1,3 +1,6 @@
 .dropdown-toggle::after{
     color:#23c49e;
 }
+.highcharts-navigator-mask-inside{
+    cursor: pointer!important;
+}
