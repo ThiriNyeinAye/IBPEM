@@ -128,12 +128,12 @@ const AnormalyViewSelector = ({ selectedAnormalyView, onSelectChanged }) => {
                 Sort By {selectedAnormaly}
                 <i className="fa fa-sort-down px-1"></i>
             </div>
-            <div className="d-flex flex-row pb-4" id="SortBy">
-                <div className="w-100" style={{ backgroundColor: '#EDEFEE20', cursor: "pointer" }}>
+            <div className="d-flex flex-row pb-4">
+                <div className="w-100 collapse multi-collapse" id="SortBy" style={{ backgroundColor: '#EDEFEE20', cursor: "pointer" }}>
                     {
                         anormalyViewList.map((v, k) => (
                             v === selectedAnormaly ? null :
-                                <div key={k} onClick={e => onSelectChanged(k + 1)} className="collapse multi-collapse border border-right-0 border-left-0 py-3 w-100" id="SortBy">
+                                <div key={k} onClick={e => onSelectChanged(k + 1)} className="border border-right-0 border-left-0 py-3 w-100">
                                     {v}
                                 </div>
                         ))
