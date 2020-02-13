@@ -161,8 +161,8 @@ const AnormalyControlPanel = props => {
                     <Icon icon="fa fa-plus" />
                     <Icon icon="fa fa-minus" />
                     <div className='px-2 pr-4 font-weight-bold text-secondary'>Zoom</div>
-                    <SampleDropdown label={"Today"} icon={<Icon icon="fa fa-calendar" />}
-                        additionalValue={["12.1.2020 ", "12.1.2020", "12.1.2020",]}
+                    <SampleDropdown label={"Today"} icon={<Icon icon="fa fa-calendar"  />}
+                        additionalValue={["7 days ", "1 month", "6 month",, "1 year"]} onClick={()=> alert('7 days')}
                     />
                 </div>
             </div>

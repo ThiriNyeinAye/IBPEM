@@ -61,6 +61,12 @@ const customDropdownStyle = {
 
 export const SampleDropdown = props => {
   const { label, additionalValue, icon } = props
+//   const showMessage=()=>{
+//     return(
+//         alert('Hello')
+//     )
+    
+// }
   return (
     <div className="">
       <div className="dropdown" data-toggle="dropdown">
@@ -72,9 +78,9 @@ export const SampleDropdown = props => {
           <div className="px-2" ><i className="fa fa-caret-down" /></div>
         </div>
       </div>
-      <div className="dropdown-menu  py-0">
+      <div className="dropdown-menu py-0">
         {additionalValue.map((v, k) => ([
-          <div key={k} className="dropdown-item my-2" style={{ cursor: 'pointer', }}>{v}</div>,
+          <div key={k} className="dropdown-item my-2" style={{ cursor: 'pointer', }} onClick={()=> (alert(v))}>{v}</div>,
           <div key={v} className="dropdown-divider my-0" />
         ])
         )}
