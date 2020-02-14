@@ -1,4 +1,4 @@
-import React, { Component } from "react"
+import React, { Component, useState } from "react"
 import moment from "moment-timezone"
 
 import SingleAreaChart from "../../components/graphs/SingleAreaChart.js"
@@ -25,7 +25,7 @@ class Anormalies extends Component {
             data: []
         }
     }
-
+    
     componentDidMount() {
         DataFetcher((error, data) => {
             if (error) console.log("Error: ", error)
@@ -34,8 +34,8 @@ class Anormalies extends Component {
     }
 
     render() {
-        const { data } = this.state
 
+        const { data } = this.state;
         const data0 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
         const data1 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
         const data2 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
@@ -60,7 +60,7 @@ class Anormalies extends Component {
                             <div className="py-2 col-lg-12 col-12">
                                 <div className="bg-white rounded p-4">
                                     <AnormalyControlPanel />
-                                    <SingleAreaChart data={data0} />
+                                    <SingleAreaChart data={data0} zoomType={"x"}/>
                                     {/* <MultiAreaChart data1={data0} data2={data2} /> */}
                                 </div>
                             </div>
@@ -113,7 +113,24 @@ class Anormalies extends Component {
 
 export default Anormalies
 
+// const zoomIN = () => {
+//     this.state.zoomType = 'x';
+// }
+
+
 const AnormalyControlPanel = props => {
+   const {zoomType} = props;
+   console.log('ZoomType => ' + props.zoomType);
+    // const [zoomType, setZoomType] = useState('x');
+    // const Zoom = () => {
+    //     if(zoomType === 'x'){
+    //         setZoomType(null)
+    //     }
+    //     else {
+    //         setZoomType('x')
+    //     }
+    //     console.log("zoom type => "+zoomType);
+    // }
     return (
         <div className='d-flex justify-content-between'>
             <div className=''>
@@ -158,11 +175,15 @@ const AnormalyControlPanel = props => {
             </div>
             <div className='pr-5'>
                 <div className='d-flex align-items-center'>
-                    <Icon icon="fa fa-plus" />
-                    <Icon icon="fa fa-minus" />
+                    <span>
+                        <Icon icon="fa fa-plus" />
+                    </span>
+                    <span onClick={() => alert('minus icon clicked')}>
+                        <Icon icon="fa fa-minus" />
+                    </span>
                     <div className='px-2 pr-4 font-weight-bold text-secondary'>Zoom</div>
-                    <SampleDropdown label={"Today"} icon={<Icon icon="fa fa-calendar"  />}
-                        additionalValue={["7 days ", "1 month", "6 month",, "1 year"]} onClick={()=> alert('7 days')}
+                    <SampleDropdown label={"Today"} icon={<Icon icon="fa fa-calendar" />}
+                        additionalValue={["12.1.2020 ", "12.1.2020", "12.1.2020",]}
                     />
                 </div>
             </div>

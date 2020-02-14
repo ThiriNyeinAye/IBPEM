@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Highcharts, { color } from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
+import moment from 'moment'
 
 const PlotBands = props => {
     const d = props.d.split(" ").filter(v => v !== "M" && v !== "L" && v !== "z")
@@ -26,8 +27,17 @@ const PlotBands = props => {
 }
 
 const SingleAreaChart = props => {
+    const { zoomType } = props;
     const refContainer = useRef(null);
-
+    // useEffect(() => {
+    //     console.log('click: ', refContainer);
+    //     refContainer.current.container.current.onclick= e => {
+    //         console.log('click: ', refContainer);
+    //         // refContainer.current.chart.xAxis[0].setExtremes(e.xAxis[0].value, e.xAxis[1].value, false)
+    //         // refContainer.current.chart.yAxis[0].setExtremes(e.yAxis[0].value, e.yAxis[1].value)
+    //     }
+    // });
+    
     const navigatorZoneColors = props.data.map((v, i, arr) => {
         if (i === 0) return { value: v[0], color: "#B6B6B6" }
         // if(i>11 && i<15) console.log(v[0])
@@ -48,18 +58,19 @@ const SingleAreaChart = props => {
             enabled: false
         },
         chart: {
+            renderTo: 'container',
             style: {
                 marginBottom: 10,
                 color: '#00BF8E'
             },
             lineColor: '#00BF8E',
             spacing: [0, 0, 30, 0],
-            zoomType: 'x',
+            zoomType: `${zoomType}`,
             type: 'area',
-            events: {
-                // click: () => {}
-                // render: () => {
-                // }
+            events:{
+                click: function(event) {
+                    alert('x : '+ event.xAxis[0].value + '\ny : '+ event.yAxis[0].value)
+                }
             }
         },
         tooltip: {
@@ -79,7 +90,7 @@ const SingleAreaChart = props => {
                     x: 4
                 },
                 title: {
-                    text: 'Temperature (°C)',
+                    text: 'Temperature (Â°C)',
                     style: {
                         color: '#000'
                     },
@@ -95,11 +106,12 @@ const SingleAreaChart = props => {
             },
             plotBands: [{ // mark the weekend
                 color: '#00bf8e32',
-                from: 1581379820000,
-                to: 1581380100000,
+                from: 1581552060000,
+                to: 1581553560000,
                 zIndex: 20,
                 borderColor: '#BF0B2399',//'#00bf8e',
                 borderWidth: 2,
+                
             }],
         },
         plotOptions: {
@@ -152,9 +164,10 @@ const SingleAreaChart = props => {
             name: 'Temperature',
             data: props.data,//.filter((v,i) => i>30),
             tooltip: {
-                valueSuffix: '°C'
+                valueSuffix: 'Â°C'
             },
             turboThreshold: 0,
+            // zoomType={zoomType}
         }]
     };
 
