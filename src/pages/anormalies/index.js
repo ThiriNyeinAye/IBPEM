@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react"
+import React, { Component, useState, useRef, useEffect } from "react"
 import moment from "moment-timezone"
 
 import SingleAreaChart from "../../components/graphs/SingleAreaChart.js"
@@ -72,8 +72,7 @@ class Anormalies extends Component {
                             </div>
                             <div className="py-2 col-lg-12 col-12">
                                 <div className="bg-white rounded p-4">
-                                    <AnormalyControlPanel />
-                                    <SingleAreaChart data={data0} zoomType={"x"} />
+                                    <SingleAreaChart data={data0} ControlPanel={AnormalyControlPanel} />
                                     {/* <MultiAreaChart data1={data0} data2={data2} /> */}
                                 </div>
                             </div>
@@ -135,12 +134,7 @@ class Anormalies extends Component {
         )
     }
 }
-
 export default Anormalies
-
-// const zoomIN = () => {
-//     this.state.zoomType = 'x';
-// }
 
 
 const AnormalyControlPanel = props => {
@@ -200,10 +194,10 @@ const AnormalyControlPanel = props => {
             </div>
             <div className='pr-5'>
                 <div className='d-flex align-items-center'>
-                    <span>
+                    <span onClick={props.handleZoomIn}>
                         <Icon icon="fa fa-plus" />
                     </span>
-                    <span onClick={() => alert('minus icon clicked')}>
+                    <span onClick={props.handleZoomOut}>
                         <Icon icon="fa fa-minus" />
                     </span>
                     <div className='px-2 pr-4 font-weight-bold text-secondary'>Zoom</div>
