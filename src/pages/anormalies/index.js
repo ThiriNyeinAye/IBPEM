@@ -22,10 +22,11 @@ class Anormalies extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            data: []
+            data: [],
+            graphShowData: []
         }
     }
-    
+
     componentDidMount() {
         DataFetcher((error, data) => {
             if (error) console.log("Error: ", error)
@@ -33,9 +34,17 @@ class Anormalies extends Component {
         })
     }
 
-    render() {
+    // changeGraphData = (g) => { this.setState({ graphs: g })}
+    handleGraphDataChart = (g) => {
+        // console.log("is graph handler", g)
+        this.setState({ graphShowData: g })
+        console.log('is show graph clicking')
+    }
 
-        const { data } = this.state;
+
+    render() {
+        const { data, graphShowData } = this.state;
+        console.log(graphShowData)
         const data0 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
         const data1 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
         const data2 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
@@ -48,32 +57,48 @@ class Anormalies extends Component {
                     </div>
 
                     <DialogNewAnormaly />
-                    
+
                     <div className="container-fluid ">
                         <div className="row ">
                             <div className="col-lg-12 py-4">
                                 <Navbar.ItemNavbar />
                             </div>
                             <div className="py-2 col-lg-12 col-12">
-                                <DropdownContainerAnormaly />
+                                <DropdownContainerAnormaly
+                                    handleGraphDataChart={this.handleGraphDataChart}
+                                // graphs={this.state.graphs}
+                                // changeGraphData={this.changeGraphData}
+                                />
                             </div>
                             <div className="py-2 col-lg-12 col-12">
                                 <div className="bg-white rounded p-4">
                                     <AnormalyControlPanel />
-                                    <SingleAreaChart data={data0} zoomType={"x"}/>
+                                    <SingleAreaChart data={data0} zoomType={"x"} />
                                     {/* <MultiAreaChart data1={data0} data2={data2} /> */}
                                 </div>
                             </div>
+                            {/* ===old version of graph ====
                             <div className="py-2 col-lg-12 col-12">
-                                <div className="bg-white rounded p-4">
-                                    <SimpleSingleAreaChart title="Temperature Input" data={data1} />
+                                    <div className="bg-white rounded p-4">
+                                        <SimpleSingleAreaChart title="Temperature Input" data={data1} />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="py-2 col-lg-12 col-12">
-                                <div className="bg-white rounded p-4 bg-dark">
-                                    <SimpleSingleAreaChart title="Temperature Output" data={data2} />
-                                </div>
-                            </div>
+                                <div className="py-2 col-lg-12 col-12">
+                                    <div className="bg-white rounded p-4 bg-dark">
+                                        <SimpleSingleAreaChart title="Temperature Output" data={data2} />
+                                    </div>
+                                </div> */}
+                            {
+                                graphShowData.map((v) =>
+                                    <div className="py-2 col-lg-12 col-12">
+                                        {v.selected &&
+                                            <div className="bg-white rounded p-4">
+                                                <SimpleSingleAreaChart title={v.name} data={data1} />
+                                            </div>
+                                        }
+                                    </div>
+                                )
+                            }
                         </div>
                     </div>
                     {/* <div className="d-flex flex-column flex-wrap flex-grow-1 p-2">
@@ -119,8 +144,8 @@ export default Anormalies
 
 
 const AnormalyControlPanel = props => {
-   const {zoomType} = props;
-   console.log('ZoomType => ' + props.zoomType);
+    const { zoomType } = props;
+    console.log('ZoomType => ' + props.zoomType);
     // const [zoomType, setZoomType] = useState('x');
     // const Zoom = () => {
     //     if(zoomType === 'x'){
@@ -149,7 +174,7 @@ const AnormalyControlPanel = props => {
                             Suggested Labeling
                             <div className='d-flex flex-wrap'>
                                 <div className='py-1'>
-                                    <div className='d-flex flex-row p-2 ' style={{backgroundColor:'#E9F8F1', borderColor:'#E9F8F1', borderRadius:10}}>
+                                    <div className='d-flex flex-row p-2 ' style={{ backgroundColor: '#E9F8F1', borderColor: '#E9F8F1', borderRadius: 10 }}>
                                         <div className='text-secondary'>
                                             SEVERITY
                                         </div>
@@ -159,7 +184,7 @@ const AnormalyControlPanel = props => {
                                     </div>
                                 </div>
                                 <div className='py-1'>
-                                    <div className='d-flex flex-row p-2  rounded-lg' style={{backgroundColor:'#E9F8F1',borderColor:'#E9F8F1', borderRadius:10}}>
+                                    <div className='d-flex flex-row p-2  rounded-lg' style={{ backgroundColor: '#E9F8F1', borderColor: '#E9F8F1', borderRadius: 10 }}>
                                         <div className='text-secondary'>
                                             SENSOR SIGNAL
                                         </div>
@@ -169,7 +194,7 @@ const AnormalyControlPanel = props => {
                                     </div>
                                 </div>
                             </div>
-                        </div>  
+                        </div>
                     </div>
                 </div>
             </div>
