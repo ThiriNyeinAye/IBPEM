@@ -3,40 +3,36 @@ import Highcharts, { color } from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
 import moment from 'moment'
 
-const PlotBands = props => {
-    const d = props.d.split(" ").filter(v => v !== "M" && v !== "L" && v !== "z")
-    const x1 = d[0]
-    const y1 = d[1]
-    const x2 = d[2]
-    const y2 = d[3]
-    const x3 = d[4]
-    const y3 = d[5]
-    const x4 = d[6]
-    const y4 = d[7]
-    return (
-        <g className={props.gClass}>
-            {/* <path fill="#00bf8e22" strokeWidth={0} d={props.d} ></path> */}
-            {/* Left */}
-            <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#00bf8e" strokeWidth={props.strokeWidth} />
-            {/* Right */}
-            <line x1={x4} y1={y4} x2={x3} y2={y3} stroke="#00bf8e" strokeWidth={props.strokeWidth} />
-            {/* Top */}
-            <line x1={x1} y1={y1} x2={x4} y2={y4} stroke="#BF0B2399" strokeWidth={props.strokeWidth} />
-        </g>
-    )
-}
+// const PlotBands = props => {
+//     const d = props.d.split(" ").filter(v => v !== "M" && v !== "L" && v !== "z")
+//     const x1 = d[0]
+//     const y1 = d[1]
+//     const x2 = d[2]
+//     const y2 = d[3]
+//     const x3 = d[4]
+//     const y3 = d[5]
+//     const x4 = d[6]
+//     const y4 = d[7]
+//     return (
+//         <g className={props.gClass}>
+//             {/* <path fill="#00bf8e22" strokeWidth={0} d={props.d} ></path> */}
+//             {/* Left */}
+//             <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#00bf8e" strokeWidth={props.strokeWidth} />
+//             {/* Right */}
+//             <line x1={x4} y1={y4} x2={x3} y2={y3} stroke="#00bf8e" strokeWidth={props.strokeWidth} />
+//             {/* Top */}
+//             <line x1={x1} y1={y1} x2={x4} y2={y4} stroke="#BF0B2399" strokeWidth={props.strokeWidth} />
+//         </g>
+//     )
+// }
 
 const SingleAreaChart = props => {
-    const { zoomType } = props;
     const refContainer = useRef(null);
-    // useEffect(() => {
-    //     console.log('click: ', refContainer);
-    //     refContainer.current.container.current.onclick= e => {
-    //         console.log('click: ', refContainer);
-    //         // refContainer.current.chart.xAxis[0].setExtremes(e.xAxis[0].value, e.xAxis[1].value, false)
-    //         // refContainer.current.chart.yAxis[0].setExtremes(e.yAxis[0].value, e.yAxis[1].value)
-    //     }
-    // });
+    const [leftLine, setLeftLine] = useState(null)
+    const [rightLine, setRightLine] = useState(null)
+    const [d, setD] = useState(null)
+    console.log("data: ", props.data)
+
     
     const navigatorZoneColors = props.data.map((v, i, arr) => {
         if (i === 0) return { value: v[0], color: "#B6B6B6" }
@@ -58,17 +54,17 @@ const SingleAreaChart = props => {
             enabled: false
         },
         chart: {
-            renderTo: 'container',
             style: {
                 marginBottom: 10,
                 color: '#00BF8E'
             },
             lineColor: '#00BF8E',
             spacing: [0, 0, 30, 0],
-            zoomType: `${zoomType}`,
+            zoomType: 'x',
             type: 'area',
             events:{
                 click: function(event) {
+                    //console.log('event', event);
                     alert('x : '+ event.xAxis[0].value + '\ny : '+ event.yAxis[0].value)
                 }
             }
@@ -104,7 +100,7 @@ const SingleAreaChart = props => {
             labels: {
                 format: '{value:%m-%d %H:%M}'
             },
-            plotBands: [{ // mark the weekend
+            plotBands: [{
                 color: '#00bf8e32',
                 from: 1581552060000,
                 to: 1581553560000,
@@ -167,7 +163,6 @@ const SingleAreaChart = props => {
                 valueSuffix: 'Â°C'
             },
             turboThreshold: 0,
-            // zoomType={zoomType}
         }]
     };
 
@@ -191,9 +186,35 @@ const SingleAreaChart = props => {
 
     return (
         <div className="">
+            <props.ControlPanel 
+                handleZoomIn={e => handleZoomIn(refContainer.current.chart,e)} 
+                handleZoomOut={e => handleZoomOut(refContainer.current.chart,e)} />
             <HighchartsReact ref={refContainer} highcharts={Highcharts} constructorType={"stockChart"} options={options} />
         </div>
     )
 }
 
 export default SingleAreaChart
+
+export const handleZoomIn = (chart) => {
+    
+    var min = chart.xAxis[0].getExtremes().min;
+    var max = chart.xAxis[0].getExtremes().max;
+
+    const diffTime = (max-min)/(1000*60*60)
+    const zoomHours = diffTime<24 ? (1000*60*60) : diffTime<24*7 ? (1000*60*60*24) : (1000*60*60)
+
+    console.log("currentXC", min, max, (max-min)/(1000*60*60), diffTime, zoomHours)
+
+    chart.xAxis[0].setExtremes((min + zoomHours), (max - zoomHours ));
+}
+
+export const handleZoomOut = (chart) => {
+    var min = chart.xAxis[0].getExtremes().min;
+    var max = chart.xAxis[0].getExtremes().max;
+
+    const diffTime = (max-min)/(1000*60*60)
+    const zoomHours = diffTime<24 ? (1000*60*60) : diffTime<24*7 ? (1000*60*60*24) : (1000*60*60)
+
+    chart.xAxis[0].setExtremes((min - zoomHours), (max + zoomHours ));
+}
