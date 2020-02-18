@@ -23,6 +23,11 @@ class Anormalies extends Component {
         super(props)
         this.state = {
             data: [],
+            anomalyInputData: {
+                faultType: [],
+                severity: [],
+                sensorSignal: [],
+            },
             graphShowData: []
         }
     }
@@ -30,8 +35,14 @@ class Anormalies extends Component {
     componentDidMount() {
         DataFetcher((error, data) => {
             if (error) console.log("Error: ", error)
-            else this.setState({ data: data.payload })
+            else this.setState({ data: data.payload.filter((v,i)=> i<100) })
         })
+    }
+
+    onAnormalyInputChanged = (value, dataType) => {
+        const anomalyInputData = {...this.state.anomalyInputData}
+        anomalyInputData[dataType] = [value]
+        this.setState({ anomalyInputData })
     }
 
     // changeGraphData = (g) => { this.setState({ graphs: g })}
@@ -39,12 +50,13 @@ class Anormalies extends Component {
         this.setState({ graphShowData: g })
     }
 
-
     render() {
-        const { data, graphShowData } = this.state;
+        const { data, graphShowData, anomalyInputData } = this.state;
+        console.log(graphShowData)
         const data0 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
         const data1 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
         const data2 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
+        const minorChartData = [data1, data2]
 
         return (
             <div className="" style={{ overflow: 'hidden' }}>
@@ -61,11 +73,10 @@ class Anormalies extends Component {
                                 <Navbar.ItemNavbar />
                             </div>
                             <div className="py-2 col-lg-12 col-12">
-                                <DropdownContainerAnormaly
+                                <DropdownContainerAnormaly 
                                     handleGraphDataChart={this.handleGraphDataChart}
-                                // graphs={this.state.graphs}
-                                // changeGraphData={this.changeGraphData}
-                                />
+                                    anomalyInputData={anomalyInputData} 
+                                    onAnormalyInputChanged={this.onAnormalyInputChanged} />
                             </div>
                             <div className="py-2 col-lg-12 col-12">
                                 <div className="bg-white rounded p-4">
@@ -85,11 +96,11 @@ class Anormalies extends Component {
                                     </div>
                                 </div> */}
                             {
-                                graphShowData.map((v) =>
+                                graphShowData.map((v, i) =>
                                     <div className="py-2 col-lg-12 col-12">
                                         {v.selected &&
                                             <div className="bg-white rounded p-4">
-                                                <SimpleSingleAreaChart title={v.name} data={data1} />
+                                                <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} />
                                             </div>
                                         }
                                     </div>
