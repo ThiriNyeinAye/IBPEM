@@ -36,15 +36,12 @@ class Anormalies extends Component {
 
     // changeGraphData = (g) => { this.setState({ graphs: g })}
     handleGraphDataChart = (g) => {
-        // console.log("is graph handler", g)
         this.setState({ graphShowData: g })
-        console.log('is show graph clicking')
     }
 
 
     render() {
         const { data, graphShowData } = this.state;
-        console.log(graphShowData)
         const data0 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
         const data1 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
         const data2 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])

@@ -13,7 +13,7 @@ const DropdownContainerAnormaly = props => {
     }
 
     return (
-        <div className='d-flex flex-row flex-wrap p-1 justify-content-between ' onClick={e => setShowEditAllDropdown(false)} >
+        <div className='d-flex flex-row flex-wrap p-1 justify-content-between ' onClick={e => setShowEditAllDropdown(false)}  >
 
             <div className="d-flex flex-column " style={{ position: "relative" }}>
                 <div className='d-flex flex-wrap flex-md-wrap flex-sm-wrap justify-content-start '>
@@ -117,7 +117,7 @@ const DropdownContainerAnormaly = props => {
         </div>
     )
 }
-export default DropdownContainerAnormaly;
+ export default DropdownContainerAnormaly;
 
 
 
