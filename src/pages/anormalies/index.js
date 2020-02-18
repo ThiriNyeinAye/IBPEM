@@ -52,7 +52,6 @@ class Anormalies extends Component {
 
     render() {
         const { data, graphShowData, anomalyInputData } = this.state;
-        console.log(graphShowData)
         const data0 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
         const data1 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
         const data2 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])

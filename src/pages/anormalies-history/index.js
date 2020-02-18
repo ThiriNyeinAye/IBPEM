@@ -48,7 +48,7 @@ class AnormaliesHistory extends Component {
                                 <div className="text-secondary">{"1293 Anomalies have been reviewed"}</div>
                             </div>
                             <div className="" style={{cursor:'pointer'}}>
-                                <span className="pr-2"><i class="fas fa-list"/></span>
+                                <span className="pr-2"><i className="fas fa-list"/></span>
                                 <span className="text-secondary">{"Filter"}</span>
                             </div>
                         </div>
