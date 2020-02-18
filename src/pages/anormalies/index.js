@@ -48,7 +48,6 @@ class Anormalies extends Component {
 
     // changeGraphData = (g) => { this.setState({ graphs: g })}
     handleGraphDataChart = (g) => {
-        // console.log("is graph handler", g)
         this.setState({ graphShowData: g })
         console.log('is show graph clicking')
         console.log("singleAreaChartRef: ", this.singleAreaChartRef)

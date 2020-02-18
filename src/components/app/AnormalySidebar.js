@@ -1,8 +1,11 @@
 import React, { useState, Fragment } from 'react'
+import {routeName} from '../../routes/index.js'
+import {Link} from 'react-router-dom'
 import { Progress } from 'reactstrap';
 import CardBody from 'reactstrap/lib/CardBody';
 
-const AnormalySidebar = () => {
+const AnormalySidebar = props => {
+    console.log(props)
     const [anormalyBy, setAnormalyBy] = useState(1)
     const anormalyByEquipmentList = Object.keys(sidebarData).map((v, key) => <AnormalyByEquipmentItem key={key} deviceName={v} anormalyData={sidebarData[v]} />)
     const AnormalyByTimeFrameList = Object.values(sidebarData).reduce((r, c) => [...r, ...c], []).map((v, key) => <AnormalyByTimeFrameItem key={key} date={v.date} time={v.time} selected={v.selected} deletedIconShowed={v.selected} />)
@@ -12,8 +15,8 @@ const AnormalySidebar = () => {
     return (
         <div className='bg-white p-3 rounded h-100 d-flex flex-column justify-content-between' >
             <div className="">
-                <div className="pt-3 pb-5">
-                    <img src={"/ecomlogo.jpeg"} alt='LoGo' className='img-fluid' />
+                <div className="pt-3 pb-5 ">
+                   <Link to={routeName.anormalies}> <img src={"/ecomlogo.jpeg"} alt='LoGo' className='img-fluid' style={{cursor:'pointer'}} /> </Link>
                 </div>
                 <div className='h4 px-1' style={{ lineHeight: 0.4 }}>Anomalies</div>
 
@@ -64,7 +67,9 @@ const AnormalySidebar = () => {
             </div>
             <div className='py-2'>
                 <div className="my-3 border"></div>
-                <div className="h6 text-secondary text-center" style={{ cursor: "pointer" }}>View History</div>
+                <div className="h6 text-secondary text-center" style={{ cursor: "pointer", }}>
+                 <Link to={routeName.routeAnormaliesHistory} style={{textDecoration:"none",color:'black'}}> View History</Link> 
+                </div>
             </div>
         </div>
 

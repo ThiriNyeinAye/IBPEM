@@ -1,11 +1,13 @@
 import React from 'react'
 import { SampleDropdown } from './DropDown.js'
+import {routeName} from '../../routes/index'
+import {Link} from 'react-router-dom'
 
 export const LogoNavbar = props => {
     return (
         <div className="d-flex flex-row justify-content-between flex-wrap ">
             <div className="pt-2">
-                <img src={"evercommlogo1.png"} alt="logo"/>
+               <Link to={routeName.routeAnormalies}><img src={"evercommlogo1.png"} alt="logo"/></Link>
             </div>
             <div className="d-flex text-secondary pt-2 ">
                 <div className="px-3 h4"><i className="fas fa-bell"></i></div>
