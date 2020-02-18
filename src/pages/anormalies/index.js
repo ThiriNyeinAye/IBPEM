@@ -10,8 +10,14 @@ import * as Navbar from "../../components/app/Navbar.js"
 import DialogNewAnormaly from "./DialogNewAnormaly.js";
 import { SampleDropdown } from '../../components/app/DropDown'
 
+const HOST = {
+    local: "http://192.168.100.7:3003/dummy-data",
+    test: "http://206.189.80.23:3003/dummy-data",
+    maythu: "http://192.168.100.27:3003/dummy-data"
+}
+
 const DataFetcher = (callback) => {
-    return fetch("http://192.168.100.7:3003/dummy-data")
+    return fetch(HOST.test)
         .then(res => res.json())
         .then(data => callback(data.error, data))
         .catch(error => callback(error, null))
@@ -36,7 +42,13 @@ class Anormalies extends Component {
     componentDidMount() {
         DataFetcher((error, data) => {
             if (error) console.log("Error: ", error)
-            else this.setState({ data: data.payload.filter((v,i)=> i<200) })
+            else {
+                this.setState({ data: data.payload.filter((v,i)=> i<200) }, () => {
+                    // const areaChart = this.singleAreaChartRef.current
+                    // areaChart.updater.isMounted()
+                    // areaChart.addSelectedRange({ leftX: 100, right: 200 })
+                })
+            }
         })
     }
 
@@ -235,8 +247,7 @@ const AnormalyControlPanel = props => {
                     </span>
                     <div className='px-2 font-weight-bold text-secondary'>Zoom</div>
                     <SampleDropdown label={"Today"} icon={<Icon icon="fa fa-calendar" />}
-                        additionalValue={["12.1.2020 ", "12.1.2020", "12.1.2020",]}
-                    />
+                        additionalValue={["7 days ", "1 month", "6 month", "1 year"]}/>
                 </div>
             </div>
         </div>

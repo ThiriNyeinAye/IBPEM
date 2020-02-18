@@ -131,7 +131,8 @@ class SingleAreaChart extends Component {
     initChartOption = (chart, props) => {
         const navigatorZoneColors = props.data.map((v, i, arr) => {
             if (i === 0) return { value: v[0], color: "#B6B6B6" }
-            return ((arr[i - 1][0] >= 1581639130000 && arr[i - 1][0] <= 1581639190000) ? { value: v[0], color: "#BF0B2399", } : { value: v[0], color: "#B6B6B6" })
+            return ((i>20 && i<26) ? { value: v[0], color: "#BF0B2399", } : { value: v[0], color: "#B6B6B6" })
+            // return ((arr[i - 1][0] >= 1581639130000 && arr[i - 1][0] <= 1581639190000) ? { value: v[0], color: "#BF0B2399", } : { value: v[0], color: "#B6B6B6" })
         })
         return {
             credits: {
