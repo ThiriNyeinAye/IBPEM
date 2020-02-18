@@ -30,6 +30,7 @@ class Anormalies extends Component {
             },
             graphShowData: []
         }
+        this.singleAreaChartRef = React.createRef()
     }
 
     componentDidMount() {
@@ -50,6 +51,7 @@ class Anormalies extends Component {
         // console.log("is graph handler", g)
         this.setState({ graphShowData: g })
         console.log('is show graph clicking')
+        console.log("singleAreaChartRef: ", this.singleAreaChartRef)
     }
 
     render() {
@@ -82,7 +84,7 @@ class Anormalies extends Component {
                             </div>
                             <div className="py-2 col-lg-12 col-12">
                                 <div className="bg-white rounded p-4">
-                                    <SingleAreaChart data={data0} ControlPanel={AnormalyControlPanel} />
+                                    <SingleAreaChart data={data0} ControlPanel={AnormalyControlPanel} ref={singleAreaChartRef=>{this.singleAreaChartRef=singleAreaChartRef}} />
                                     {/* <MultiAreaChart data1={data0} data2={data2} /> */}
                                 </div>
                             </div>

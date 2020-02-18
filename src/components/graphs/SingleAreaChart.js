@@ -28,10 +28,17 @@ import moment from "moment-timezone"
 //     )
 // }
 
+const AppConst = {
+    CREATE: 2,
+    UPDATE: 1,
+    DEFAULT: 0,
+}
+
 const SingleAreaChart = props => {
     const refContainer = useRef(null);
     const [leftLine, setLeftLine] = useState(null)
     const [rightLine, setRightLine] = useState(null)
+    const [rangeUpdateCondition, setRangeUpdateCondition] = useState(AppConst.DEFAULT)
     
     const navigatorZoneColors = props.data.map((v, i, arr) => {
         if (i === 0) return { value: v[0], color: "#B6B6B6" }
@@ -54,6 +61,7 @@ const SingleAreaChart = props => {
                 offsetXLeft: e.offsetX-6,
                 offsetXRight: e.offsetX+6,
             })
+            setRangeUpdateCondition(AppConst.CREATE)
         }
 
         chart.container.onmousemove = (e) => {
@@ -82,7 +90,7 @@ const SingleAreaChart = props => {
             // console.log("Click: ", `${e.offsetX } : ${chart.xAxis[0].toValue(e.offsetX)} : ${moment.unix(chart.xAxis[0].toValue(e.offsetX)/1000).format("YYYY-DD-MM HH:mm:ss")}`)
         }
 
-    }, [leftLine, setLeftLine, rightLine, setRightLine])
+    }, [leftLine, setLeftLine, rightLine, setRightLine, rangeUpdateCondition, setRangeUpdateCondition])
 
     const options = {
         credits: {
