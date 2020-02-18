@@ -90,7 +90,7 @@ const DropdownContainerAnormaly = props => {
                             {
                                 graphs.map((v, i) => (
                                     <div key={i} className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1" onClick={e => setGraphs(graphs.map(c => ({ name: c.name, selected: c.name === v.name ? !c.selected : c.selected })))}>
-                                        <input type="checkbox" checked={v.selected} />
+                                        <input type="checkbox" checked={v.selected} onChange={e => null} />
                                         <div className="pl-2">{v.name}</div>
                                     </div>
                                 ))

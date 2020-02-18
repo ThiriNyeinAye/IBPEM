@@ -255,9 +255,9 @@ const SingleAreaChart = props => {
 
     return (
         <div className="">
-            <props.ControlPanel 
+            {props.ControlPanel && <props.ControlPanel 
                 handleZoomIn={e => handleZoomIn(refContainer.current.chart,e)} 
-                handleZoomOut={e => handleZoomOut(refContainer.current.chart,e)} />
+                handleZoomOut={e => handleZoomOut(refContainer.current.chart,e)} />}
             <HighchartsReact ref={refContainer} highcharts={Highcharts} constructorType={"stockChart"} options={options} />
         </div>
     )
