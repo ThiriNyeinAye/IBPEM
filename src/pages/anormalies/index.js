@@ -12,7 +12,7 @@ import { SampleDropdown } from '../../components/app/DropDown'
 
 const HOST = {
     local: "http://192.168.100.7:3003/dummy-data",
-    test: "http://206.189.80.23:3003/dummy-data",
+    test: "https://ibpem.com/api/dummy-data",
     maythu: "http://192.168.100.27:3003/dummy-data"
 }
 
