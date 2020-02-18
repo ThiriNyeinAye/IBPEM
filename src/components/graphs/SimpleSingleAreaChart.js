@@ -11,7 +11,7 @@ const SimpleSingleAreaChart = (props) => {
         },
         chart: {
             type: 'area',
-            spacing: [0, 0, 30, 0],
+            spacing: [0, 0, 30, 16],
             height: 200,
             zoomType: 'x',
             backgroundColor: "#ffffff"
@@ -42,12 +42,7 @@ const SimpleSingleAreaChart = (props) => {
         },
         series : [
             {
-                zones:[
-                    {
-                        color:'#00BF8E'
-                    }
-                ],
-                type:'line',
+                type:'area',
                 name: 'Temperature',
                 data: props.data,
                 tooltip: {
@@ -60,18 +55,18 @@ const SimpleSingleAreaChart = (props) => {
             {
                 labels: {
                     align: 'right',
-                    x: 15,
+                    x: -6,
                     y: -3
                 }
             }
         ],
         plotOptions: {
             series: {
-                color: '#2196f3',
+                color: "#00BF8E",
                 fillColor: {
                     linearGradient: [0, 0, 0, 200],
                     stops: [
-                        [0, "#2196f377"],
+                        [0, "#00BF8E77"],
                         [1, "#2196f300"]
                     ]
                 }

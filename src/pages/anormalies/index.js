@@ -22,19 +22,30 @@ class Anormalies extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            data: []
+            data: [],
+            anomalyInputData: {
+                faultType: [],
+                severity: [],
+                sensorSignal: [],
+            }
         }
     }
 
     componentDidMount() {
         DataFetcher((error, data) => {
             if (error) console.log("Error: ", error)
-            else this.setState({ data: data.payload })
+            else this.setState({ data: data.payload.filter((v,i)=> i<100) })
         })
     }
 
+    onAnormalyInputChanged = (value, dataType) => {
+        const anomalyInputData = {...this.state.anomalyInputData}
+        anomalyInputData[dataType] = [value]
+        this.setState({ anomalyInputData })
+    }
+
     render() {
-        const { data } = this.state
+        const { data, anomalyInputData } = this.state
 
         const data0 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
         const data1 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
@@ -55,7 +66,9 @@ class Anormalies extends Component {
                                 <Navbar.ItemNavbar />
                             </div>
                             <div className="py-2 col-lg-12 col-12">
-                                <DropdownContainerAnormaly />
+                                <DropdownContainerAnormaly 
+                                    anomalyInputData={anomalyInputData} 
+                                    onAnormalyInputChanged={this.onAnormalyInputChanged} />
                             </div>
                             <div className="py-2 col-lg-12 col-12">
                                 <div className="bg-white rounded p-4">
