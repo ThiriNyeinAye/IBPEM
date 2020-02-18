@@ -1,9 +1,10 @@
-import React, { useState, Fragment } from 'react'
+import React, { useState, Fragment, useEffect } from 'react'
 import SingleAreaChart from "../../components/graphs/SingleAreaChart.js"
 
 const CollapseTable = props => {
     // const [expand, setExpand] = useState(false)
     const { data = [] } = props
+
     return (
         <div className="table-responsive w-100">
             <table className="w-100" style={{ borderSpacing: "0 6px", borderCollapse: "separate", minWidth: 1200 }}>

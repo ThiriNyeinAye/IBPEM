@@ -38,6 +38,8 @@ class AnormaliesHistory extends Component {
         const data0 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix()*1000, v.efficiency])
         const data1 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix()*1000, v.evaInput])
         const data2 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix()*1000, v.evaOutput])
+        
+        if(data.length===0) return <div className="text-center p-4">Loading...</div>
 
         return (
             <div className="container-fluid">
