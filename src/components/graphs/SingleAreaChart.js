@@ -3,6 +3,7 @@ import { createPortal } from "react-dom"
 import Highcharts, { Axis } from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
 import moment from "moment-timezone"
+// import moment from 'moment'
 
 // const PlotBands = props => {
 //     const d = props.d.split(" ").filter(v => v !== "M" && v !== "L" && v !== "z")
@@ -27,13 +28,11 @@ import moment from "moment-timezone"
 //     )
 // }
 
-// var count = 0;
-
 const SingleAreaChart = props => {
     const refContainer = useRef(null);
     const [leftLine, setLeftLine] = useState(null)
     const [rightLine, setRightLine] = useState(null)
-
+    
     const navigatorZoneColors = props.data.map((v, i, arr) => {
         if (i === 0) return { value: v[0], color: "#B6B6B6" }
         // if(i>11 && i<15) console.log(v[0])
@@ -108,9 +107,10 @@ const SingleAreaChart = props => {
             spacing: [0, 0, 30, 0],
             zoomType: 'x',
             type: 'area',
-            events: {
-                load: e => {
-                    
+            events:{
+                click: function(event) {
+                    //console.log('event', event);
+                    alert('x : '+ event.xAxis[0].value + '\ny : '+ event.yAxis[0].value)
                 }
             }
         },
@@ -131,7 +131,7 @@ const SingleAreaChart = props => {
                     x: 4
                 },
                 title: {
-                    text: 'Temperature (°C)',
+                    text: 'Temperature (Â°C)',
                     style: {
                         color: '#000'
                     },
@@ -229,7 +229,7 @@ const SingleAreaChart = props => {
             name: 'Temperature',
             data: props.data,//.filter((v,i) => i>30),
             tooltip: {
-                valueSuffix: '°C'
+                valueSuffix: 'Â°C'
             },
             turboThreshold: 0,
         }]
@@ -255,9 +255,10 @@ const SingleAreaChart = props => {
 
     return (
         <div className="">
-            <HighchartsReact ref={refContainer} highcharts={Highcharts} constructorType={"stockChart"} options={options} >
-
-            </HighchartsReact>
+            <props.ControlPanel 
+                handleZoomIn={e => handleZoomIn(refContainer.current.chart,e)} 
+                handleZoomOut={e => handleZoomOut(refContainer.current.chart,e)} />
+            <HighchartsReact ref={refContainer} highcharts={Highcharts} constructorType={"stockChart"} options={options} />
         </div>
     )
 }
@@ -457,4 +458,27 @@ const createSelectedTimeRange = ({ chart, offsetXLeft, offsetXRight, leftLine, r
             setRightLine({ xValue: chart.xAxis[0].toValue(offsetXRight), element: groupRight })
         // }     
     }
+}
+
+export const handleZoomIn = (chart) => {
+    
+    var min = chart.xAxis[0].getExtremes().min;
+    var max = chart.xAxis[0].getExtremes().max;
+
+    const diffTime = (max-min)/(1000*60*60)
+    const zoomHours = diffTime<24 ? (1000*60*60) : diffTime<24*7 ? (1000*60*60*24) : (1000*60*60)
+
+    console.log("currentXC", min, max, (max-min)/(1000*60*60), diffTime, zoomHours)
+
+    chart.xAxis[0].setExtremes((min + zoomHours), (max - zoomHours ));
+}
+
+export const handleZoomOut = (chart) => {
+    var min = chart.xAxis[0].getExtremes().min;
+    var max = chart.xAxis[0].getExtremes().max;
+
+    const diffTime = (max-min)/(1000*60*60)
+    const zoomHours = diffTime<24 ? (1000*60*60) : diffTime<24*7 ? (1000*60*60*24) : (1000*60*60)
+
+    chart.xAxis[0].setExtremes((min - zoomHours), (max + zoomHours ));
 }

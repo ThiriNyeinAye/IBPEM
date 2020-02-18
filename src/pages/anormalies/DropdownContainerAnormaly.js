@@ -2,11 +2,19 @@ import React, { useState } from 'react'
 import { DropDown, DropDownBlock } from '../../components/app/DropDown.js'
 import onClickOutside from "react-onclickoutside";
 
-const DropdownContainerAnormaly = (props) => {
+const DropdownContainerAnormaly = props => {
+    const { handleGraphDataChart } = props
     const [showEditAllDropdown, setShowEditAllDropdown] = useState(false)
+    const [graphs, setGraphs] = useState([{ name: "Input Temperature", selected: false }, { name: "Output Temperature", selected: false }])
+    const [dropdownHandler, setdropdownHandler] = useState(false)
     const { anomalyInputData, onAnormalyInputChanged } = props
 
     DropdownContainerAnormaly.handleClickOutside = () => setShowEditAllDropdown(false)
+
+    const showGraphClick = (e, g) => {
+        setdropdownHandler(false)
+        handleGraphDataChart(g)
+    }
 
     return (
         <div className='d-flex flex-row flex-wrap p-1 justify-content-between' onClick={e => setShowEditAllDropdown(false)}>
@@ -72,44 +80,28 @@ const DropdownContainerAnormaly = (props) => {
             </div>
 
             <div className='d-flex flex-column justify-content-center'>
-                <div className='d-flex flex-lg-nowrap flex-wrap'>
-                    <div className='dropdown rounded '>
-                        <div className="dropdown" data-toggle="dropdown">
-                            <div className="d-flex flex-column border rounded bg-light">
-                                <div className="btn dropdown-toggle px-3">Add Graph</div>
-                            </div>
-                            <div className='dropdown-menu px-1'>
-                                <div className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1">
-                                    <input type="checkbox" />
-                                    <div className="pl-2">Option A</div>
-                                </div>
-                                <div className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1">
-                                    <input type="checkbox" />
-                                    <div className="pl-2">Option B</div>
-                                </div>
-                                <div className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1">
-                                    <input type="checkbox" />
-                                    <div className="pl-2">Option C</div>
-                                </div>
-                                <div className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1">
-                                    <input type="checkbox" />
-                                    <div className="pl-2">Option D</div>
-                                </div>
-                                <div className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1">
-                                    <input type="checkbox" />
-                                    <div className="pl-2">Option E</div>
-                                </div>
-                                <div className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1">
-                                    <input type="checkbox" />
-                                    <div className="pl-2">Option F</div>
-                                </div>
-                                <div className=" d-flex flex-row justify-content-center pt-3">
-                                    <div className="btn text-white px-3" style={{ backgroundColor: '#23c49e' }} >
-                                        Show Graph
+                <div className='d-flex flex-lg-nowrap flex-wrap '>
+                    <div className={`dropdown rounded ${dropdownHandler ? 'none' : 'show'}`}>
+                        {/* <div className="dropdown" data-toggle="dropdown" aria-expanded='true'> */}
+                        <div className="d-flex flex-column border rounded bg-light">
+                            <div className="btn dropdown-toggle px-3 " onClick={e => setdropdownHandler(!dropdownHandler)}>Add Graph</div>
+                        </div>
+                        <div className={`dropdown-menu px-1 ${dropdownHandler && 'show'}`} /*onChange={(e) => handleChecked(e)}*/>
+                            {
+                                graphs.map((v, i) => (
+                                    <div key={i} className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1" onClick={e => setGraphs(graphs.map(c => ({ name: c.name, selected: c.name === v.name ? !c.selected : c.selected })))}>
+                                        <input type="checkbox" checked={v.selected} />
+                                        <div className="pl-2">{v.name}</div>
                                     </div>
-                                </div>
+                                ))
+                            }
+                            <div className=" d-flex flex-row justify-content-center pt-3">
+                                <div className="btn text-white px-3" type="button" style={{ backgroundColor: '#23c49e' }} onClick={(e) => showGraphClick(e, graphs)}>
+                                    Show Graph
+                                 </div>
                             </div>
                         </div>
+                        {/* </div> */}
                     </div>
                     <div className='p-1 justify-content-center' >
                         <div className='d-flex justify-content-around align-items-center '>
