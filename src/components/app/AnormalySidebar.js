@@ -5,7 +5,6 @@ import { Progress } from 'reactstrap';
 import CardBody from 'reactstrap/lib/CardBody';
 
 const AnormalySidebar = props => {
-    console.log(props)
     const [anormalyBy, setAnormalyBy] = useState(1)
     const anormalyByEquipmentList = Object.keys(sidebarData).map((v, key) => <AnormalyByEquipmentItem key={key} deviceName={v} anormalyData={sidebarData[v]} />)
     const AnormalyByTimeFrameList = Object.values(sidebarData).reduce((r, c) => [...r, ...c], []).map((v, key) => <AnormalyByTimeFrameItem key={key} date={v.date} time={v.time} selected={v.selected} deletedIconShowed={v.selected} />)
@@ -16,7 +15,7 @@ const AnormalySidebar = props => {
         <div className='bg-white p-3 rounded h-100 d-flex flex-column justify-content-between' >
             <div className="">
                 <div className="pt-3 pb-5 ">
-                   <Link to={routeName.anormalies}> <img src={"/ecomlogo.jpeg"} alt='LoGo' className='img-fluid' style={{cursor:'pointer'}} /> </Link>
+                   <Link to="/"> <img src={"/ecomlogo.jpeg"} alt='LoGo' className='img-fluid' style={{cursor:'pointer'}} /> </Link>
                 </div>
                 <div className='h4 px-1' style={{ lineHeight: 0.4 }}>Anomalies</div>
 
