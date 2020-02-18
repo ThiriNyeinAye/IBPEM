@@ -3,8 +3,14 @@ import CollapseHistoryTable from "../../components/app/CollapseTable.js"
 import moment from "moment-timezone"
 import * as Navbar from "../../components/app/Navbar.js"
 
+const HOST = {
+    local: "http://192.168.100.7:3003/dummy-data",
+    test: "https://ibpem.com/api/dummy-data",
+    maythu: "http://192.168.100.27:3003/dummy-data"
+}
+
 const DataFetcher = (callback) => {
-    return fetch("http://192.168.100.7:3003/dummy-data")
+    return fetch(HOST.test)
         .then(res => res.json())
         .then(data => callback(data.error, data))
         .catch(error => callback(error, null))
