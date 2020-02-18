@@ -36,7 +36,7 @@ class Anormalies extends Component {
     componentDidMount() {
         DataFetcher((error, data) => {
             if (error) console.log("Error: ", error)
-            else this.setState({ data: data.payload.filter((v,i)=> i<100) })
+            else this.setState({ data: data.payload.filter((v,i)=> i<200) })
         })
     }
 
@@ -46,11 +46,40 @@ class Anormalies extends Component {
         this.setState({ anomalyInputData })
     }
 
-    // changeGraphData = (g) => { this.setState({ graphs: g })}
     handleGraphDataChart = (g) => {
         this.setState({ graphShowData: g })
-        console.log('is show graph clicking')
+    }
+    //Charts
+    handleZoomIn = () => {
         console.log("singleAreaChartRef: ", this.singleAreaChartRef)
+        const areaChart = this.singleAreaChartRef.current
+        if(areaChart!==null) {
+            if(areaChart.chartRef.current!==null) {
+                const chart = areaChart.chartRef.current.chart
+                this.singleAreaChartRef.current.setZoomIn(chart)
+            }
+        }
+    }
+    handleZoomOut = () => {
+        const areaChart = this.singleAreaChartRef.current
+        if(areaChart!==null) {
+            if(areaChart.chartRef.current!==null) {
+                const chart = areaChart.chartRef.current.chart
+                this.singleAreaChartRef.current.setZoomOut(chart)
+            }
+        }
+    }
+    //Anomaly Dialog
+    onSubmitAnomaly = (message, byUser) => {
+        const { anomalyInputData, graphShowData } = this.state
+        alert("Going to create an anomaly\n"+
+            JSON.stringify({ 
+                message, 
+                byUser,
+                anomalyInputData,
+                graphShowData,
+            }, null, 2)
+        )
     }
 
     render() {
@@ -63,11 +92,12 @@ class Anormalies extends Component {
         return (
             <div className="" style={{ overflow: 'hidden' }}>
                 <div className="d-flex flex-row flex-wrap flex-md-nowrap" >
+
                     <div className="d-flex flex-column flex-fill p-2" style={{ minWidth: 300 }}>
                         <AnormalySidebar />
                     </div>
 
-                    <DialogNewAnormaly />
+                    <DialogNewAnormaly onSubmitAnomaly={this.onSubmitAnomaly}  />
 
                     <div className="container-fluid ">
                         <div className="row ">
@@ -82,8 +112,13 @@ class Anormalies extends Component {
                             </div>
                             <div className="py-2 col-lg-12 col-12">
                                 <div className="bg-white rounded p-4">
-                                    <SingleAreaChart data={data0} ControlPanel={AnormalyControlPanel} ref={singleAreaChartRef=>{this.singleAreaChartRef=singleAreaChartRef}} />
-                                    {/* <MultiAreaChart data1={data0} data2={data2} /> */}
+                                    <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
+                                    { 
+                                        data.length>0 ? 
+                                            <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />
+                                            /* <MultiAreaChart data1={data0} data2={data2} /> */
+                                        : <div className="p-4 text-secondary text-center">Loading...</div>
+                                    }
                                 </div>
                             </div>
                             {/* ===old version of graph ====
@@ -99,7 +134,7 @@ class Anormalies extends Component {
                                 </div> */}
                             {
                                 graphShowData.map((v, i) =>
-                                    <div className="py-2 col-lg-12 col-12">
+                                    <div key={i} className="py-2 col-lg-12 col-12">
                                         {v.selected &&
                                             <div className="bg-white rounded p-4">
                                                 <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} />
@@ -148,18 +183,6 @@ export default Anormalies
 
 
 const AnormalyControlPanel = props => {
-    const { zoomType } = props;
-    console.log('ZoomType => ' + props.zoomType);
-    // const [zoomType, setZoomType] = useState('x');
-    // const Zoom = () => {
-    //     if(zoomType === 'x'){
-    //         setZoomType(null)
-    //     }
-    //     else {
-    //         setZoomType('x')
-    //     }
-    //     console.log("zoom type => "+zoomType);
-    // }
     return (
         <div className='d-flex justify-content-between'>
             <div className=''>
@@ -202,7 +225,7 @@ const AnormalyControlPanel = props => {
                     </div>
                 </div>
             </div>
-            <div className='pr-5'>
+            <div className=''>
                 <div className='d-flex align-items-center'>
                     <span onClick={props.handleZoomIn}>
                         <Icon icon="fa fa-plus" />
@@ -210,7 +233,7 @@ const AnormalyControlPanel = props => {
                     <span onClick={props.handleZoomOut}>
                         <Icon icon="fa fa-minus" />
                     </span>
-                    <div className='px-2 pr-4 font-weight-bold text-secondary'>Zoom</div>
+                    <div className='px-2 font-weight-bold text-secondary'>Zoom</div>
                     <SampleDropdown label={"Today"} icon={<Icon icon="fa fa-calendar" />}
                         additionalValue={["12.1.2020 ", "12.1.2020", "12.1.2020",]}
                     />

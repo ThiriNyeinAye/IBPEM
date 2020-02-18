@@ -86,10 +86,10 @@ const DropdownContainerAnormaly = props => {
                         <div className="d-flex flex-column border rounded bg-light">
                             <div className="btn dropdown-toggle px-3 " onClick={e => setdropdownHandler(!dropdownHandler)}>Add Graph</div>
                         </div>
-                        <div className={`dropdown-menu px-1 w-100 ${dropdownHandler && 'show'}`} /*onChange={(e) => handleChecked(e)}*/>
+                        <div className={`dropdown-menu px-1 ${dropdownHandler && 'show'}`} /*onChange={(e) => handleChecked(e)}*/>
                             {
                                 graphs.map((v, i) => (
-                                    <div key={i} className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1" onClick={e => setGraphs(graphs.map(c => ({ name: c.name, selected: c.name === v.name ? !c.selected : c.selected })))}>
+                                    <div key={i} className="px-2 d-flex flex-row align-items-center dropdown-item" data-value="option1" tabIndex="-1" onClick={e => setGraphs(graphs.map(c => ({ name: c.name, selected: c.name === v.name ? !c.selected : c.selected })))}>
                                         <input type="checkbox" checked={v.selected} onChange={e => null} />
                                         <div className="pl-2">{v.name}</div>
                                     </div>
@@ -135,7 +135,6 @@ const DropdownContainerAnormaly = props => {
 }
 
 const clickOutsideConfig = {
-    // hello: "Hello"
     handleClickOutside: () => DropdownContainerAnormaly.handleClickOutside
   };
 
