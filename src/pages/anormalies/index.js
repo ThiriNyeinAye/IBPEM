@@ -1,4 +1,4 @@
-import React, { Component, useState, useRef, useEffect } from "react"
+import React, { Component, useState, useRef, useEffect, Fragment } from "react"
 import moment from "moment-timezone"
 
 import SingleAreaChart from "../../components/graphs/SingleAreaChart.js"
@@ -29,6 +29,11 @@ class Anormalies extends Component {
         super(props)
         this.state = {
             data: [],
+            height:200,
+            isEmptystate: true,
+            isClicked: true,
+            isTripClicked: false,
+            isSquareClicked: false,
             anomalyInputData: {
                 faultType: [],
                 severity: [],
@@ -38,7 +43,47 @@ class Anormalies extends Component {
         }
         this.singleAreaChartRef = React.createRef()
     }
-
+    changeContentView=()=>{
+        if(this.state.isEmptystate===true || this.state.isContentState===false){
+            this.setState({
+                ...this.state,
+                height: 210,
+                isEmptystate: false,
+                isContentState: true,
+                isSquareState: false,
+                isContentClicked: true,
+                isClicked: false,
+                isSquareClicked: false
+            })
+        }
+    }
+    changeSquareView=()=>{
+        if(this.state.isEmptystate===true || this.state.isSquareState===false){
+            this.setState({
+                ...this.state,
+                isEmptystate: false,
+                isSquareState: true,
+                isContentState: false,
+                isSquareClicked: true,
+                isContentClicked: false,
+                isClicked: false
+            })
+        }
+    }
+    changeBurgerView=()=>{
+        if(this.state.isEmptystate===false){
+            this.setState({
+                ...this.state,
+                isEmptystate: true,
+                isSquareState: false,
+                isContentState: false,
+                isClicked: true,
+                // height:200,
+                isSquareClicked: false,
+                isContentClicked: false
+            })
+        }
+    }
     componentDidMount() {
         DataFetcher((error, data) => {
             if (error) console.log("Error: ", error)
@@ -125,72 +170,85 @@ class Anormalies extends Component {
                                 <DropdownContainerAnormaly 
                                     handleGraphDataChart={this.handleGraphDataChart}
                                     anomalyInputData={anomalyInputData} 
-                                    onAnormalyInputChanged={this.onAnormalyInputChanged} />
+                                    onAnormalyInputChanged={this.onAnormalyInputChanged}
+                                    changeBurgerView={this.changeBurgerView} 
+                                    changeContentView={this.changeContentView} 
+                                    changeSquareView={this.changeSquareView}
+                                    isClicked={this.state.isClicked}
+                                    isContentClicked= {this.state.isContentClicked}
+                                    isSquareClicked= {this.state.isSquareClicked} 
+                                />
                             </div>
-                            <div className="py-2 col-lg-12 col-12">
-                                <div className="bg-white rounded p-4">
+                            
+                            </div>
+
+                            <div className="py-2 col-lg-12 col-12 p-0 ">
+                                {/* <div className=" bg-white rounded p-2">
                                     <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
-                                    { 
-                                        data.length>0 ? 
-                                            <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />
-                                            /* <MultiAreaChart data1={data0} data2={data2} /> */
-                                        : <div className="p-4 text-secondary text-center">Loading...</div>
-                                    }
-                                </div>
-                            </div>
-                            {/* ===old version of graph ====
-                            <div className="py-2 col-lg-12 col-12">
-                                    <div className="bg-white rounded p-4">
-                                        <SimpleSingleAreaChart title="Temperature Input" data={data1} />
-                                    </div>
-                                </div>
-                                <div className="py-2 col-lg-12 col-12">
-                                    <div className="bg-white rounded p-4 bg-dark">
-                                        <SimpleSingleAreaChart title="Temperature Output" data={data2} />
-                                    </div>
                                 </div> */}
-                            {
-                                graphShowData.map((v, i) =>
-                                    <div key={i} className="py-2 col-lg-12 col-12">
-                                        {v.selected &&
-                                            <div className="bg-white rounded p-4">
-                                                <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} />
-                                            </div>
+                                {this.state.isEmptystate&&(
+                                  <Fragment>
+                                   
+                                      <div className=" bg-white rounded p-4">
+                                        <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
+
+                                      { 
+                                          data.length>0 ? 
+                                              <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />
+                                              // <MultiAreaChart data1={data0} data2={data2} />
+                                          : <div className="p-4 text-secondary text-center">Loading...</div>
+                                      }
+                                  </div>
+                                  {
+                                      graphShowData.map((v, i) =>
+                                          <div key={i} className="pt-2 ">
+                                              {v.selected &&
+                                                  <div className="p-4 bg-white rounded">
+                                                      <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} />
+                                                  </div>
+                                              }
+                                          </div>
+                                      )
+                                  }
+                                  </Fragment>
+                                
+                                )}
+                            {this.state.isContentState&&(
+                                <Fragment>
+                                   
+                                    <div className='d-flex flex-row justify-content-between '>
+
+                                        <div className="col bg-white rounded p-4">
+                                    <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
+
+                                            { 
+                                                data.length>0 ? 
+                                                    <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />
+                                                    //  <MultiAreaChart data1={data0} data2={data2} /> 
+                                                : <div className="p-4 text-secondary text-center">Loading...</div>
+                                            }
+                                        </div>
+                                        <div className='col pl-2'>
+                                        {
+                                            graphShowData.map((v, i) =>
+                                                <div key={i} className="pb-2 col-lg-12 col-12 justify-content-center pl-2 p-0">
+                                                    {v.selected &&
+                                                        <div className="bg-white rounded p-5">
+                                                            <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} height={this.state.height}/>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            )
                                         }
+                                        </div>
                                     </div>
-                                )
-                            }
-                        </div>
+                                </Fragment>
+                                
+                            )}
+                                
+                            </div>
+                        
                     </div>
-                    {/* <div className="d-flex flex-column flex-wrap flex-grow-1 p-2">
-                        <div className="py-4 ">
-                            <Navbar.ItemNavbar />
-                        </div>
-                        <div className="py-2">
-                            <DropdownContainerAnormaly />
-                        </div>
-                        <div className="py-2">
-                            <div className="bg-white rounded p-4">
-                                <AnormalyControlPanel />
-                                <SingleAreaChart data={data0} />
-                            </div>
-                        </div> */}
-                    {/* <div className="py-2">
-                            <div className="bg-white rounded p-4">
-                                <MultiAreaChart data1={data0} data2={data2} />
-                            </div>
-                        </div> */}
-                    {/* <div className="py-2">
-                            <div className="bg-white rounded p-4">
-                                <SimpleSingleAreaChart title="Temperature Input" data={data1} />
-                            </div>
-                        </div>
-                        <div className="py-2">
-                            <div className="bg-white rounded p-4 bg-dark">
-                                <SimpleSingleAreaChart title="Temperature Output" data={data2} />
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
             </div>
         )
