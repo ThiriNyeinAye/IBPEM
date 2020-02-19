@@ -4,13 +4,13 @@ import moment from "moment-timezone"
 import * as Navbar from "../../components/app/Navbar.js"
 
 const HOST = {
-    local: "http://192.168.100.7:3003/dummy-data",
-    test: "https://ibpem.com/api/dummy-data",
-    maythu: "http://192.168.100.27:3003/dummy-data"
+    local: "http://192.168.100.7:3003",
+    test: "https://ibpem.com/api",
+    maythu: "http://192.168.100.27:3003"
 }
 
 const DataFetcher = (callback) => {
-    return fetch(HOST.test)
+    return fetch(`${HOST.test}/dummy-data`)
         .then(res => res.json())
         .then(data => callback(data.error, data))
         .catch(error => callback(error, null))

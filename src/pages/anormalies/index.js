@@ -25,7 +25,7 @@ const DataFetcher = (callback) => {
 
 const CreateAnomalyData = (data, callback) => {
     // console.log("data: ", data)
-    return fetch(`${HOST.maythu}/anomalies`, {
+    return fetch(`${HOST.test}/anomalies`, {
         method: 'POST',
         headers: {
             'Content-Type': "application/json"
@@ -38,7 +38,7 @@ const CreateAnomalyData = (data, callback) => {
 }
 
 const ReadAnomalyData = (callback) => {
-    return fetch(`${HOST.maythu}/anomalies`)
+    return fetch(`${HOST.test}/anomalies`)
         .then(res => res.json())
         .then(data => callback(null, data))
         .then(error => callback(error, null))
