@@ -54,8 +54,13 @@ class Anormalies extends Component {
 
     onAnormalyInputChanged = (value, dataType) => {
         const anomalyInputData = {...this.state.anomalyInputData}
-        anomalyInputData[dataType] = [value]
-        this.setState({ anomalyInputData })
+        if(anomalyInputData[dataType].findIndex(v=>v===value)>-1) {
+            anomalyInputData[dataType] = anomalyInputData[dataType].filter(v => v!==value)
+            this.setState({ anomalyInputData })
+        } else if(value.trim()!=="") {
+            anomalyInputData[dataType] = [value]
+            this.setState({ anomalyInputData })
+        }
     }
 
     handleGraphDataChart = (g) => {
