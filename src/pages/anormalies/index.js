@@ -11,16 +11,37 @@ import DialogNewAnormaly from "./DialogNewAnormaly.js";
 import { SampleDropdown } from '../../components/app/DropDown'
 
 const HOST = {
-    local: "http://192.168.100.7:3003/dummy-data",
-    test: "https://ibpem.com/api/dummy-data",
-    maythu: "http://192.168.100.27:3003/dummy-data"
+    local: "http://192.168.100.7:3003",
+    test: "https://ibpem.com/api",
+    maythu: "http://192.168.100.27:3003"
 }
 
 const DataFetcher = (callback) => {
-    return fetch(HOST.test)
+    return fetch(`${HOST.maythu}/dummy-data`)
         .then(res => res.json())
         .then(data => callback(data.error, data))
         .catch(error => callback(error, null))
+}
+
+const CreateAnomalyData = (data, callback) => {
+    // console.log("data: ", data)
+    return fetch(`${HOST.maythu}/anomalies`, { 
+        method: 'POST',
+        headers: {
+            'Content-Type': "application/json"
+        },
+        body: JSON.stringify(data) 
+    })
+        .then(res => res.json())
+        .then(data => callback(null, data))
+        .then(error => callback(error, null))
+}
+
+const ReadAnomalyData = (callback) => {
+    return fetch(`${HOST.maythu}/anomalies`)
+        .then(res => res.json())
+        .then(data => callback(null, data))
+        .then(error => callback(error, null))
 }
 
 class Anormalies extends Component {
@@ -29,6 +50,8 @@ class Anormalies extends Component {
         super(props)
         this.state = {
             data: [],
+            anomalyDataByTime: [],
+            anomalyDataByEquipment: {},
             anomalyInputData: {
                 faultType: [],
                 severity: [],
@@ -43,11 +66,44 @@ class Anormalies extends Component {
         DataFetcher((error, data) => {
             if (error) console.log("Error: ", error)
             else {
-                this.setState({ data: data.payload.filter((v,i)=> i<200) }, () => {
-                    // const areaChart = this.singleAreaChartRef.current
-                    // areaChart.updater.isMounted()
-                    // areaChart.addSelectedRange({ leftX: 100, right: 200 })
+                this.setState({ data: data.payload/*.filter((v,i)=> i<200)*/ }, () => {
+                    return this.fetchAnomalyData()
                 })
+            }
+        })
+    }
+
+    fetchAnomalyData = () => {
+        return ReadAnomalyData((error, data) => {
+            if(error===null && data.payload!==null) {
+                // const tmp = {...this.state.anomalyDataByEquipment}
+                const anomalyDataByEquipment = data.payload.reduce((r,c) => {
+                    const R = {...r}
+                    const value = {
+                        ...c,
+                        selected: false, 
+                        date: moment(c.startDate).format("MMM Do YY"),
+                        time: `${moment(c.startDate).format("HH:mm:ss")}-${moment(c.endDate).format("HH:mm:ss")}`
+                    }
+                    // if(tmp[c.deviceType]!==null && tmp[c.deviceType]!==undefined) {
+                    //     if(tmp[c.deviceType].findIndex(v => v.id===value.id && v.selected)!==-1) 
+                    //         value.selected = true;
+                    // }
+                    if(R[c.deviceType]===undefined) R[c.deviceType] = [value]
+                    else R[c.deviceType].push(value)
+                    return R
+                }, {})
+                this.setState({ 
+                    anomalyDataByTime: data.payload,
+                    anomalyDataByEquipment
+                }, () => {
+                    const areaChart = this.singleAreaChartRef.current
+                    if(areaChart!==null) {
+                        areaChart.removeSelectedRange()
+                    }
+                })
+            } else {
+                console.log("Error:123: ", error)
             }
         })
     }
@@ -68,7 +124,7 @@ class Anormalies extends Component {
     }
     //Charts
     handleZoomIn = () => {
-        console.log("singleAreaChartRef: ", this.singleAreaChartRef)
+        // console.log("singleAreaChartRef: ", this.singleAreaChartRef)
         const areaChart = this.singleAreaChartRef.current
         if(areaChart!==null) {
             if(areaChart.chartRef.current!==null) {
@@ -87,20 +143,64 @@ class Anormalies extends Component {
         }
     }
     //Anomaly Dialog
-    onSubmitAnomaly = (message, byUser) => {
+    onSubmitAnomaly = (message, byUser, callback=()=>null) => {
         const { anomalyInputData, graphShowData } = this.state
-        alert("Going to create an anomaly\n"+
-            JSON.stringify({ 
-                message, 
-                byUser,
-                anomalyInputData,
-                graphShowData,
-            }, null, 2)
-        )
+
+        const areaChart = this.singleAreaChartRef.current
+        const leftLine = areaChart.state.leftLine
+        const rightLine = areaChart.state.rightLine
+        if(areaChart!==null && leftLine!==null && rightLine!==null) {
+            const anomalyData = {
+                user: byUser,
+                deviceType: "Chiller 3",
+                deviceId: "CH3",
+                anomalyState: 1,
+                faultType: anomalyInputData.faultType,
+                severity: anomalyInputData.severity,
+                sensorSignal: anomalyInputData.sensorSignal,
+                startDate: moment.unix(leftLine.xValue/1000).tz("Europe/Lisbon").format("YYYY-MM-DD HH:mm:ss"),
+                endDate: moment.unix(rightLine.xValue/1000).tz("Europe/Lisbon").format("YYYY-MM-DD HH:mm:ss"),
+                additionalGraphs: graphShowData.filter(v=>v.selected).map(v => v.name),
+                remark: message,
+            }
+
+            return CreateAnomalyData(anomalyData, (error, data) => {
+                if(error===null) {
+                    this.fetchAnomalyData()
+                    callback()
+                } else console.log("Anomaly Create: ERROR: ", error)
+            })
+        } else {
+            alert("Please required input!")
+        }
+    }
+
+    handleAnomalyTimeClicked = value => {
+        const anomalyDataByEquipment1 = {...this.state.anomalyDataByEquipment}
+        const anomalyDataByEquipment = Object.keys(anomalyDataByEquipment1).reduce((r,c) => {
+            const R = {...r}
+            const data = anomalyDataByEquipment1[c].map( v => v.id===value.id ? {...v, selected: true } : {...v, selected: false })
+            R[c] = data
+            return R
+        }, {})
+        this.setState({ 
+            anomalyDataByEquipment,
+            anomalyInputData: { 
+                faultType: value.faultType, 
+                severity: value.severity, 
+                sensorSignal: value.sensorSignal,
+            },
+            graphShowData: value.additionalGraphs.map(v => ({ selected: true, name: v}))
+        }, () => {
+            const areaChart = this.singleAreaChartRef.current
+            const startTs = moment.tz(value.startDate, "Europe/Lisbon").unix() * 1000
+            const endTs = moment.tz(value.endDate, "Europe/Lisbon").unix() * 1000
+            areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
+        })
     }
 
     render() {
-        const { data, graphShowData, anomalyInputData } = this.state;
+        const { data, graphShowData, anomalyInputData, anomalyDataByTime, anomalyDataByEquipment } = this.state;
         const data0 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
         const data1 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
         const data2 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
@@ -111,7 +211,9 @@ class Anormalies extends Component {
                 <div className="d-flex flex-row flex-wrap flex-md-nowrap" >
 
                     <div className="d-flex flex-column flex-fill p-2" style={{ minWidth: 300 }}>
-                        <AnormalySidebar />
+                        <AnormalySidebar 
+                            anomalyDataByEquipment={anomalyDataByEquipment}
+                            handleAnomalyTimeClicked={this.handleAnomalyTimeClicked} />
                     </div>
 
                     <DialogNewAnormaly onSubmitAnomaly={this.onSubmitAnomaly}  />
@@ -130,6 +232,8 @@ class Anormalies extends Component {
                             <div className="py-2 col-lg-12 col-12">
                                 <div className="bg-white rounded p-4">
                                     <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
+                                </div>
+                                <div className="bg-white rounded p-4">
                                     { 
                                         data.length>0 ? 
                                             <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />
@@ -149,7 +253,7 @@ class Anormalies extends Component {
                                         <SimpleSingleAreaChart title="Temperature Output" data={data2} />
                                     </div>
                                 </div> */}
-                            {
+                            { 
                                 graphShowData.map((v, i) =>
                                     <div key={i} className="py-2 col-lg-12 col-12">
                                         {v.selected &&

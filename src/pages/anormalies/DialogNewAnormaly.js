@@ -30,7 +30,7 @@ const DialogBox = props => {
                     <div className="py-2 d-flex flex-row justify-content-end">
                         <div className="">
                             <div className="btn btn-light border mx-1" data-dismiss="modal" onClick={e=>setMessage("")}>Cancel</div>
-                            <div className="btn btn-success mx-1" onClick={e => onSubmitAnomaly(message, byUser)}>Submit Anomaly</div>
+                            <div className="btn btn-success mx-1" data-toggle="modal" data-target="#dialogAddAsAnomaly" onClick={e => onSubmitAnomaly(message, byUser, ()=> setMessage("") )}>Submit Anomaly</div>
                         </div>
                     </div>
                 </div>

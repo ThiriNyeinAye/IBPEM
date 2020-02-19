@@ -46,16 +46,16 @@ class Solutions extends Component {
                                 onHistoryClicked={()=>this.onRouteChanged(routeName.routeAnormaliesHistory)} />
                             <Detection 
                                 logo={"/detection-2.jpeg"} title={"False Alarms Detection"} info={"82 Alerts"} 
-                                onAnormalyClicked={()=>this.onRouteChanged(routeName.routeAnormalies)} 
-                                onHistoryClicked={()=>this.onRouteChanged(routeName.routeAnormaliesHistory)} />
+                                onAnormalyClicked={()=>null/*this.onRouteChanged(routeName.routeAnormalies)*/} 
+                                onHistoryClicked={()=>null/*this.onRouteChanged(routeName.routeAnormaliesHistory)*/} />
                             <Detection 
                                 logo={"/detection-3.jpeg"} title={"Fault Detection -Diagnosis"} info={"14 Alerts"} 
-                                onAnormalyClicked={()=>this.onRouteChanged(routeName.routeAnormalies)} 
-                                onHistoryClicked={()=>this.onRouteChanged(routeName.routeAnormaliesHistory)} />
+                                onAnormalyClicked={()=>null/*this.onRouteChanged(routeName.routeAnormalies)*/} 
+                                onHistoryClicked={()=>null/*this.onRouteChanged(routeName.routeAnormaliesHistory)*/} />
                             <Detection 
                                 logo={"/detection-4.jpeg"} title={"CALM"} info={"4 Alerts"} 
-                                onAnormalyClicked={()=>this.onRouteChanged(routeName.routeAnormalies)} 
-                                onHistoryClicked={()=>this.onRouteChanged(routeName.routeAnormaliesHistory)} />
+                                onAnormalyClicked={()=>null/*this.onRouteChanged(routeName.routeAnormalies)*/} 
+                                onHistoryClicked={()=>null/*this.onRouteChanged(routeName.routeAnormaliesHistory)*/} />
                         </div>
                     </div>
                 </div>
