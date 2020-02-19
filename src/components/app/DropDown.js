@@ -3,7 +3,7 @@ import React, { useState } from "react";
 export const DropDown = props => {
   const [menuShow, setMenuShow] = useState(false)
   const { label, defaultValue, additionalValue, onDropDownItemClicked, dataType } = props;
-  const defaultValueData = defaultValue[dataType].reduce((r,c) => `${r}${c}`,"")
+  const defaultValueData = defaultValue[dataType].reduce((r, c) => `${r}${c}`, "")
 
   return (
     <div className=" d-flex flex-row p-1" style={{ minWidth: 100 }}>
@@ -19,7 +19,7 @@ export const DropDown = props => {
         </div>
         <div className={`dropdown-menu ${menuShow ? 'show' : ''}`} >
           {
-            additionalValue.map((v, k) => <div key={k} className={`dropdown-item ${defaultValue[dataType].findIndex(v1=>v1===v)>-1 ? 'bg-success text-light' : ''}`} onClick={e=> { onDropDownItemClicked(v, dataType); setMenuShow(false)}} style={{ cursor: 'pointer' }} >{v}</div>)
+            additionalValue.map((v, k) => <div key={k} className={`dropdown-item ${defaultValue[dataType].findIndex(v1 => v1 === v) > -1 ? 'bg-success text-light' : ''}`} onClick={e => { onDropDownItemClicked(v, dataType); setMenuShow(false) }} style={{ cursor: 'pointer' }} >{v}</div>)
           }
         </div>
       </div>
@@ -29,7 +29,7 @@ export const DropDown = props => {
 
 export const DropDownBlock = props => {
   const { label, defaultValue, additionalValue, showEditAllDropdown = false, onDropDownItemClicked, dataType } = props;
-  const defaultValueData = defaultValue[dataType].reduce((r,c) => `${r} ${c}`,"")
+  const defaultValueData = defaultValue[dataType].reduce((r, c) => `${r} ${c}`, "")
 
   return (
     <div className={`d-flex ${showEditAllDropdown ? '' : 'p-1'}`}>
@@ -44,7 +44,7 @@ export const DropDownBlock = props => {
         </div>
         <div className={`dropdown-menu w-100 ${showEditAllDropdown && "show"}`} style={showEditAllDropdown ? customDropdownMenuStyle : {}}>
           {
-            additionalValue.map((v, k) => <div key={k} className={`btn btn-block text-left`} onClick={e=> onDropDownItemClicked(v, dataType)} > {v} </div>)
+            additionalValue.map((v, k) => <div key={k} className={`btn btn-block text-left`} onClick={e => onDropDownItemClicked(v, dataType)} > {v} </div>)
           }
         </div>
       </div>
@@ -70,19 +70,19 @@ const customDropdownStyle = {
 export const SampleDropdown = props => {
   const { label, additionalValue, icon } = props
   return (
-    <div className="">
+    <div className="pl-2">
       <div className="dropdown" data-toggle="dropdown">
         <div className="d-flex align-items-center justify-content-center" style={{ cursor: 'pointer' }}>
           <div className=" d-flex align-items-center">
-            <span className="px-2"> {icon}</span>
-            <span> {label}</span>
+            <span className=""> {icon}</span>
+            <span className="text-secondary"> {label}</span>
           </div>
-          <div className="px-2" ><i className="fa fa-caret-down" /></div>
+          <div className="px-1 text-secondary" ><i className="fa fa-caret-down" /></div>
         </div>
       </div>
       <div className="dropdown-menu py-0">
         {additionalValue.map((v, k) => ([
-          <div key={k} className="dropdown-item my-2" style={{ cursor: 'pointer', }} onClick={()=>null}>{v}</div>,
+          <div key={k} className="dropdown-item my-2" style={{ cursor: 'pointer', }} onClick={() => null}>{v}</div>,
           <div key={v} className="dropdown-divider my-0" />
         ])
         )}

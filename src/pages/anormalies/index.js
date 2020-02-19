@@ -1,4 +1,4 @@
-import React, { Component, useState, useRef, useEffect } from "react"
+import React, { Component, useState, useRef, useEffect, Fragment } from "react"
 import moment from "moment-timezone"
 
 import SingleAreaChart from "../../components/graphs/SingleAreaChart.js"
@@ -17,7 +17,7 @@ const HOST = {
 }
 
 const DataFetcher = (callback) => {
-    return fetch(`${HOST.maythu}/dummy-data`)
+    return fetch(`${HOST.test}/dummy-data`)
         .then(res => res.json())
         .then(data => callback(data.error, data))
         .catch(error => callback(error, null))
@@ -25,12 +25,12 @@ const DataFetcher = (callback) => {
 
 const CreateAnomalyData = (data, callback) => {
     // console.log("data: ", data)
-    return fetch(`${HOST.maythu}/anomalies`, { 
+    return fetch(`${HOST.maythu}/anomalies`, {
         method: 'POST',
         headers: {
             'Content-Type': "application/json"
         },
-        body: JSON.stringify(data) 
+        body: JSON.stringify(data)
     })
         .then(res => res.json())
         .then(data => callback(null, data))
@@ -52,6 +52,11 @@ class Anormalies extends Component {
             data: [],
             anomalyDataByTime: [],
             anomalyDataByEquipment: {},
+            height: 200,
+            isEmptystate: true,
+            isClicked: true,
+            isTripClicked: false,
+            isSquareClicked: false,
             anomalyInputData: {
                 faultType: [],
                 severity: [],
@@ -61,7 +66,47 @@ class Anormalies extends Component {
         }
         this.singleAreaChartRef = React.createRef()
     }
-
+    changeContentView = () => {
+        if (this.state.isEmptystate === true || this.state.isContentState === false) {
+            this.setState({
+                ...this.state,
+                height: 210,
+                isEmptystate: false,
+                isContentState: true,
+                isSquareState: false,
+                isContentClicked: true,
+                isClicked: false,
+                isSquareClicked: false
+            })
+        }
+    }
+    changeSquareView = () => {
+        if (this.state.isEmptystate === true || this.state.isSquareState === false) {
+            this.setState({
+                ...this.state,
+                isEmptystate: false,
+                isSquareState: true,
+                isContentState: false,
+                isSquareClicked: true,
+                isContentClicked: false,
+                isClicked: false
+            })
+        }
+    }
+    changeBurgerView = () => {
+        if (this.state.isEmptystate === false) {
+            this.setState({
+                ...this.state,
+                isEmptystate: true,
+                isSquareState: false,
+                isContentState: false,
+                isClicked: true,
+                // height:200,
+                isSquareClicked: false,
+                isContentClicked: false
+            })
+        }
+    }
     componentDidMount() {
         DataFetcher((error, data) => {
             if (error) console.log("Error: ", error)
@@ -75,13 +120,13 @@ class Anormalies extends Component {
 
     fetchAnomalyData = () => {
         return ReadAnomalyData((error, data) => {
-            if(error===null && data.payload!==null) {
+            if (error === null && data.payload !== null) {
                 // const tmp = {...this.state.anomalyDataByEquipment}
-                const anomalyDataByEquipment = data.payload.reduce((r,c) => {
-                    const R = {...r}
+                const anomalyDataByEquipment = data.payload.reduce((r, c) => {
+                    const R = { ...r }
                     const value = {
                         ...c,
-                        selected: false, 
+                        selected: false,
                         date: moment(c.startDate).format("MMM Do YY"),
                         time: `${moment(c.startDate).format("HH:mm:ss")}-${moment(c.endDate).format("HH:mm:ss")}`
                     }
@@ -89,16 +134,16 @@ class Anormalies extends Component {
                     //     if(tmp[c.deviceType].findIndex(v => v.id===value.id && v.selected)!==-1) 
                     //         value.selected = true;
                     // }
-                    if(R[c.deviceType]===undefined) R[c.deviceType] = [value]
+                    if (R[c.deviceType] === undefined) R[c.deviceType] = [value]
                     else R[c.deviceType].push(value)
                     return R
                 }, {})
-                this.setState({ 
+                this.setState({
                     anomalyDataByTime: data.payload,
                     anomalyDataByEquipment
                 }, () => {
                     const areaChart = this.singleAreaChartRef.current
-                    if(areaChart!==null) {
+                    if (areaChart !== null) {
                         areaChart.removeSelectedRange()
                     }
                 })
@@ -109,11 +154,11 @@ class Anormalies extends Component {
     }
 
     onAnormalyInputChanged = (value, dataType) => {
-        const anomalyInputData = {...this.state.anomalyInputData}
-        if(anomalyInputData[dataType].findIndex(v=>v===value)>-1) {
-            anomalyInputData[dataType] = anomalyInputData[dataType].filter(v => v!==value)
+        const anomalyInputData = { ...this.state.anomalyInputData }
+        if (anomalyInputData[dataType].findIndex(v => v === value) > -1) {
+            anomalyInputData[dataType] = anomalyInputData[dataType].filter(v => v !== value)
             this.setState({ anomalyInputData })
-        } else if(value.trim()!=="") {
+        } else if (value.trim() !== "") {
             anomalyInputData[dataType] = [value]
             this.setState({ anomalyInputData })
         }
@@ -126,8 +171,8 @@ class Anormalies extends Component {
     handleZoomIn = () => {
         // console.log("singleAreaChartRef: ", this.singleAreaChartRef)
         const areaChart = this.singleAreaChartRef.current
-        if(areaChart!==null) {
-            if(areaChart.chartRef.current!==null) {
+        if (areaChart !== null) {
+            if (areaChart.chartRef.current !== null) {
                 const chart = areaChart.chartRef.current.chart
                 this.singleAreaChartRef.current.setZoomIn(chart)
             }
@@ -135,21 +180,21 @@ class Anormalies extends Component {
     }
     handleZoomOut = () => {
         const areaChart = this.singleAreaChartRef.current
-        if(areaChart!==null) {
-            if(areaChart.chartRef.current!==null) {
+        if (areaChart !== null) {
+            if (areaChart.chartRef.current !== null) {
                 const chart = areaChart.chartRef.current.chart
                 this.singleAreaChartRef.current.setZoomOut(chart)
             }
         }
     }
     //Anomaly Dialog
-    onSubmitAnomaly = (message, byUser, callback=()=>null) => {
+    onSubmitAnomaly = (message, byUser, callback = () => null) => {
         const { anomalyInputData, graphShowData } = this.state
 
         const areaChart = this.singleAreaChartRef.current
         const leftLine = areaChart.state.leftLine
         const rightLine = areaChart.state.rightLine
-        if(areaChart!==null && leftLine!==null && rightLine!==null) {
+        if (areaChart !== null && leftLine !== null && rightLine !== null) {
             const anomalyData = {
                 user: byUser,
                 deviceType: "Chiller 3",
@@ -158,14 +203,14 @@ class Anormalies extends Component {
                 faultType: anomalyInputData.faultType,
                 severity: anomalyInputData.severity,
                 sensorSignal: anomalyInputData.sensorSignal,
-                startDate: moment.unix(leftLine.xValue/1000).tz("Europe/Lisbon").format("YYYY-MM-DD HH:mm:ss"),
-                endDate: moment.unix(rightLine.xValue/1000).tz("Europe/Lisbon").format("YYYY-MM-DD HH:mm:ss"),
-                additionalGraphs: graphShowData.filter(v=>v.selected).map(v => v.name),
+                startDate: moment.unix(leftLine.xValue / 1000).tz("Europe/Lisbon").format("YYYY-MM-DD HH:mm:ss"),
+                endDate: moment.unix(rightLine.xValue / 1000).tz("Europe/Lisbon").format("YYYY-MM-DD HH:mm:ss"),
+                additionalGraphs: graphShowData.filter(v => v.selected).map(v => v.name),
                 remark: message,
             }
 
             return CreateAnomalyData(anomalyData, (error, data) => {
-                if(error===null) {
+                if (error === null) {
                     this.fetchAnomalyData()
                     callback()
                 } else console.log("Anomaly Create: ERROR: ", error)
@@ -176,21 +221,21 @@ class Anormalies extends Component {
     }
 
     handleAnomalyTimeClicked = value => {
-        const anomalyDataByEquipment1 = {...this.state.anomalyDataByEquipment}
-        const anomalyDataByEquipment = Object.keys(anomalyDataByEquipment1).reduce((r,c) => {
-            const R = {...r}
-            const data = anomalyDataByEquipment1[c].map( v => v.id===value.id ? {...v, selected: true } : {...v, selected: false })
+        const anomalyDataByEquipment1 = { ...this.state.anomalyDataByEquipment }
+        const anomalyDataByEquipment = Object.keys(anomalyDataByEquipment1).reduce((r, c) => {
+            const R = { ...r }
+            const data = anomalyDataByEquipment1[c].map(v => v.id === value.id ? { ...v, selected: true } : { ...v, selected: false })
             R[c] = data
             return R
         }, {})
-        this.setState({ 
+        this.setState({
             anomalyDataByEquipment,
-            anomalyInputData: { 
-                faultType: value.faultType, 
-                severity: value.severity, 
+            anomalyInputData: {
+                faultType: value.faultType,
+                severity: value.severity,
                 sensorSignal: value.sensorSignal,
             },
-            graphShowData: value.additionalGraphs.map(v => ({ selected: true, name: v}))
+            graphShowData: value.additionalGraphs.map(v => ({ selected: true, name: v }))
         }, () => {
             const areaChart = this.singleAreaChartRef.current
             const startTs = moment.tz(value.startDate, "Europe/Lisbon").unix() * 1000
@@ -211,12 +256,12 @@ class Anormalies extends Component {
                 <div className="d-flex flex-row flex-wrap flex-md-nowrap" >
 
                     <div className="d-flex flex-column flex-fill p-2" style={{ minWidth: 300 }}>
-                        <AnormalySidebar 
+                        <AnormalySidebar
                             anomalyDataByEquipment={anomalyDataByEquipment}
                             handleAnomalyTimeClicked={this.handleAnomalyTimeClicked} />
                     </div>
 
-                    <DialogNewAnormaly onSubmitAnomaly={this.onSubmitAnomaly}  />
+                    <DialogNewAnormaly onSubmitAnomaly={this.onSubmitAnomaly} />
 
                     <div className="container-fluid ">
                         <div className="row ">
@@ -224,77 +269,81 @@ class Anormalies extends Component {
                                 <Navbar.ItemNavbar />
                             </div>
                             <div className="py-2 col-lg-12 col-12">
-                                <DropdownContainerAnormaly 
+                                <DropdownContainerAnormaly
                                     handleGraphDataChart={this.handleGraphDataChart}
-                                    anomalyInputData={anomalyInputData} 
-                                    onAnormalyInputChanged={this.onAnormalyInputChanged} />
+                                    anomalyInputData={anomalyInputData}
+                                    onAnormalyInputChanged={this.onAnormalyInputChanged}
+                                    changeBurgerView={this.changeBurgerView}
+                                    changeContentView={this.changeContentView}
+                                    changeSquareView={this.changeSquareView}
+                                    isClicked={this.state.isClicked}
+                                    isContentClicked={this.state.isContentClicked}
+                                    isSquareClicked={this.state.isSquareClicked}
+                                />
                             </div>
-                            <div className="py-2 col-lg-12 col-12">
-                                <div className="bg-white rounded p-4">
-                                    <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
-                                </div>
-                                <div className="bg-white rounded p-4">
-                                    { 
-                                        data.length>0 ? 
-                                            <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />
-                                            /* <MultiAreaChart data1={data0} data2={data2} /> */
-                                        : <div className="p-4 text-secondary text-center">Loading...</div>
-                                    }
-                                </div>
-                            </div>
-                            {/* ===old version of graph ====
-                            <div className="py-2 col-lg-12 col-12">
-                                    <div className="bg-white rounded p-4">
-                                        <SimpleSingleAreaChart title="Temperature Input" data={data1} />
-                                    </div>
-                                </div>
-                                <div className="py-2 col-lg-12 col-12">
-                                    <div className="bg-white rounded p-4 bg-dark">
-                                        <SimpleSingleAreaChart title="Temperature Output" data={data2} />
-                                    </div>
-                                </div> */}
-                            { 
-                                graphShowData.map((v, i) =>
-                                    <div key={i} className="py-2 col-lg-12 col-12">
-                                        {v.selected &&
-                                            <div className="bg-white rounded p-4">
-                                                <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} />
-                                            </div>
+
+                            <div className="py-2 col-lg-12 col-12 pl-3">
+                                {this.state.isEmptystate && (
+                                    <Fragment>
+                                        <div className=" bg-white rounded p-4">
+                                            <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
+
+                                            {
+                                                data.length > 0 ?
+                                                    <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />
+                                                    // <MultiAreaChart data1={data0} data2={data2} />
+                                                    : <div className="p-4 text-secondary text-center">Loading...</div>
+                                            }
+                                        </div>
+                                        {
+                                            graphShowData.map((v, i) =>
+                                                <div key={i} className="pt-2 ">
+                                                    {v.selected &&
+                                                        <div className="p-4 bg-white rounded">
+                                                            <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} />
+                                                        </div>
+                                                    }
+                                                </div>
+                                            )
                                         }
-                                    </div>
-                                )
-                            }
+                                    </Fragment>
+
+                                )}
+                                {this.state.isContentState && (
+                                    <Fragment>
+
+                                        <div className='d-flex flex-row justify-content-between '>
+
+                                            <div className="col bg-white rounded p-4">
+                                                <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
+                                                {
+                                                    data.length > 0 ?
+                                                        <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />
+                                                        //  <MultiAreaChart data1={data0} data2={data2} /> 
+                                                        : <div className="p-4 text-secondary text-center">Loading...</div>
+                                                }
+                                            </div>
+                                            <div className='col pl-2'>
+                                                {
+                                                    graphShowData.map((v, i) =>
+                                                        <div key={i} className="pb-2 col-lg-12 col-12 justify-content-center pl-2 p-0">
+                                                            {v.selected &&
+                                                                <div className="bg-white rounded p-5">
+                                                                    <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} height={this.state.height} />
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                    )
+                                                }
+                                            </div>
+                                        </div>
+                                    </Fragment>
+                                )}
+
+                            </div>
                         </div>
+
                     </div>
-                    {/* <div className="d-flex flex-column flex-wrap flex-grow-1 p-2">
-                        <div className="py-4 ">
-                            <Navbar.ItemNavbar />
-                        </div>
-                        <div className="py-2">
-                            <DropdownContainerAnormaly />
-                        </div>
-                        <div className="py-2">
-                            <div className="bg-white rounded p-4">
-                                <AnormalyControlPanel />
-                                <SingleAreaChart data={data0} />
-                            </div>
-                        </div> */}
-                    {/* <div className="py-2">
-                            <div className="bg-white rounded p-4">
-                                <MultiAreaChart data1={data0} data2={data2} />
-                            </div>
-                        </div> */}
-                    {/* <div className="py-2">
-                            <div className="bg-white rounded p-4">
-                                <SimpleSingleAreaChart title="Temperature Input" data={data1} />
-                            </div>
-                        </div>
-                        <div className="py-2">
-                            <div className="bg-white rounded p-4 bg-dark">
-                                <SimpleSingleAreaChart title="Temperature Output" data={data2} />
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
             </div>
         )
@@ -305,12 +354,12 @@ export default Anormalies
 
 const AnormalyControlPanel = props => {
     return (
-        <div className='d-flex justify-content-between'>
+        <div className='d-flex justify-content-between align-items-center'>
             <div className=''>
-                <div className="py-1"></div>
+                <div className="py-0"></div>
                 <div className='dropup'>
                     <div className='btn dropdown-toggle px-1' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span className='h5 p-2 text-secondary'>CH-3</span>
+                        <span className='text-secondary' style={{ fontSize: 20 }}>CH-3</span>
                     </div>
                     <div className='dropdown-menu pt-3 pb-0'>
                         <div className='px-3 border border-top-0 border-right-0 border-left-0 pb-3 text-left' >
@@ -354,9 +403,9 @@ const AnormalyControlPanel = props => {
                     <span onClick={props.handleZoomOut}>
                         <Icon icon="fa fa-minus" />
                     </span>
-                    <div className='px-2 font-weight-bold text-secondary'>Zoom</div>
+                    <div className='text-secondary'>Zoom</div>
                     <SampleDropdown label={"Today"} icon={<Icon icon="fa fa-calendar" />}
-                        additionalValue={["7 days ", "1 month", "6 month", "1 year"]}/>
+                        additionalValue={["7 days ", "1 month", "6 month", "1 year"]} />
                 </div>
             </div>
         </div>

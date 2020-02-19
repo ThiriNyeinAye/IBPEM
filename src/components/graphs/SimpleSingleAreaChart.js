@@ -3,7 +3,7 @@ import Highcharts, { color } from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
 
 const SimpleSingleAreaChart = (props) => {
-    const { title } = props
+    const { title, height } = props
 
     const options = {
         credits: {
@@ -12,7 +12,7 @@ const SimpleSingleAreaChart = (props) => {
         chart: {
             type: 'area',
             spacing: [0, 0, 30, 16],
-            height: 200,
+            height: `${height===undefined?"15%": height}`,
             zoomType: 'x',
             backgroundColor: "#ffffff"
         },
