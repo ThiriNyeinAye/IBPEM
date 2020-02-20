@@ -9,6 +9,7 @@ const DropdownContainerAnormaly = props => {
     const [graphs, setGraphs] = useState([{ name: "Input Temperature", selected: false }, { name: "Output Temperature", selected: false }])
     const [dropdownHandler, setdropdownHandler] = useState(false)
     const { anomalyInputData, onAnormalyInputChanged } = props
+    const {inputData} = props
 
     DropdownContainerAnormaly.handleClickOutside = () => setShowEditAllDropdown(false)
 
@@ -16,6 +17,7 @@ const DropdownContainerAnormaly = props => {
         setdropdownHandler(false)
         handleGraphDataChart(g)
     }
+
 console.log("Graph data==",graphs)
     return (
         <div className='d-flex flex-row flex-wrap p-1 justify-content-between ' onClick={e => setShowEditAllDropdown(false)}  >
