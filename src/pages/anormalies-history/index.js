@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import CollapseHistoryTable from "../../components/app/CollapseTable.js"
 import moment from "moment-timezone"
 import * as Navbar from "../../components/app/Navbar.js"
+import {SampleDropdown} from '../../components/app/DropDown.js'
 
 const HOST = {
     local: "http://192.168.100.7:3003",
@@ -21,7 +22,7 @@ class AnormaliesHistory extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            data: []
+            data: [],
         }
     }
 
@@ -31,6 +32,8 @@ class AnormaliesHistory extends Component {
             else this.setState({ data: data.payload })
         })
     }
+
+//  onChangeData = e => console.log({e})
 
     render() {
         const { data } = this.state
@@ -56,8 +59,12 @@ class AnormaliesHistory extends Component {
                                 <div className="text-secondary">{"1293 Anomalies have been reviewed"}</div>
                             </div>
                             <div className="" style={{cursor:'pointer'}}>
-                                <span className="pr-2"><i className="fas fa-list"/></span>
-                                <span className="text-secondary">{"Filter"}</span>
+                                {/* <span className="pr-2"><i className="fas fa-list"/></span>
+                                <span className="text-secondary">{"Filter"}</span> */}
+                                  <SampleDropdown label={"Filter"} icon={<i className="fas fa-list"/>} 
+                                  additionalValue={[ 'Mark Taiwan','lucy']} notToggle
+                                //   onChangeData={(e)=>this.onChangeData(e)}
+                                  />
                             </div>
                         </div>
                         <CollapseHistoryTable data={data0} />

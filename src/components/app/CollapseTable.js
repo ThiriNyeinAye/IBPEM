@@ -6,8 +6,8 @@ const CollapseTable = props => {
     const { data = [] } = props
 
     return (
-        <div className="table-responsive w-100">
-            <table className="w-100" style={{ borderSpacing: "0 6px", borderCollapse: "separate", minWidth: 1200 }}>
+        <div className="table-responsive ">
+            <table className="w-100 " style={{ borderSpacing: "0 6px", borderCollapse: "separate", minWidth: 1200 }}>
                 <thead>
                     <tr >
                         <th className="py-3 text-secondary"><div>No</div></th>
@@ -84,8 +84,8 @@ const ExpandedRow = ({ expand, data }) => {
     return (
         <tr>
             <td colSpan={7}>
-                <div className={`p-3 collapse ${expand ? `show` : `none`} border my-1 bg-white rounded`}>
-                    <SingleAreaChart data={data} />
+                <div className={`p-3 collapse ${expand ? `show` : `none`} border my-1 bg-white rounded `} >
+                   <SingleAreaChart data={data} />
                 </div>
             </td>
         </tr>

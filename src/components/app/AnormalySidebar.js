@@ -30,10 +30,15 @@ const AnormalySidebar = props => {
     const AnormalyView = anormalyBy === 2 ? anormalyByEquipmentList : AnormalyByTimeFrameList
 
     return (
-        <div className='bg-white shadow-sm py-3 rounded h-100 d-flex flex-column justify-content-between' >
+        <div className='bg-white shadow-lg py-3 rounded h-100 d-flex flex-column justify-content-between' >
             <div className="">
-                <div className="px-3 pt-3 pb-5 ">
-                   <Link to="/"> <img src={"/ecomlogo.jpeg"} alt='LoGo' className='img-fluid' style={{cursor:'pointer'}} /> </Link>
+                <div className="pl-3 pr-2 pb-3 d-flex flex-row justify-content-between">
+                   <Link to="/" > <img src={"/ecomlogo.jpeg"} alt='LoGo' className='img-fluid' style={{cursor:'pointer'}} /> </Link>
+                    <div id="sidebarMenuIcon" style={{ cursor: "pointer", }}>
+                        <div className="px-1" >
+                            <i id="sidebarMenuIconI" className="fa fa-bars fa-2x" style={{ color: "#0087b5" }} />
+                        </div>
+                    </div>
                 </div>
                 <div className='px-3 px-1 text-dark' style={{ fontSize: 24 }}>Anomalies</div>
 

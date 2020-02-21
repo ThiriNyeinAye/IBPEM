@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { DropDown, DropDownBlock } from '../../components/app/DropDown.js'
+import  DropDown,{DropDownBlock}  from '../../components/app/DropDown.js'
+// import DropDownBlock from '../../components/app/DropDown.js'
 import onClickOutside from "react-onclickoutside";
 
 const DropdownContainerAnormaly = props => {
@@ -9,14 +10,14 @@ const DropdownContainerAnormaly = props => {
     const [graphs, setGraphs] = useState([{ name: "Input Temperature", selected: false }, { name: "Output Temperature", selected: false }])
     const [dropdownHandler, setdropdownHandler] = useState(false)
     const { anomalyInputData, onAnormalyInputChanged } = props
+    const {inputData} = props
 
-    DropdownContainerAnormaly.handleClickOutside = () => setShowEditAllDropdown(false)
+     DropdownContainerAnormaly.handleClickOutside = () => { setShowEditAllDropdown(false) }/*setShowEditAllDropdown(false)*/
 
     const showGraphClick = (e, g) => {
         setdropdownHandler(false)
         handleGraphDataChart(g)
     }
-console.log("Graph data==",graphs)
     return (
         <div className='d-flex flex-row flex-wrap p-1 justify-content-between ' onClick={e => setShowEditAllDropdown(false)}  >
 
@@ -27,19 +28,22 @@ console.log("Graph data==",graphs)
                         label={"FAULT TYPE"}
                         dataType={"faultType"}
                         defaultValue={anomalyInputData/*"Refregerant Lean"*/}
-                        additionalValue={["Condenser Fouling", "Excess Oil", "Low Condenser Water Flow", "Non-Condensable", "Normal", "Reduced Condenser Flow", "Refrigerant Leak", "Refrigerant Overcharge", "Add custom"]} />
+                        additionalValue={["Condenser Fouling", "Excess Oil", "Low Condenser Water Flow", "Non-Condensable", "Normal", "Reduced Condenser Flow", "Refrigerant Leak", "Refrigerant Overcharge", "Add custom"]}
+                        />
                     <DropDown
                         onDropDownItemClicked={onAnormalyInputChanged}
                         label={"SEVERITY"}
                         dataType={"severity"}
                         defaultValue={anomalyInputData/*"Low"*/}
-                        additionalValue={["1-Low", "2-Medium", "3-High"]} />
+                        additionalValue={["1-Low", "2-Medium", "3-High"]} 
+                        />
                     <DropDown
                         onDropDownItemClicked={onAnormalyInputChanged}
                         label={"SENSOR SIGNAL"}
                         dataType={"sensorSignal"}
                         defaultValue={anomalyInputData/*"Plant EMG"*/}
-                        additionalValue={["Chiller KW", "Chiller Running Count", "CHW DP STPT", "CHW DP", "CHW KW", "CHW MIN", "CHW RL", "CHWP-VSD-OP", "CHWP-StageDNSP", "CHWP-StageINSP"]} />
+                        additionalValue={["Chiller KW", "Chiller Running Count", "CHW DP STPT", "CHW DP", "CHW KW", "CHW MIN", "CHW RL", "CHWP-VSD-OP", "CHWP-StageDNSP", "CHWP-StageINSP"]} 
+                        />
                     <div className='d-flex flex-column justify-content-center'>
                         <div className="btn" onClick={e => { e.stopPropagation(); return setShowEditAllDropdown(true) }}>Edit All <i className="fa fa-caret-down" /></div>
                     </div>
@@ -87,7 +91,7 @@ console.log("Graph data==",graphs)
                         <div className="d-flex flex-column border rounded bg-light">
                             <div className="btn dropdown-toggle px-3 " onClick={e => setdropdownHandler(!dropdownHandler)}>Add Graph</div>
                         </div>
-                        <div className={`dropdown-menu px-1 ${dropdownHandler && 'show'}`} /*onChange={(e) => handleChecked(e)}*/>
+                        <div className={`dropdown-menu px-1  ${dropdownHandler && 'show'}`} /*onChange={(e) => handleChecked(e)}*/>
                             {
                                 graphs.map((v, i) => (
                                     <div key={i} className="px-2 d-flex flex-row align-items-center dropdown-item" data-value="option1" tabIndex="-1" onClick={e => setGraphs(graphs.map(c => ({ name: c.name, selected: c.name === v.name ? !c.selected : c.selected })))}>
@@ -108,7 +112,7 @@ console.log("Graph data==",graphs)
                         <div className='d-flex justify-content-around align-items-center '>
                             <div className=''>
                                 <div className="btn btn-sm" value='text' onClick={props.changeContentView}>
-                                    {/* <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }}></i> */}
+                                     {/* <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }}></i> */}
                                     {isContentClicked? 
                                         <i className="fa fa-th-large" style={{ color: '#23c49e', fontSize: 26 }}></i> : 
                                         <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }}></i>
@@ -148,7 +152,7 @@ console.log("Graph data==",graphs)
 }
 
 const clickOutsideConfig = {
-    handleClickOutside: () => DropdownContainerAnormaly.handleClickOutside
+    handleClickOutside: () => DropdownContainerAnormaly.handleClickOutside,
   };
 
 export default onClickOutside(DropdownContainerAnormaly, clickOutsideConfig)

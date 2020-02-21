@@ -64,9 +64,11 @@ class Anormalies extends Component {
                 severity: [],
                 sensorSignal: [],
             },
-            graphShowData: []
+            graphShowData: [],
+            dimensions: null,
         }
         this.singleAreaChartRef = React.createRef()
+        this.sidebarRef = React.createRef()
     }
     changeContentView = () => {
         if (this.state.isEmptystate === true || this.state.isContentState === false) {
@@ -110,6 +112,10 @@ class Anormalies extends Component {
         }
     }
     componentDidMount() {
+        window.onresize = (e) => {
+            this.responsiveHandler(e.target)
+        }
+        this.responsiveHandler(window)
         DataFetcher((error, data) => {
             if (error) console.log("Error: ", error)
             else {
@@ -118,6 +124,48 @@ class Anormalies extends Component {
                 })
             }
         })
+    }
+
+    responsiveHandler = (window) => {
+        this.setState({ wwidth: window.innerWidth })
+        if(this.sidebarRef.current!==null && window!==null && window!==undefined) {
+            const windowWidth = window.innerWidth
+            const sidebarStyle = this.sidebarRef.current.style
+            const anoDivStyle = document.getElementById("anomalyDivContainer").style
+            const sidebarMenuIcon = document.getElementById("sidebarMenuIcon")
+
+            if(windowWidth < 993 && sidebarMenuIcon.style.display !== "block") {                
+                sidebarStyle.position = "fixed"
+                sidebarStyle.zIndex = 1000
+                sidebarStyle.left = "-240px"
+                sidebarStyle.top = "0px"
+        
+                anoDivStyle.paddingLeft = "60px"
+                sidebarMenuIcon.style.display = "block"
+                sidebarMenuIcon.onclick = e => {
+                    sidebarStyle.left = sidebarStyle.left==="0px" ? "-240px" : "0px"
+                }
+                // this.sidebarRef.current.onclick = e => {
+                //     console.log("targetId: ", e.target.id)
+                //     if(sidebarMenuIcon.style.display === "block" && e.target.id!=="sidebarMenuIconI") {
+                //         e.preventDefault()
+                //         e.stopPropagation()
+                //         sidebarStyle.left = sidebarStyle.left==="0px" ? "-240px" : "0px"
+                //     }
+                // }
+            } 
+            // else if(windowWidth < 993 && sidebarMenuIcon.style.display !== "block") {
+                
+            // } 
+            else if(windowWidth > 992){ 
+                sidebarStyle.position = "relative"
+                sidebarStyle.zIndex = 1000
+                sidebarStyle.left = "0px"
+        
+                anoDivStyle.paddingLeft = "8px"
+                sidebarMenuIcon.style.display = "none"
+            }
+        }
     }
 
     fetchAnomalyData = () => {
@@ -243,25 +291,25 @@ class Anormalies extends Component {
     }
 
     render() {
-        const { data, graphShowData, anomalyInputData, anomalyDataByTime, anomalyDataByEquipment } = this.state;
+        const { data, graphShowData, anomalyInputData, anomalyDataByTime, anomalyDataByEquipment,dimensions} = this.state;
         const data0 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
         const data1 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
         const data2 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
         const minorChartData = [data1, data2]
-
+          
         return (
             <div className="" style={{ overflow: 'hidden' }}>
                 <div className="d-flex flex-row flex-wrap flex-md-nowrap" >
 
-                    <div className="d-flex flex-column flex-fill p-2 " style={{ minWidth: 300, marginLeft: -235 }}>
+                    <div className="d-flex flex-column flex-fill p-2" style={{ minWidth: '300px' }} ref={this.sidebarRef} >
                         <AnormalySidebar
                             anomalyDataByEquipment={anomalyDataByEquipment}
                             handleAnomalyTimeClicked={this.handleAnomalyTimeClicked} />
                     </div>
-
+                    
                     <DialogNewAnormaly onSubmitAnomaly={this.onSubmitAnomaly} />
-
-                    <div className="container-fluid ">
+                    
+                    <div id="anomalyDivContainer" className="container-fluid ">
                         <div className="row ">
                             <div className="col-lg-12 py-4">
                                 <Navbar.ItemNavbar />
