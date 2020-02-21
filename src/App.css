@@ -4,3 +4,8 @@
 .highcharts-navigator-mask-inside{
     cursor: pointer!important;
 }
+
+.rect-22:hover {
+    opacity: 1 !important;
+    stroke: black !important
+}

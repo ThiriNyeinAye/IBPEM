@@ -10,6 +10,8 @@ import * as Navbar from "../../components/app/Navbar.js"
 import DialogNewAnormaly from "./DialogNewAnormaly.js";
 import { SampleDropdown } from '../../components/app/DropDown'
 
+import TestComponent from "./TestComponent"
+
 const HOST = {
     local: "http://192.168.100.7:3003",
     test: "https://ibpem.com/api",
@@ -17,7 +19,7 @@ const HOST = {
 }
 
 const DataFetcher = (callback) => {
-    return fetch(`${HOST.test}/dummy-data`)
+    return fetch(`${HOST.maythu}/dummy-data`)
         .then(res => res.json())
         .then(data => callback(data.error, data))
         .catch(error => callback(error, null))
@@ -25,7 +27,7 @@ const DataFetcher = (callback) => {
 
 const CreateAnomalyData = (data, callback) => {
     // console.log("data: ", data)
-    return fetch(`${HOST.test}/anomalies`, {
+    return fetch(`${HOST.maythu}/anomalies`, {
         method: 'POST',
         headers: {
             'Content-Type': "application/json"
@@ -38,7 +40,7 @@ const CreateAnomalyData = (data, callback) => {
 }
 
 const ReadAnomalyData = (callback) => {
-    return fetch(`${HOST.test}/anomalies`)
+    return fetch(`${HOST.maythu}/anomalies`)
         .then(res => res.json())
         .then(data => callback(null, data))
         .then(error => callback(error, null))
@@ -121,8 +123,8 @@ class Anormalies extends Component {
     fetchAnomalyData = () => {
         return ReadAnomalyData((error, data) => {
             if (error === null && data.payload !== null) {
-                // const tmp = {...this.state.anomalyDataByEquipment}
-                const anomalyDataByEquipment = data.payload.reduce((r, c) => {
+                const tmp = data.payload.sort((l,r) => r.endDate.localeCompare(l.endDate))
+                const anomalyDataByEquipment = tmp.reduce((r, c) => {
                     const R = { ...r }
                     const value = {
                         ...c,
@@ -130,10 +132,6 @@ class Anormalies extends Component {
                         date: moment(c.startDate).format("MMM Do YY"),
                         time: `${moment(c.startDate).format("HH:mm:ss")}-${moment(c.endDate).format("HH:mm:ss")}`
                     }
-                    // if(tmp[c.deviceType]!==null && tmp[c.deviceType]!==undefined) {
-                    //     if(tmp[c.deviceType].findIndex(v => v.id===value.id && v.selected)!==-1) 
-                    //         value.selected = true;
-                    // }
                     if (R[c.deviceType] === undefined) R[c.deviceType] = [value]
                     else R[c.deviceType].push(value)
                     return R
@@ -153,7 +151,7 @@ class Anormalies extends Component {
         })
     }
 
-    onAnormalyInputChanged = (value, dataType) => {
+    onAnormalyInputChanged = (value, dataType) => { 
         const anomalyInputData = { ...this.state.anomalyInputData }
         if (anomalyInputData[dataType].findIndex(v => v === value) > -1) {
             anomalyInputData[dataType] = anomalyInputData[dataType].filter(v => v !== value)
@@ -255,7 +253,7 @@ class Anormalies extends Component {
             <div className="" style={{ overflow: 'hidden' }}>
                 <div className="d-flex flex-row flex-wrap flex-md-nowrap" >
 
-                    <div className="d-flex flex-column flex-fill p-2" style={{ minWidth: 300 }}>
+                    <div className="d-flex flex-column flex-fill p-2 " style={{ minWidth: 300, marginLeft: -235 }}>
                         <AnormalySidebar
                             anomalyDataByEquipment={anomalyDataByEquipment}
                             handleAnomalyTimeClicked={this.handleAnomalyTimeClicked} />
@@ -282,12 +280,15 @@ class Anormalies extends Component {
                                 />
                             </div>
 
+            
                             <div className="py-2 col-lg-12 col-12 pl-3">
                                 {this.state.isEmptystate && (
                                     <Fragment>
                                         <div className=" bg-white rounded p-4">
                                             <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
-
+                                            <div className="p-2 bg-white rounded">
+                                                <TestComponent />
+                                            </div>
                                             {
                                                 data.length > 0 ?
                                                     <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />
@@ -316,6 +317,9 @@ class Anormalies extends Component {
 
                                             <div className="col bg-white rounded p-4">
                                                 <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
+                                                <div className="p-2 bg-white rounded">
+                                                    <TestComponent />
+                                                </div>
                                                 {
                                                     data.length > 0 ?
                                                         <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />

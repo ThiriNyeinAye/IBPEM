@@ -41,7 +41,8 @@ class SingleAreaChart extends Component {
             leftLine: null,
             rightLine: null,
             rangeUpdateCondition: AppConst.DEFAULT,
-            options: {}
+            options: {},
+            monitorText: {}
         }
         this.chartRef = React.createRef(null)
     }
@@ -97,17 +98,30 @@ class SingleAreaChart extends Component {
         this.setState({ options: this.initChartOption(chart, this.props) })
 
         chart.container.ondblclick = (e) => {
-            this.addSelectedRange({ leftX: e.offsetX - 6, rightX: e.offsetX + 6 })
+            return this.addSelectedRange({ leftX: e.offsetX - 24, rightX: e.offsetX + 24 })
         }
 
         chart.container.children[0].onmousemove = e => {
             chart.pointer.normalize(e)
-            return this.refreshSelectedTimeRangeOnResize({
+            e.preventDefault()
+            this.refreshSelectedTimeRangeOnResize({
                 chart,
                 leftLine: this.state.leftLine,
                 rightLine: this.state.rightLine,
                 chartX: e.chartX,
                 offsetX: e.offsetX,
+            })
+        }
+
+        chart.container.children[0].ontouchmove = e => {
+            e.preventDefault()
+            chart.pointer.normalize(e)
+            this.refreshSelectedTimeRangeOnResize({
+                chart,
+                leftLine: this.state.leftLine,
+                rightLine: this.state.rightLine,
+                chartX: e.chartX,
+                offsetX: e.chartX,
             })
         }
 
@@ -121,25 +135,26 @@ class SingleAreaChart extends Component {
         const { props } = this
 
         // Define a custom symbol path
-        Highcharts.SVGRenderer.prototype.symbols.leftarrow = (x, y, w, h) => {
-            return [
-                'M', x + w / 2, y,
-                'L', x + w / 2, y + h,
-                x, y + h / 2,
-                'Z'
-            ];
-        };
-        Highcharts.SVGRenderer.prototype.symbols.rightarrow = (x, y, w, h) => {
-            return [
-                'M', x + w / 2, y,
-                'L', x + w / 2, y + h,
-                x + w, y + h / 2,
-                'Z'
-            ];
-        };
+        // Highcharts.SVGRenderer.prototype.symbols.leftarrow = (x, y, w, h) => {
+        //     return [
+        //         'M', x + w / 2, y,
+        //         'L', x + w / 2, y + h,
+        //         x, y + h / 2,
+        //         'Z'
+        //     ];
+        // };
+        // Highcharts.SVGRenderer.prototype.symbols.rightarrow = (x, y, w, h) => {
+        //     return [
+        //         'M', x + w / 2, y,
+        //         'L', x + w / 2, y + h,
+        //         x + w, y + h / 2,
+        //         'Z'
+        //     ];
+        // };
 
         return (
             <div className="">
+                {/* <div>{JSON.stringify(this.state.monitorText)} </div> */}
                 <HighchartsReact ref={this.chartRef} highcharts={Highcharts} constructorType={"stockChart"} options={this.state.options} />
             </div>
         )
@@ -279,10 +294,10 @@ class SingleAreaChart extends Component {
                     backgroundColor: "#2196f399",
                     borderColor: "#2196f399",
                     enabled: true,
-                    height: 20,
-                    lineWidth: 1,
-                    symbols: ['leftarrow', 'rightarrow'],
-                    width: 10
+                    height: 30,
+                    // lineWidth: 1,
+                    // symbols: ['leftarrow', 'rightarrow'],
+                    width: 14
                 },
             },
             series: [{
@@ -322,6 +337,7 @@ class SingleAreaChart extends Component {
             right: chart.plotLeft + chart.plotWidth
         };
         if (chartX >= extremes.left && chartX <= extremes.right) {
+            
             if (rightLine !== null && rightLine.element !== null && rightLine.element.drag) {
                 rightLine.element.attr({
                     transform: `translate(${offsetX},${0})`
@@ -379,6 +395,10 @@ class SingleAreaChart extends Component {
             })
             .add(groupLeft);
         draggablePlotHandleLeft.element.onmousedown = (e) => {
+            this.setState({ monitorText: {
+                ...this.state.monitorText,
+                mouse: "down"
+            }})
             groupLeft.drag = true
             e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
         }
@@ -387,6 +407,10 @@ class SingleAreaChart extends Component {
             e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
         }
         draggablePlotHandleLeft.element.onmouseup = (e) => {
+            this.setState({ monitorText: {
+                ...this.state.monitorText,
+                mouse: "down"
+            }})
             groupLeft.drag = false
             e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
         }
@@ -444,6 +468,7 @@ class SingleAreaChart extends Component {
             groupRight.drag = false
             e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
         }
+   
         draggablePlotHandleRight.element.ontouchend = (e) => {
             groupRight.drag = false
             e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
