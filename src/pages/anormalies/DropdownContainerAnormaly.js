@@ -1,21 +1,22 @@
 import React, { useState } from 'react'
-import { DropDown, DropDownBlock } from '../../components/app/DropDown.js'
+import  DropDown,{DropDownBlock}  from '../../components/app/DropDown.js'
+// import DropDownBlock from '../../components/app/DropDown.js'
 import onClickOutside from "react-onclickoutside";
 
 const DropdownContainerAnormaly = props => {
+    const {isClicked, isSquareClicked, isContentClicked} = props
     const { handleGraphDataChart } = props
     const [showEditAllDropdown, setShowEditAllDropdown] = useState(false)
     const [graphs, setGraphs] = useState([{ name: "Input Temperature", selected: false }, { name: "Output Temperature", selected: false }])
     const [dropdownHandler, setdropdownHandler] = useState(false)
     const { anomalyInputData, onAnormalyInputChanged } = props
 
-    // DropdownContainerAnormaly.handleClickOutside = () => setShowEditAllDropdown(false)
+     DropdownContainerAnormaly.handleClickOutside = () => { setShowEditAllDropdown(false) }/*setShowEditAllDropdown(false)*/
 
     const showGraphClick = (e, g) => {
         setdropdownHandler(false)
         handleGraphDataChart(g)
     }
-
     return (
         <div className='d-flex flex-row flex-wrap p-1 justify-content-between ' onClick={e => setShowEditAllDropdown(false)}  >
 
@@ -26,19 +27,22 @@ const DropdownContainerAnormaly = props => {
                         label={"FAULT TYPE"}
                         dataType={"faultType"}
                         defaultValue={anomalyInputData/*"Refregerant Lean"*/}
-                        additionalValue={["Condenser Fouling", "Excess Oil", "Low Condenser Water Flow", "Non-Condensable", "Normal", "Reduced Condenser Flow", "Refrigerant Leak", "Refrigerant Overcharge", "Add custom"]} />
+                        additionalValue={["Condenser Fouling", "Excess Oil", "Low Condenser Water Flow", "Non-Condensable", "Normal", "Reduced Condenser Flow", "Refrigerant Leak", "Refrigerant Overcharge", "Add custom"]}
+                        />
                     <DropDown
                         onDropDownItemClicked={onAnormalyInputChanged}
                         label={"SEVERITY"}
                         dataType={"severity"}
                         defaultValue={anomalyInputData/*"Low"*/}
-                        additionalValue={["1-Low", "2-Medium", "3-High"]} />
+                        additionalValue={["1-Low", "2-Medium", "3-High"]} 
+                        />
                     <DropDown
                         onDropDownItemClicked={onAnormalyInputChanged}
                         label={"SENSOR SIGNAL"}
                         dataType={"sensorSignal"}
                         defaultValue={anomalyInputData/*"Plant EMG"*/}
-                        additionalValue={["Chiller KW", "Chiller Running Count", "CHW DP STPT", "CHW DP", "CHW KW", "CHW MIN", "CHW RL", "CHWP-VSD-OP", "CHWP-StageDNSP", "CHWP-StageINSP"]} />
+                        additionalValue={["Chiller KW", "Chiller Running Count", "CHW DP STPT", "CHW DP", "CHW KW", "CHW MIN", "CHW RL", "CHWP-VSD-OP", "CHWP-StageDNSP", "CHWP-StageINSP"]} 
+                        />
                     <div className='d-flex flex-column justify-content-center'>
                         <div className="btn" onClick={e => { e.stopPropagation(); return setShowEditAllDropdown(true) }}>Edit All <i className="fa fa-caret-down" /></div>
                     </div>
@@ -89,7 +93,7 @@ const DropdownContainerAnormaly = props => {
                         <div className={`dropdown-menu px-1  ${dropdownHandler && 'show'}`} /*onChange={(e) => handleChecked(e)}*/>
                             {
                                 graphs.map((v, i) => (
-                                    <div key={i} className="px-2 d-flex flex-row align-items-center" data-value="option1" tabIndex="-1" onClick={e => setGraphs(graphs.map(c => ({ name: c.name, selected: c.name === v.name ? !c.selected : c.selected })))}>
+                                    <div key={i} className="px-2 d-flex flex-row align-items-center dropdown-item" data-value="option1" tabIndex="-1" onClick={e => setGraphs(graphs.map(c => ({ name: c.name, selected: c.name === v.name ? !c.selected : c.selected })))}>
                                         <input type="checkbox" checked={v.selected} onChange={e => null} />
                                         <div className="pl-2">{v.name}</div>
                                     </div>
@@ -106,18 +110,30 @@ const DropdownContainerAnormaly = props => {
                     <div className='p-1 justify-content-center' >
                         <div className='d-flex justify-content-around align-items-center '>
                             <div className=''>
-                                <div className="btn btn-sm" value='text' >
-                                    <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }}></i>
+                                <div className="btn btn-sm" value='text' onClick={props.changeContentView}>
+                                     {/* <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }}></i> */}
+                                    {isContentClicked? 
+                                        <i className="fa fa-th-large" style={{ color: '#23c49e', fontSize: 26 }}></i> : 
+                                        <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }}></i>
+                                    }   
                                 </div>
                             </div>
                             <div className=''>
-                                <div className="btn btn-sm" value='text'>
-                                    <i className="fa fa-square" style={{ color: '#d0d0d0', fontSize: 26 }}></i>
+                                <div className="btn btn-sm" value='text' onClick={props.changeSquareView}>
+                                    {/* <i className="fa fa-square" style={{ color: '#d0d0d0', fontSize: 26 }}></i> */}
+                                    {isSquareClicked?
+                                        <i className="fa fa-square" style={{ color: '#23c49e', fontSize: 26 }}></i> :
+                                        <i className="fa fa-square" style={{ color: '#d0d0d0', fontSize: 26 }}></i>
+                                    }
                                 </div>
                             </div>
                             <div className=''>
-                                <div className="btn btn-sm" value='text'>
-                                    <i className="fa fa-bars" style={{ color: '#23c49e', fontSize: 26 }}></i>
+                                <div className="btn btn-sm" value='text' onClick={props.changeBurgerView}>
+                                    {/* <i className="fa fa-bars" style={{ color: '#23c49e', fontSize: 26 }}></i> */}
+                                    {isClicked?
+                                        <i className="fa fa-bars" style={{ color: '#23c49e', fontSize: 26 }}></i> :
+                                        <i className="fa fa-bars" style={{ color: '#d0d0d0', fontSize: 26 }}></i>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -134,12 +150,11 @@ const DropdownContainerAnormaly = props => {
     )
 }
 
-// const clickOutsideConfig = {
-//     // hello: "Hello"
-//     handleClickOutside: () => DropdownContainerAnormaly.handleClickOutside
-//   };
-// export default onClickOutside(DropdownContainerAnormaly, clickOutsideConfig)
-export default DropdownContainerAnormaly;
+const clickOutsideConfig = {
+    handleClickOutside: () => DropdownContainerAnormaly.handleClickOutside,
+  };
+
+export default onClickOutside(DropdownContainerAnormaly, clickOutsideConfig)
 
 
 
