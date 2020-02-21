@@ -1,10 +1,21 @@
 import React, { useState } from "react";
 import onClickOutside from "react-onclickoutside";
 
-const DropDown= props => {
-   const [menuShow, setMenuShow] = useState(false)
+export const DropDown = props => {
+  const {fields} = props
+  const [inputData,setInputData]  = useState('')
+  const [menuShow, setMenuShow] = useState(false)
+  const [Open, setOpen] = useState(false)
   const { label, defaultValue, additionalValue, onDropDownItemClicked, dataType } = props;
-  const defaultValueData = defaultValue[dataType].reduce((r, c) => `${r}${c}`, "")
+  const defaultValueData = defaultValue[dataType].reduce((r,c) => `${r}${c}`,"")
+
+  const handleAddData = e => {
+    alert(inputData)
+  }
+
+  const handleChange = e => {
+    setInputData(e.target.value)
+  }
 
   DropDown.handleClickOutside = (e) =>  { console.log('outside click');return setMenuShow(false)  }
  
@@ -23,8 +34,20 @@ const DropDown= props => {
         <div className={`dropdown-menu ${menuShow ? 'show' : ''}`} >
         {/* <div className="dropdown-menu"> */}
           {
-            additionalValue.map((v, k) => <div key={k} className={`dropdown-item ${defaultValue[dataType].findIndex(v1 => v1 === v) > -1 ? 'bg-success text-light' : ''}`} onClick={e => { onDropDownItemClicked(v, dataType); setMenuShow(false) }} style={{ cursor: 'pointer' }} >{v}</div>)
-          }
+            additionalValue.map((v, k) => v==='Add custom'? 
+              <div>
+                <hr /> 
+                <div key={k} className="dropdown-item pb-3" onClick={e => Open? setOpen(false) : setOpen(true)} style={{ cursor: 'pointer' }}>{v}</div>
+                {Open && (
+                  <div className="container">
+                    <input type="text" className="w-100" onChange={handleChange}></input>
+                    <div className="btn btn-sm btn-block my-1" style={{backgroundColor: '#20b390', color: '#ffffff'}} onClick={e =>{handleAddData(); setOpen(false)}}>ADD</div>
+                  </div>
+                )}
+              </div> 
+             : 
+              <div key={k} className={`dropdown-item ${defaultValue[dataType].findIndex(v1=>v1===v)>-1 ? 'bg-success text-light' : ''}`} onClick={e=> { onDropDownItemClicked(v, dataType); setMenuShow(false)}} style={{ cursor: 'pointer' }} >{v}</div>
+            )}
         </div>
       </div>
     </div>
@@ -37,7 +60,7 @@ export default onClickOutside(DropDown,clickOutsideConfig)
 
 export const DropDownBlock = props => {
   const { label, defaultValue, additionalValue, showEditAllDropdown = false, onDropDownItemClicked, dataType } = props;
-  const defaultValueData = defaultValue[dataType].reduce((r, c) => `${r} ${c}`, "")
+  const defaultValueData = defaultValue[dataType].reduce((r,c) => `${r} ${c}`,"")
 
   return (
     <div className={`d-flex ${showEditAllDropdown ? '' : 'p-1'}`}>
@@ -52,7 +75,7 @@ export const DropDownBlock = props => {
         </div>
         <div className={`dropdown-menu w-100 ${showEditAllDropdown && "show"}`} style={showEditAllDropdown ? customDropdownMenuStyle : {}}>
           {
-            additionalValue.map((v, k) => <div key={k} className={`btn btn-block text-left`} onClick={e => onDropDownItemClicked(v, dataType)} > {v} </div>)
+            additionalValue.map((v, k) => <div key={k} className={`btn btn-block text-left`} onClick={e=> onDropDownItemClicked(v, dataType)} > {v} </div>)
           }
         </div>
       </div>
@@ -80,7 +103,7 @@ export const SampleDropdown = props => {
   const { label, additionalValue, icon ,notToggle,onChangeData,value} = props
   
   return (
-    <div className="pl-2">
+    <div className="">
       <div className="dropdown" data-toggle="dropdown">
         <div className="d-flex align-items-center justify-content-center" style={{ cursor: 'pointer' }}>
           <div className=" d-flex align-items-center">

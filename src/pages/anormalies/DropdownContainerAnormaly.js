@@ -10,6 +10,7 @@ const DropdownContainerAnormaly = props => {
     const [graphs, setGraphs] = useState([{ name: "Input Temperature", selected: false }, { name: "Output Temperature", selected: false }])
     const [dropdownHandler, setdropdownHandler] = useState(false)
     const { anomalyInputData, onAnormalyInputChanged } = props
+    const {inputData} = props
 
      DropdownContainerAnormaly.handleClickOutside = () => { setShowEditAllDropdown(false) }/*setShowEditAllDropdown(false)*/
 
