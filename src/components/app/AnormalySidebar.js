@@ -2,6 +2,7 @@ import React, { useState, Fragment } from 'react'
 import {routeName} from '../../routes/index.js'
 import {Link} from 'react-router-dom'
 import { Progress } from 'reactstrap';
+import { ItemNavbar } from './Navbar.js';
 
 const AnormalySidebar = props => {
     const { 
@@ -32,8 +33,11 @@ const AnormalySidebar = props => {
     return (
         <div className='bg-white shadow-lg py-3 rounded h-100 d-flex flex-column justify-content-between' >
             <div className="">
-                <div className="pl-3 pr-2 pb-3 d-flex flex-row justify-content-between">
-                   <Link to="/" > <img src={"/ecomlogo.jpeg"} alt='LoGo' className='img-fluid' style={{cursor:'pointer'}} /> </Link>
+                <div className="pl-3 pr-2 pb-3 d-flex flex-row flex-wrap justify-content-between">
+                    <div>
+                        <Link to="/" > <img src={"/ecomlogo.jpeg"} alt='LoGo' className='img-fluid' style={{cursor:'pointer'}} /> </Link>
+                        <ItemNavbar />
+                    </div>
                     <div id="sidebarMenuIcon" style={{ cursor: "pointer", }}>
                         <div className="px-1" >
                             <i id="sidebarMenuIconI" className="fa fa-bars fa-2x" style={{ color: "#0087b5" }} />

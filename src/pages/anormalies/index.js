@@ -311,9 +311,9 @@ class Anormalies extends Component {
                     
                     <div id="anomalyDivContainer" className="container-fluid ">
                         <div className="row ">
-                            <div className="col-lg-12 py-4">
+                            {/* <div className="col-lg-12 py-4">
                                 <Navbar.ItemNavbar />
-                            </div>
+                            </div> */}
                             <div className="py-2 col-lg-12 col-12">
                                 <DropdownContainerAnormaly
                                     handleGraphDataChart={this.handleGraphDataChart}
