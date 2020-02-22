@@ -4,7 +4,7 @@ import localStorage from "../../helper/localStorage.js"
 // import { withLStorage } from "../../components/hoc.js"
 
 const Login = props => {
-    const [loginForm, setLoginForm] = useState({ email: "phyokoko@gmail.com", password: "phyokoko99" })
+    const [loginForm, setLoginForm] = useState({ email: "", password: "" })//useState({ email: "phyokoko@gmail.com", password: "phyokoko99" })
     const [errorMessage, setErrorMeesage] = useState("")
     
     useEffect(() => {  
