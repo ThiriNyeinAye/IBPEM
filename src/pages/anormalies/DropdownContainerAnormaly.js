@@ -38,37 +38,40 @@ const DropdownContainerAnormaly = props => {
 
     const CustomDataFetch=()=>{
         CustomDataFetcher((error,data)=>{
-            setFaultTypeLabel(data.faultType.sort((a,b)=> {
-                if(a>b){
-                    return 1;
-                }
-                if(a<b){
-                    return -1
-                }
-            }));
-            setSeverityLabel(data.severity.sort((a,b)=> {
-                if(a>b){
-                    return 1;
-                }
-                if(a<b){
-                    return -1
-                }
-            }));
-            setSensorSignalLabel(data.sensorSignal.sort((a,b)=> {
-                if(a>b){
-                    return 1
-                }
-                if(a<b){
-                    return -1
-                }
-            }))
+            if(error) alert(error)
+            else {
+                
+                setFaultTypeLabel(data.faultType.sort((a,b)=> {
+                    if(a>b){
+                        return 1;
+                    }
+                    if(a<b){
+                        return -1
+                    }
+                }));
+                setSeverityLabel(data.severity.sort((a,b)=> {
+                    if(a>b){
+                        return 1;
+                    }
+                    if(a<b){
+                        return -1
+                    }
+                }));
+                setSensorSignalLabel(data.sensorSignal.sort((a,b)=> {
+                    if(a>b){
+                        return 1
+                    }
+                    if(a<b){
+                        return -1
+                    }
+                }))
+            }
         })
     }
     useEffect(()=>{
         CustomDataFetch()
     },[])
 
-    console.log("fault type==",faultTypeLabel)
     const FaultTypeLabel = faultTypeLabel.concat(addCustom)
 
     return (
