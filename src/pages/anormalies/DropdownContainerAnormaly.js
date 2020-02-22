@@ -1,6 +1,5 @@
-import React, { useState } from 'react'
-import  DropDown,{DropDownBlock}  from '../../components/app/DropDown.js'
-// import DropDownBlock from '../../components/app/DropDown.js'
+import React, { useState, useEffect } from 'react'
+import { DropDown, DropDownBlock } from '../../components/app/DropDown.js'
 import onClickOutside from "react-onclickoutside";
 
 const DropdownContainerAnormaly = props => {
@@ -10,14 +9,62 @@ const DropdownContainerAnormaly = props => {
     const [graphs, setGraphs] = useState([{ name: "Input Temperature", selected: false }, { name: "Output Temperature", selected: false }])
     const [dropdownHandler, setdropdownHandler] = useState(false)
     const { anomalyInputData, onAnormalyInputChanged } = props
-    const {inputData} = props
+    const [faultTypeLabel,setFaultTypeLabel]=useState([])
+    const [severityLabel, setSeverityLabel]=useState([])
+    const [sensorSignalLabel, setSensorSignalLabel] = useState([])
+    const [data,setData]=useState()
+    const [addCustom] =["Add custom"]
 
-     DropdownContainerAnormaly.handleClickOutside = () => { setShowEditAllDropdown(false) }/*setShowEditAllDropdown(false)*/
+    DropdownContainerAnormaly.handleClickOutside = () => setShowEditAllDropdown(false)
 
     const showGraphClick = (e, g) => {
         setdropdownHandler(false)
         handleGraphDataChart(g)
     }
+    const url="http://192.168.100.27:3003/labels"
+    const CustomDataFetcher=(callback)=>{
+        fetch(url)
+        .then(res=> res.json())
+        .then(data=>callback(data.error,data.payload))
+        .catch(error => callback(error, null))
+      
+    }
+
+    const CustomDataFetch=()=>{
+        CustomDataFetcher((error,data)=>{
+            setFaultTypeLabel(data.faultType.sort((a,b)=> {
+                if(a>b){
+                    return 1;
+                }
+                if(a<b){
+                    return -1
+                }
+            }));
+            setSeverityLabel(data.severity.sort((a,b)=> {
+                if(a>b){
+                    return 1;
+                }
+                if(a<b){
+                    return -1
+                }
+            }));
+            setSensorSignalLabel(data.sensorSignal.sort((a,b)=> {
+                if(a>b){
+                    return 1
+                }
+                if(a<b){
+                    return -1
+                }
+            }))
+        })
+    }
+    useEffect(()=>{
+        CustomDataFetch()
+    },[])
+
+    console.log("fault type==",faultTypeLabel)
+    const FaultTypeLabel = faultTypeLabel.concat(addCustom)
+
     return (
         <div className='d-flex flex-row flex-wrap p-1 justify-content-between ' onClick={e => setShowEditAllDropdown(false)}  >
 
@@ -28,28 +75,25 @@ const DropdownContainerAnormaly = props => {
                         label={"FAULT TYPE"}
                         dataType={"faultType"}
                         defaultValue={anomalyInputData/*"Refregerant Lean"*/}
-                        additionalValue={["Condenser Fouling", "Excess Oil", "Low Condenser Water Flow", "Non-Condensable", "Normal", "Reduced Condenser Flow", "Refrigerant Leak", "Refrigerant Overcharge", "Add custom"]}
-                        />
+                        additionalValue={FaultTypeLabel} />
                     <DropDown
                         onDropDownItemClicked={onAnormalyInputChanged}
                         label={"SEVERITY"}
                         dataType={"severity"}
                         defaultValue={anomalyInputData/*"Low"*/}
-                        additionalValue={["1-Low", "2-Medium", "3-High"]} 
-                        />
+                        additionalValue={severityLabel} />
                     <DropDown
                         onDropDownItemClicked={onAnormalyInputChanged}
                         label={"SENSOR SIGNAL"}
                         dataType={"sensorSignal"}
                         defaultValue={anomalyInputData/*"Plant EMG"*/}
-                        additionalValue={["Chiller KW", "Chiller Running Count", "CHW DP STPT", "CHW DP", "CHW KW", "CHW MIN", "CHW RL", "CHWP-VSD-OP", "CHWP-StageDNSP", "CHWP-StageINSP"]} 
-                        />
+                        additionalValue={sensorSignalLabel} />
                     <div className='d-flex flex-column justify-content-center'>
                         <div className="btn" onClick={e => { e.stopPropagation(); return setShowEditAllDropdown(true) }}>Edit All <i className="fa fa-caret-down" /></div>
                     </div>
                 </div>
                 {showEditAllDropdown &&
-                    // d-flex flex-lg-nowrap flex-wrap row 
+                    // d-flex flex-lg-nowrap flex-wrap row
                     <div className="" style={{ position: "absolute", left: 0, right: 0, top: 0, zIndex: 20, }} onClick={e => e.stopPropagation()}>
                         <div className="d-flex flex-lg-nowrap flex-wrap justify-content-start bg-white border bg-white rounded">
                             <div className="bg-white ">
@@ -58,7 +102,7 @@ const DropdownContainerAnormaly = props => {
                                     label={"FAULT TYPE"}
                                     dataType={"faultType"}
                                     defaultValue={anomalyInputData/*"Refregerant Lean"*/}
-                                    additionalValue={["Condenser Fouling", "Excess Oil", "Low Condenser Water Flow", "Non-Condensable", "Normal", "Reduced Condenser Flow", "Refrigerant Leak", "Refrigerant Overcharge", "Add custom"]}
+                                    additionalValue={FaultTypeLabel}
                                     showEditAllDropdown={showEditAllDropdown} />
                             </div>
                             <div className="bg-white border border-top-0 border-bottom-0 ">
@@ -67,7 +111,7 @@ const DropdownContainerAnormaly = props => {
                                     label={"SEVRITY"}
                                     dataType={"severity"}
                                     defaultValue={anomalyInputData/*"Low"*/}
-                                    additionalValue={["1-Low", "2-Medium", "3-High"]}
+                                    additionalValue={severityLabel}
                                     showEditAllDropdown={showEditAllDropdown} />
                             </div>
                             <div className="bg-white ">
@@ -76,7 +120,7 @@ const DropdownContainerAnormaly = props => {
                                     label={"SENSOR SIGNAL"}
                                     dataType={"sensorSignal"}
                                     defaultValue={anomalyInputData/*"Plant EMG"*/}
-                                    additionalValue={["Chiller KW", "Chiller Running Count", "CHW DP STPT", "CHW DP", "CHW KW", "CHW MIN", "CHW RL", "CHWP-VSD-OP", "CHWP-StageDNSP", "CHWP-StageINSP"]}
+                                    additionalValue={sensorSignalLabel}
                                     showEditAllDropdown={showEditAllDropdown} />
                             </div>
                         </div>
@@ -91,7 +135,7 @@ const DropdownContainerAnormaly = props => {
                         <div className="d-flex flex-column border rounded bg-light">
                             <div className="btn dropdown-toggle px-3 " onClick={e => setdropdownHandler(!dropdownHandler)}>Add Graph</div>
                         </div>
-                        <div className={`dropdown-menu px-1  ${dropdownHandler && 'show'}`} /*onChange={(e) => handleChecked(e)}*/>
+                        <div className={`dropdown-menu px-1 ${dropdownHandler && 'show'}`} /*onChange={(e) => handleChecked(e)}*/>
                             {
                                 graphs.map((v, i) => (
                                     <div key={i} className="px-2 d-flex flex-row align-items-center dropdown-item" data-value="option1" tabIndex="-1" onClick={e => setGraphs(graphs.map(c => ({ name: c.name, selected: c.name === v.name ? !c.selected : c.selected })))}>
@@ -112,7 +156,7 @@ const DropdownContainerAnormaly = props => {
                         <div className='d-flex justify-content-around align-items-center '>
                             <div className=''>
                                 <div className="btn btn-sm" value='text' onClick={props.changeContentView}>
-                                     {/* <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }}></i> */}
+                                    {/* <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }}></i> */}
                                     {isContentClicked? 
                                         <i className="fa fa-th-large" style={{ color: '#23c49e', fontSize: 26 }}></i> : 
                                         <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }}></i>
@@ -152,7 +196,7 @@ const DropdownContainerAnormaly = props => {
 }
 
 const clickOutsideConfig = {
-    handleClickOutside: () => DropdownContainerAnormaly.handleClickOutside,
+    handleClickOutside: () => DropdownContainerAnormaly.handleClickOutside
   };
 
 export default onClickOutside(DropdownContainerAnormaly, clickOutsideConfig)

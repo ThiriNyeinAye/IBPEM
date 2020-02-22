@@ -57,6 +57,7 @@ class Anormalies extends Component {
             anomalyDataByTime: [],
             anomalyDataByEquipment: {},
             height: 200,
+            temp: 0,
             isEmptystate: true,
             isClicked: true,
             isTripClicked: false,
@@ -70,6 +71,7 @@ class Anormalies extends Component {
             dimensions: null,
         }
         this.singleAreaChartRef = React.createRef()
+        this.multiAreaChartRef = React.createRef()
         this.sidebarRef = React.createRef()
     }
     changeContentView = () => {
@@ -216,6 +218,31 @@ class Anormalies extends Component {
         this.setState({ graphShowData: g })
     }
     //Charts
+    handleMultiZoomIn = () => {
+        this.setState({temp: this.state.temp+1})
+        const multiChart = this.multiAreaChartRef.current
+        if(multiChart !== null){
+            if(multiChart.multiChartRef.current !== null){
+                const chart1 = multiChart.multiChartRef.current.chart
+                this.multiAreaChartRef.current.setMultiZoomIn(chart1)
+            }
+        }
+    }
+    handleMultiZoomOut = () => {
+        const multiChart = this.multiAreaChartRef.current
+        if(multiChart !== null) {
+            if(multiChart.multiChartRef.current !== null){
+                const chart1 = multiChart.multiChartRef.current.chart
+               
+                if(this.state.temp<=0) {
+                    console.log()
+                } else {
+                    this.multiAreaChartRef.current.setMultiZoomOut(chart1)
+                    this.setState({temp: this.state.temp-1})
+                }
+            }
+        }
+    }
     handleZoomIn = () => {
         // console.log("singleAreaChartRef: ", this.singleAreaChartRef)
         const areaChart = this.singleAreaChartRef.current
@@ -313,9 +340,9 @@ class Anormalies extends Component {
                     
                     <div id="anomalyDivContainer" className="container-fluid ">
                         <div className="row ">
-                            <div className="col-lg-12 py-4">
+                            {/* <div className="col-lg-12 py-4">
                                 <Navbar.ItemNavbar />
-                            </div>
+                            </div> */}
                             <div className="py-2 col-lg-12 col-12">
                                 <DropdownContainerAnormaly
                                     handleGraphDataChart={this.handleGraphDataChart}
@@ -343,6 +370,17 @@ class Anormalies extends Component {
                                                 data.length > 0 ?
                                                     <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />
                                                     // <MultiAreaChart data1={data0} data2={data2} />
+                                                    : <div className="p-4 text-secondary text-center">Loading...</div>
+                                            }
+                                        </div>
+                                        <div className=" bg-white rounded p-4">
+                                            <AnormalyControlPanel handleZoomIn={this.handleMultiZoomIn} handleZoomOut={this.handleMultiZoomOut} />
+                                            <div className="p-2 bg-white rounded">
+                                                <TestComponent />
+                                            </div>
+                                            {
+                                                data.length > 0 ?
+                                                     <MultiAreaChart ref={this.multiAreaChartRef} data1={data0} data2={data2} />
                                                     : <div className="p-4 text-secondary text-center">Loading...</div>
                                             }
                                         </div>
@@ -374,6 +412,17 @@ class Anormalies extends Component {
                                                     data.length > 0 ?
                                                         <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />
                                                         //  <MultiAreaChart data1={data0} data2={data2} /> 
+                                                        : <div className="p-4 text-secondary text-center">Loading...</div>
+                                                }
+                                            </div>
+                                            <div className="col bg-white rounded p-4">
+                                                <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
+                                                <div className="p-2 bg-white rounded">
+                                                    <TestComponent />
+                                                </div>
+                                                {
+                                                    data.length > 0 ?
+                                                         <MultiAreaChart ref={this.multiAreaChartRef} data1={data0} data2={data2} /> 
                                                         : <div className="p-4 text-secondary text-center">Loading...</div>
                                                 }
                                             </div>
@@ -451,10 +500,10 @@ const AnormalyControlPanel = props => {
             </div>
             <div className=''>
                 <div className='d-flex align-items-center'>
-                    <span onClick={props.handleZoomIn}>
+                    <span onClick={props.multiChartRef? props.handleMultiZoomIn : props.handleZoomIn}>
                         <Icon icon="fa fa-plus" />
                     </span>
-                    <span onClick={props.handleZoomOut}>
+                    <span onClick={props.multiChartRef? props.handleMultiZoomOut : props.handleZoomOut}>
                         <Icon icon="fa fa-minus" />
                     </span>
                     <div className='text-secondary'>Zoom</div>
