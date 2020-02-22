@@ -2,6 +2,12 @@ import React, { useState, useEffect } from 'react'
 import { DropDown, DropDownBlock } from '../../components/app/DropDown.js'
 import onClickOutside from "react-onclickoutside";
 
+const HOST = {
+    local: "http://192.168.100.7:3003",
+    test: "https://ibpem.com/api",
+    maythu: "http://192.168.100.27:3003"
+}
+
 const DropdownContainerAnormaly = props => {
     const {isClicked, isSquareClicked, isContentClicked} = props
     const { handleGraphDataChart } = props
@@ -21,7 +27,7 @@ const DropdownContainerAnormaly = props => {
         setdropdownHandler(false)
         handleGraphDataChart(g)
     }
-    const url="http://192.168.100.27:3003/labels"
+    const url=`${HOST.test}/labels`
     const CustomDataFetcher=(callback)=>{
         fetch(url)
         .then(res=> res.json())
