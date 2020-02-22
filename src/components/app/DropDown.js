@@ -44,9 +44,9 @@ export const DropDown = props => {
         <div className={`dropdown-menu ${menuShow ? 'show' : ''}`} >
           {
             additionalValue.map((v, k) => v==='Add custom'? 
-              <div>
+              <div key={k} >
                 <hr /> 
-                <div key={k} className="dropdown-item pb-3" onClick={e => Open? setOpen(false) : setOpen(true)} style={{ cursor: 'pointer' }}>{v}</div>
+                <div className="dropdown-item pb-3" onClick={e => Open? setOpen(false) : setOpen(true)} style={{ cursor: 'pointer' }}>{v}</div>
                 {Open && (
                   <div className="container">
                     <input type="text" className="w-100" onChange={handleChange} autoFocus></input>
@@ -107,9 +107,9 @@ export const DropDownBlock = props => {
         <div className={`dropdown-menu w-100 ${showEditAllDropdown && "show"}`} style={showEditAllDropdown ? customDropdownMenuStyle : {}}>
         {
             additionalValue.map((v, k) => v==='Add custom'? 
-              <div>
+              <div key={k}>
                 <hr /> 
-                <div key={k} className="dropdown-item pb-3" onClick={e => Open? setOpen(false) : setOpen(true)} style={{ cursor: 'pointer' }}>{v}</div>
+                <div className="dropdown-item pb-3" onClick={e => Open? setOpen(false) : setOpen(true)} style={{ cursor: 'pointer' }}>{v}</div>
                 {Open && (
                   <div className="container">
                     <input type="text" className="w-100" onChange={handleChange} autoFocus></input>
@@ -157,8 +157,8 @@ export const SampleDropdown = props => {
       </div>
       <div className="dropdown-menu py-0">
         {additionalValue.map((v, k) => ([
-          <div key={k} className="dropdown-item my-2" style={{ cursor: 'pointer', }} onClick={()=>null}>{v}</div>,
-          <div key={v} className="dropdown-divider my-0" />
+          <div key={k} className="dropdown-item my-2" style={{ cursor: 'pointer', borderBottom: "1px solid #a5a5a5" }} onClick={()=>null}>{v}</div>,
+          // <div key={v} className="dropdown-divider my-0" />
         ])
         )}
       </div>

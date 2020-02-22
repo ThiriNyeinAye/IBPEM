@@ -5,7 +5,7 @@ const  login=(props)=> {
 }
 
 const solutions=(props)=> {
-    props.history.push(routeName.routeSolutions)
+    return props.history.push(routeName.routeSolutions)
 }
 
 const  anomalies=(props)=> {

@@ -6,10 +6,11 @@ import localStorage from "../../helper/localStorage.js"
 const Login = props => {
     const [loginForm, setLoginForm] = useState({ email: "phyokoko@gmail.com", password: "phyokoko99" })
     const [errorMessage, setErrorMeesage] = useState("")
-    const key = localStorage.readLogin()
-
+    
     useEffect(() => {  
-        const isAuthorized = localStorage.checkAuthorized(key) 
+        const key = localStorage.readLogin()
+        const isAuthorized = localStorage.checkAuthorized(key)
+            
         if(isAuthorized) {
             return routeTo.solutions(props)
         }   
@@ -21,7 +22,7 @@ const Login = props => {
         const authorizedKey = localStorage.checkAuthorizedLogin(loginForm)
         if(authorizedKey!==null) {
             localStorage.saveLogin(authorizedKey)
-            return routeTo.solutions(props)
+            return window.location.href = "/"
         } else {
             return setErrorMeesage("Email or password does not matched!")
         }
@@ -54,4 +55,5 @@ const Login = props => {
     )
 }
 
-export default Login //withLStorage(Login)
+export default Login 
+//withLStorage(Login)
