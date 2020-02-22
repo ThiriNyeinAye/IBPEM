@@ -1,5 +1,6 @@
 import React, { Component } from "react"
 import { routeName } from "../../routes"
+import { withLStorage } from "../../components/hoc.js"
 
 class AnormaliesDevice extends Component {
 
@@ -49,4 +50,4 @@ class AnormaliesDevice extends Component {
 
 }
 
-export default AnormaliesDevice
+export default withLStorage(AnormaliesDevice)

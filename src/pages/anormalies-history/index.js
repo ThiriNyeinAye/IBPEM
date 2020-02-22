@@ -3,6 +3,7 @@ import CollapseHistoryTable from "../../components/app/CollapseTable.js"
 import moment from "moment-timezone"
 import * as Navbar from "../../components/app/Navbar.js"
 import {SampleDropdown} from '../../components/app/DropDown.js'
+import { withLStorage } from "../../components/hoc.js"
 
 const HOST = {
     local: "http://192.168.100.7:3003",
@@ -76,4 +77,4 @@ class AnormaliesHistory extends Component {
 
 }
 
-export default AnormaliesHistory
+export default withLStorage(AnormaliesHistory)

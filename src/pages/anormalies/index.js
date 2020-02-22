@@ -10,6 +10,8 @@ import * as Navbar from "../../components/app/Navbar.js"
 import DialogNewAnormaly from "./DialogNewAnormaly.js";
 import { SampleDropdown } from '../../components/app/DropDown'
 
+import { withLStorage } from "../../components/hoc.js"
+
 import TestComponent from "./TestComponent"
 
 const HOST = {
@@ -401,7 +403,7 @@ class Anormalies extends Component {
         )
     }
 }
-export default Anormalies
+export default withLStorage(Anormalies)
 
 
 const AnormalyControlPanel = props => {
