@@ -12,7 +12,7 @@ const HOST = {
 }
 
 const DataFetcher = (callback) => {
-    return fetch(`${HOST.maythu}/dummy-data`)
+    return fetch(`${HOST.test}/dummy-data`)
         .then(res => res.json())
         .then(data => callback(data.error, data))
         .catch(error => callback(error, null))

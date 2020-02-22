@@ -21,7 +21,7 @@ const HOST = {
 }
 
 const DataFetcher = (callback) => {
-    return fetch(`${HOST.maythu}/dummy-data`)
+    return fetch(`${HOST.test}/dummy-data`)
         .then(res => res.json())
         .then(data => callback(data.error, data))
         .catch(error => callback(error, null))
@@ -29,7 +29,7 @@ const DataFetcher = (callback) => {
 
 const CreateAnomalyData = (data, callback) => {
     // console.log("data: ", data)
-    return fetch(`${HOST.maythu}/anomalies`, {
+    return fetch(`${HOST.test}/anomalies`, {
         method: 'POST',
         headers: {
             'Content-Type': "application/json"
@@ -42,7 +42,7 @@ const CreateAnomalyData = (data, callback) => {
 }
 
 const ReadAnomalyData = (callback) => {
-    return fetch(`${HOST.maythu}/anomalies`)
+    return fetch(`${HOST.test}/anomalies`)
         .then(res => res.json())
         .then(data => callback(null, data))
         .then(error => callback(error, null))
@@ -325,6 +325,8 @@ class Anormalies extends Component {
         const data1 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
         const data2 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
         const minorChartData = [data1, data2]
+
+        console.log("state: ", this.state.isEmptystate, this.state.isContentState)
           
         return (
             <div className="" style={{ overflow: 'hidden' }}>
@@ -375,9 +377,6 @@ class Anormalies extends Component {
                                         </div>
                                         <div className=" bg-white rounded p-4">
                                             <AnormalyControlPanel handleZoomIn={this.handleMultiZoomIn} handleZoomOut={this.handleMultiZoomOut} />
-                                            <div className="p-2 bg-white rounded">
-                                                <TestComponent />
-                                            </div>
                                             {
                                                 data.length > 0 ?
                                                      <MultiAreaChart ref={this.multiAreaChartRef} data1={data0} data2={data2} />
@@ -417,9 +416,6 @@ class Anormalies extends Component {
                                             </div>
                                             <div className="col bg-white rounded p-4">
                                                 <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
-                                                <div className="p-2 bg-white rounded">
-                                                    <TestComponent />
-                                                </div>
                                                 {
                                                     data.length > 0 ?
                                                          <MultiAreaChart ref={this.multiAreaChartRef} data1={data0} data2={data2} /> 
