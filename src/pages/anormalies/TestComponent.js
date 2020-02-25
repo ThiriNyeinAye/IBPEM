@@ -28,6 +28,7 @@ export default class TestComponent extends Component {
         const w = data[0]!==undefined ? data[0].length : 100
         const rects = data.map((v1,k1) => v1.map((v2, k2) => {
             return (
+
                 <rect  
                     key={`${k1}${k2}`}
                     onClick={this.handleHoverOnSvgRect}

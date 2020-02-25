@@ -13,6 +13,7 @@ import { SampleDropdown } from '../../components/app/DropDown'
 import { withLStorage } from "../../components/hoc.js"
 
 import TestComponent from "./TestComponent"
+import { Fade } from "reactstrap"
 
 const HOST = {
     local: "http://192.168.100.7:3003",
@@ -60,7 +61,7 @@ class Anormalies extends Component {
             temp: 0,
             isEmptystate: true,
             isClicked: true,
-            isTripClicked: false,
+            isTripleSquareClicked:false,
             isSquareClicked: false,
             anomalyInputData: {
                 faultType: [],
@@ -74,12 +75,15 @@ class Anormalies extends Component {
         this.multiAreaChartRef = React.createRef()
         this.sidebarRef = React.createRef()
     }
+    
     changeContentView = () => {
         if (this.state.isEmptystate === true || this.state.isContentState === false) {
             this.setState({
                 ...this.state,
                 height: 210,
                 isEmptystate: false,
+                isTripleSquareClicked:false,
+                isTripleSquareState:false,
                 isContentState: true,
                 isSquareState: false,
                 isContentClicked: true,
@@ -88,13 +92,31 @@ class Anormalies extends Component {
             })
         }
     }
+    changeTripleSquareView=()=>{
+        if(this.state.isEmptystate === true || this.state.isTripleSquareState === false){
+          this.setState({
+              ...this.state,
+              height:210,
+              isEmptystate:false,
+              isTripleSquareState:true,
+              isTripleSquareClicked:true,
+              isClicked:false,
+              isContentClicked:false,
+              isSquareClicked:false,
+              isContentState:false,
+              isSquareState:false
+          })
+        }
+    }
     changeSquareView = () => {
         if (this.state.isEmptystate === true || this.state.isSquareState === false) {
             this.setState({
                 ...this.state,
                 isEmptystate: false,
                 isSquareState: true,
+                isTripleSquareClicked:false,
                 isContentState: false,
+                isTripleSquareState:false,
                 isSquareClicked: true,
                 isContentClicked: false,
                 isClicked: false
@@ -108,6 +130,8 @@ class Anormalies extends Component {
                 isEmptystate: true,
                 isSquareState: false,
                 isContentState: false,
+                isTripleSquareClicked:false,
+                isTripleSquareState:false,
                 isClicked: true,
                 // height:200,
                 isSquareClicked: false,
@@ -245,6 +269,7 @@ class Anormalies extends Component {
     }
     handleZoomIn = () => {
         // console.log("singleAreaChartRef: ", this.singleAreaChartRef)
+        this.setState({temp: this.state.temp+1})
         const areaChart = this.singleAreaChartRef.current
         if (areaChart !== null) {
             if (areaChart.chartRef.current !== null) {
@@ -258,7 +283,15 @@ class Anormalies extends Component {
         if (areaChart !== null) {
             if (areaChart.chartRef.current !== null) {
                 const chart = areaChart.chartRef.current.chart
-                this.singleAreaChartRef.current.setZoomOut(chart)
+
+                if(this.state.temp <= 0)
+                {
+                    console.log()
+                }else {
+                    this.singleAreaChartRef.current.setZoomOut(chart)
+                    this.setState({temp: this.state.temp-1})
+                }
+                
             }
         }
     }
@@ -325,8 +358,6 @@ class Anormalies extends Component {
         const data1 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
         const data2 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
         const minorChartData = [data1, data2]
-
-        console.log("state: ", this.state.isEmptystate, this.state.isContentState)
           
         return (
             <div className="" style={{ overflow: 'hidden' }}>
@@ -353,14 +384,51 @@ class Anormalies extends Component {
                                     changeBurgerView={this.changeBurgerView}
                                     changeContentView={this.changeContentView}
                                     changeSquareView={this.changeSquareView}
+                                    changeTripleSquareView={this.changeTripleSquareView}
                                     isClicked={this.state.isClicked}
                                     isContentClicked={this.state.isContentClicked}
                                     isSquareClicked={this.state.isSquareClicked}
+                                    isTripleSquareClicked={this.state.isTripleSquareClicked}
+                                    
                                 />
                             </div>
 
             
-                            <div className="py-2 col-lg-12 col-12 pl-3">
+                            <div className="py-2 col-lg-12 col-12 ">
+                                {this.state.isTripleSquareState&&(
+                                    <Fragment>
+                                       <div className='p-1'>
+                                            <div className=" bg-white rounded p-4">
+                                                <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
+                                                    <div className="p-2 bg-white rounded">
+                                                        <TestComponent />
+                                                    </div>
+                                                    {
+                                                        data.length > 0 ?
+                                                            <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />
+                                                            // <MultiAreaChart data1={data0} data2={data2} />
+                                                            : <div className="p-4 text-secondary text-center">Loading...</div>
+                                                    }
+                                            </div>
+                                       </div>
+                                        <div className='d-flex '>
+                                            {
+                                            graphShowData.map((v, i) =>
+                                                <div key={i} className="p-1 w-100">
+                                                    {v.selected &&
+                                                        <div className="p-4 bg-white rounded">
+                                                            <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} height={this.state.height}/>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            )
+                                        }
+                                            
+                                        
+                                        </div>
+                                        
+                                    </Fragment>
+                                )}
                                 {this.state.isEmptystate && (
                                     <Fragment>
                                         <div className=" bg-white rounded p-4">
@@ -372,14 +440,6 @@ class Anormalies extends Component {
                                                 data.length > 0 ?
                                                     <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />
                                                     // <MultiAreaChart data1={data0} data2={data2} />
-                                                    : <div className="p-4 text-secondary text-center">Loading...</div>
-                                            }
-                                        </div>
-                                        <div className=" bg-white rounded p-4">
-                                            <AnormalyControlPanel handleZoomIn={this.handleMultiZoomIn} handleZoomOut={this.handleMultiZoomOut} />
-                                            {
-                                                data.length > 0 ?
-                                                     <MultiAreaChart ref={this.multiAreaChartRef} data1={data0} data2={data2} />
                                                     : <div className="p-4 text-secondary text-center">Loading...</div>
                                             }
                                         </div>
@@ -397,6 +457,7 @@ class Anormalies extends Component {
                                     </Fragment>
 
                                 )}
+                               
                                 {this.state.isContentState && (
                                     <Fragment>
 
@@ -414,14 +475,6 @@ class Anormalies extends Component {
                                                         : <div className="p-4 text-secondary text-center">Loading...</div>
                                                 }
                                             </div>
-                                            <div className="col bg-white rounded p-4">
-                                                <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
-                                                {
-                                                    data.length > 0 ?
-                                                         <MultiAreaChart ref={this.multiAreaChartRef} data1={data0} data2={data2} /> 
-                                                        : <div className="p-4 text-secondary text-center">Loading...</div>
-                                                }
-                                            </div>
                                             <div className='col pl-2'>
                                                 {
                                                     graphShowData.map((v, i) =>
@@ -436,6 +489,23 @@ class Anormalies extends Component {
                                                 }
                                             </div>
                                         </div>
+                                    </Fragment>
+                                )}
+                                
+                                {this.state.isSquareState&&(
+                                    <Fragment>
+                                      <div className="col bg-white rounded p-4">
+                                                <AnormalyControlPanel handleZoomIn={this.handleMultiZoomIn} handleZoomOut={this.handleMultiZoomOut} />
+                                                <div className="p-2 bg-white rounded">
+                                                    <TestComponent />
+                                                </div>
+                                                {
+                                                    data.length > 0 ?
+                                                        // <SingleAreaChart ref={this.singleAreaChartRef} data={data0} />
+                                                        <MultiAreaChart ref={this.multiAreaChartRef} data1={data0} data2={data2} /> 
+                                                        : <div className="p-4 text-secondary text-center">Loading...</div>
+                                                }
+                                            </div>
                                     </Fragment>
                                 )}
 

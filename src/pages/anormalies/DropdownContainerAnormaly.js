@@ -9,7 +9,7 @@ const HOST = {
 }
 
 const DropdownContainerAnormaly = props => {
-    const {isClicked, isSquareClicked, isContentClicked} = props
+    const { isClicked, isSquareClicked, isContentClicked,isTripleSquareClicked } = props
     const { handleGraphDataChart } = props
     const [showEditAllDropdown, setShowEditAllDropdown] = useState(false)
     const [graphs, setGraphs] = useState([{ name: "Input Temperature", selected: false }, { name: "Output Temperature", selected: false }])
@@ -164,29 +164,36 @@ const DropdownContainerAnormaly = props => {
                     <div className='p-1 justify-content-center' >
                         <div className='d-flex justify-content-around align-items-center '>
                             <div className=''>
+                                <div className="btn btn-sm" value='text' onClick={props.changeTripleSquareView}>
+                                    {isTripleSquareClicked?
+                                          <i className="fas fa-columns" style={{ color: '#23c49e', fontSize: 26 }} />:
+                                          <i className="fas fa-columns" style={{ color: '#d0d0d0', fontSize: 26 }} />
+                                    }
+                                      
+                                    
+                                </div>
+                            </div>
+                            <div className=''>
                                 <div className="btn btn-sm" value='text' onClick={props.changeContentView}>
-                                    {/* <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }}></i> */}
                                     {isContentClicked? 
-                                        <i className="fa fa-th-large" style={{ color: '#23c49e', fontSize: 26 }}></i> : 
-                                        <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }}></i>
+                                        <i className="fa fa-th-large" style={{ color: '#23c49e', fontSize: 26 }} />: 
+                                        <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }} />
                                     }   
                                 </div>
                             </div>
                             <div className=''>
                                 <div className="btn btn-sm" value='text' onClick={props.changeSquareView}>
-                                    {/* <i className="fa fa-square" style={{ color: '#d0d0d0', fontSize: 26 }}></i> */}
                                     {isSquareClicked?
-                                        <i className="fa fa-square" style={{ color: '#23c49e', fontSize: 26 }}></i> :
-                                        <i className="fa fa-square" style={{ color: '#d0d0d0', fontSize: 26 }}></i>
+                                        <i className="fa fa-square" style={{ color: '#23c49e', fontSize: 26 }} />:
+                                        <i className="fa fa-square" style={{ color: '#d0d0d0', fontSize: 26 }} />
                                     }
                                 </div>
                             </div>
                             <div className=''>
                                 <div className="btn btn-sm" value='text' onClick={props.changeBurgerView}>
-                                    {/* <i className="fa fa-bars" style={{ color: '#23c49e', fontSize: 26 }}></i> */}
                                     {isClicked?
-                                        <i className="fa fa-bars" style={{ color: '#23c49e', fontSize: 26 }}></i> :
-                                        <i className="fa fa-bars" style={{ color: '#d0d0d0', fontSize: 26 }}></i>
+                                        <i className="fa fa-bars" style={{ color: '#23c49e', fontSize: 26 }} />:
+                                        <i className="fa fa-bars" style={{ color: '#d0d0d0', fontSize: 26 }} />
                                     }
                                 </div>
                             </div>
@@ -209,7 +216,3 @@ const clickOutsideConfig = {
   };
 
 export default onClickOutside(DropdownContainerAnormaly, clickOutsideConfig)
-
-
-
-
