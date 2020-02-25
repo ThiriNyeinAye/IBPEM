@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import  DropDown,{DropDownBlock}  from '../../components/app/DropDown.js'
-// import DropDownBlock from '../../components/app/DropDown.js'
-import onClickOutside from "react-onclickoutside";
+import AllDropdownBlockView from './AllDropDownBlockView.js';
+import NormalDropDownView from './NormalDropDownView'
 
 const DropdownContainerAnormaly = props => {
     const {isClicked, isSquareClicked, isContentClicked} = props
@@ -12,75 +11,22 @@ const DropdownContainerAnormaly = props => {
     const { anomalyInputData, onAnormalyInputChanged } = props
     const {inputData} = props
 
-     DropdownContainerAnormaly.handleClickOutside = () => { setShowEditAllDropdown(false) }/*setShowEditAllDropdown(false)*/
+    //  DropdownContainerAnormaly.handleClickOutside = () => {  setShowEditAllDropdown(false)  }/*setShowEditAllDropdown(false)*/
 
     const showGraphClick = (e, g) => {
         setdropdownHandler(false)
         handleGraphDataChart(g)
     }
     return (
-        <div className='d-flex flex-row flex-wrap p-1 justify-content-between ' onClick={e => setShowEditAllDropdown(false)}  >
+        <div className='d-flex flex-row flex-wrap p-1 justify-content-between ' /*onClick={e => setShowEditAllDropdown(false)}*/  >
 
             <div className="d-flex flex-column" style={{ position: "relative" }}>
-                <div className='d-flex flex-wrap flex-md-wrap flex-sm-wrap justify-content-start '>
-                    <DropDown
-                        onDropDownItemClicked={onAnormalyInputChanged}
-                        label={"FAULT TYPE"}
-                        dataType={"faultType"}
-                        defaultValue={anomalyInputData/*"Refregerant Lean"*/}
-                        additionalValue={["Condenser Fouling", "Excess Oil", "Low Condenser Water Flow", "Non-Condensable", "Normal", "Reduced Condenser Flow", "Refrigerant Leak", "Refrigerant Overcharge", "Add custom"]}
-                        />
-                    <DropDown
-                        onDropDownItemClicked={onAnormalyInputChanged}
-                        label={"SEVERITY"}
-                        dataType={"severity"}
-                        defaultValue={anomalyInputData/*"Low"*/}
-                        additionalValue={["1-Low", "2-Medium", "3-High"]} 
-                        />
-                    <DropDown
-                        onDropDownItemClicked={onAnormalyInputChanged}
-                        label={"SENSOR SIGNAL"}
-                        dataType={"sensorSignal"}
-                        defaultValue={anomalyInputData/*"Plant EMG"*/}
-                        additionalValue={["Chiller KW", "Chiller Running Count", "CHW DP STPT", "CHW DP", "CHW KW", "CHW MIN", "CHW RL", "CHWP-VSD-OP", "CHWP-StageDNSP", "CHWP-StageINSP"]} 
-                        />
-                    <div className='d-flex flex-column justify-content-center'>
-                        <div className="btn" onClick={e => { e.stopPropagation(); return setShowEditAllDropdown(true) }}>Edit All <i className="fa fa-caret-down" /></div>
-                    </div>
-                </div>
-                {showEditAllDropdown &&
-                    // d-flex flex-lg-nowrap flex-wrap row 
-                    <div className="" style={{ position: "absolute", left: 0, right: 0, top: 0, zIndex: 20, }} onClick={e => e.stopPropagation()}>
-                        <div className="d-flex flex-lg-nowrap flex-wrap justify-content-start bg-white border bg-white rounded">
-                            <div className="bg-white ">
-                                <DropDownBlock
-                                    onDropDownItemClicked={onAnormalyInputChanged}
-                                    label={"FAULT TYPE"}
-                                    dataType={"faultType"}
-                                    defaultValue={anomalyInputData/*"Refregerant Lean"*/}
-                                    additionalValue={["Condenser Fouling", "Excess Oil", "Low Condenser Water Flow", "Non-Condensable", "Normal", "Reduced Condenser Flow", "Refrigerant Leak", "Refrigerant Overcharge", "Add custom"]}
-                                    showEditAllDropdown={showEditAllDropdown} />
-                            </div>
-                            <div className="bg-white border border-top-0 border-bottom-0 ">
-                                <DropDownBlock
-                                    onDropDownItemClicked={onAnormalyInputChanged}
-                                    label={"SEVRITY"}
-                                    dataType={"severity"}
-                                    defaultValue={anomalyInputData/*"Low"*/}
-                                    additionalValue={["1-Low", "2-Medium", "3-High"]}
-                                    showEditAllDropdown={showEditAllDropdown} />
-                            </div>
-                            <div className="bg-white ">
-                                <DropDownBlock
-                                    onDropDownItemClicked={onAnormalyInputChanged}
-                                    label={"SENSOR SIGNAL"}
-                                    dataType={"sensorSignal"}
-                                    defaultValue={anomalyInputData/*"Plant EMG"*/}
-                                    additionalValue={["Chiller KW", "Chiller Running Count", "CHW DP STPT", "CHW DP", "CHW KW", "CHW MIN", "CHW RL", "CHWP-VSD-OP", "CHWP-StageDNSP", "CHWP-StageINSP"]}
-                                    showEditAllDropdown={showEditAllDropdown} />
-                            </div>
+                <NormalDropDownView anomalyInputData={anomalyInputData} onAnormalyInputChanged={onAnormalyInputChanged} setShowEditAllDropdown={setShowEditAllDropdown} />
+               
+     {showEditAllDropdown &&
+                        <div className="" style={{ position: "absolute", left: 0, right: 0, top: 0, zIndex: 20, }} onClick={e => {e.stopPropagation()}}>
+                       <AllDropdownBlockView anomalyInputData={anomalyInputData} onAnormalyInputChanged={onAnormalyInputChanged} showEditAllDropdown={showEditAllDropdown} setShowEditAllDropdown={setShowEditAllDropdown}/>
                         </div>
-                    </div>
                 }
             </div>
 
@@ -150,12 +96,9 @@ const DropdownContainerAnormaly = props => {
         </div>
     )
 }
+export default DropdownContainerAnormaly;
 
-const clickOutsideConfig = {
-    handleClickOutside: () => DropdownContainerAnormaly.handleClickOutside,
-  };
 
-export default onClickOutside(DropdownContainerAnormaly, clickOutsideConfig)
 
 
 
