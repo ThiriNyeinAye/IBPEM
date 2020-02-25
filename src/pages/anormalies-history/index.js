@@ -1,7 +1,10 @@
+
 import React, { Component } from "react";
 import CollapseHistoryTable from "../../components/app/CollapseTable.js";
 import moment from "moment-timezone";
 import * as Navbar from "../../components/app/Navbar.js";
+
+import { withLStorage } from "../../components/hoc.js"
 
 
 const HOST = {
@@ -25,7 +28,7 @@ class AnormaliesHistory extends Component {
       tableData: [],
       FilteronChangeValue: "",
       filter: {
-        no_filter:'',
+        // no_filter:'',
         user: null,
         dateTime: null
       },
@@ -101,12 +104,18 @@ class AnormaliesHistory extends Component {
       </div>
       <div className="modal-body">
           {/* user-lable filter */}
-      <div className="d-flex flex-row justify-content-between align-items-center py-2"> 
-      <div>User Labeled:</div>
-      <div className="d-flex" >
-                    <div onClick={e => this.setState(prev => ({ filter: {...prev.filter, user: null} }))} className="px-2" >
+      <div className="d-flex flex-row align-items-center py-2"> 
+      <div className="dropdown flex-fill"  >
+   
+    <div className="border rounded p-2 d-flex justify-content-between align-items-center" data-toggle="dropdown"> 
+    <div>User LabelledBy : {filter.user!==null ? filter.user : ""}</div>
+    <div><i className="fa fa-sort-down" /></div>
+    </div>
+  
+      <div className=" dropdown-menu w-100">
+                    <div onClick={e => this.setState(prev => ({ filter: {...prev.filter, user: "No filter"} }))} className="px-2 dropdown-item" >
                         <input id="no-filter" type="checkbox"
-                            value={filter.no_filter}
+                            value={filter.user}
                             onChange={e => this.setState({ filter: { ...filter, no_filter: e.target.checked } })  }
                             />  <label htmlFor="no-filter" style={{cursor:'pointer'}}> No Filter </label>
                     </div>
@@ -117,7 +126,7 @@ class AnormaliesHistory extends Component {
                           []
                         )
                         .map((v, k) => (
-                          <div key={k} className="px-2">
+                          <div key={k} className="px-2 dropdown-item">
                             <input
                               id={v}
                               type="checkbox"
@@ -133,6 +142,7 @@ class AnormaliesHistory extends Component {
                           </div>
                         ))}
         </div>
+  </div>
        </div>
      {/* ============================================================================ */}
      {/* <div className="d-flex flex-row justify-content-between align-items-center py-2"> 
@@ -199,8 +209,7 @@ class AnormaliesHistory extends Component {
     );
   }
 }
-
-export default AnormaliesHistory;
+export default withLStorage(AnormaliesHistory)
 
 const HistoryTableDataOrignal = [
   {
@@ -244,3 +253,6 @@ const HistoryTableDataOrignal = [
     LabelledBy: "Lucy"
   }
 ];
+
+
+

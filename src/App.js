@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Route, Switch, Redirect, withRouter } from "react-router-dom"
 import routes from "./routes"
 
+
 class App extends Component {
   
   constructor(props) {
@@ -16,6 +17,7 @@ class App extends Component {
   }
 
   render() {
+
     return (
         <Switch>
           { Object.keys(routes.routes).map((name,k) => <Route key={k} path={`/${name}`} component={routes.routes[name].component} />) }

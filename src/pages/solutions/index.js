@@ -2,6 +2,7 @@ import React, { Component } from "react"
 import { routeName } from "../../routes"
 import * as Navbar from "../../components/app/Navbar.js"
 import Detection from "./Detections.js"
+import { withLStorage } from "../../components/hoc.js"
 
 class Solutions extends Component {
 
@@ -65,4 +66,4 @@ class Solutions extends Component {
 
 }
 
-export default Solutions
+export default withLStorage(Solutions)

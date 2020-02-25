@@ -234,7 +234,7 @@ export const SampleDropdown = props => {
           {notToggle && (
             <div className="px-2">
               {/* {FilteronChangeValue.length > 0 && "By: "} */}
-              {FilteronChangeValue}
+              {FilteronChangeValue}{" "}
             </div>
           )}
         </div>

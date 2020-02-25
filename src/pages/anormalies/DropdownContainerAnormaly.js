@@ -1,22 +1,77 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import AllDropdownBlockView from './AllDropDownBlockView.js';
 import NormalDropDownView from './NormalDropDownView'
 
+const HOST = {
+    local: "http://192.168.100.7:3003",
+    test: "https://ibpem.com/api",
+    maythu: "http://192.168.100.27:3003"
+}
+
 const DropdownContainerAnormaly = props => {
-    const {isClicked, isSquareClicked, isContentClicked} = props
+    const { isClicked, isSquareClicked, isContentClicked,isTripleSquareClicked } = props
     const { handleGraphDataChart } = props
     const [showEditAllDropdown, setShowEditAllDropdown] = useState(false)
     const [graphs, setGraphs] = useState([{ name: "Input Temperature", selected: false }, { name: "Output Temperature", selected: false }])
     const [dropdownHandler, setdropdownHandler] = useState(false)
     const { anomalyInputData, onAnormalyInputChanged } = props
-    const {inputData} = props
-
-    //  DropdownContainerAnormaly.handleClickOutside = () => {  setShowEditAllDropdown(false)  }/*setShowEditAllDropdown(false)*/
+    const [faultTypeLabel,setFaultTypeLabel]=useState([])
+    const [severityLabel, setSeverityLabel]=useState([])
+    const [sensorSignalLabel, setSensorSignalLabel] = useState([])
+    const [data,setData]=useState()
+    const [addCustom] =["Add custom"]
 
     const showGraphClick = (e, g) => {
         setdropdownHandler(false)
         handleGraphDataChart(g)
     }
+    const url=`${HOST.test}/labels`
+    const CustomDataFetcher=(callback)=>{
+        fetch(url)
+        .then(res=> res.json())
+        .then(data=>callback(data.error,data.payload))
+        .catch(error => callback(error, null))
+      
+    }
+
+    const CustomDataFetch=()=>{
+        CustomDataFetcher((error,data)=>{
+            if(error) alert(error)
+            else {
+                
+                setFaultTypeLabel(data.faultType.sort((a,b)=> {
+                    if(a>b){
+                        return 1;
+                    }
+                    if(a<b){
+                        return -1
+                    }
+                }));
+                setSeverityLabel(data.severity.sort((a,b)=> {
+                    if(a>b){
+                        return 1;
+                    }
+                    if(a<b){
+                        return -1
+                    }
+                }));
+                setSensorSignalLabel(data.sensorSignal.sort((a,b)=> {
+                    if(a>b){
+                        return 1
+                    }
+                    if(a<b){
+                        return -1
+                    }
+                }))
+            }
+        })
+    }
+    useEffect(()=>{
+        CustomDataFetch()
+    },[])
+
+    const FaultTypeLabel = faultTypeLabel.concat(addCustom)
+
     return (
         <div className='d-flex flex-row flex-wrap p-1 justify-content-between ' /*onClick={e => setShowEditAllDropdown(false)}*/  >
 
@@ -37,7 +92,7 @@ const DropdownContainerAnormaly = props => {
                         <div className="d-flex flex-column border rounded bg-light">
                             <div className="btn dropdown-toggle px-3 " onClick={e => setdropdownHandler(!dropdownHandler)}>Add Graph</div>
                         </div>
-                        <div className={`dropdown-menu px-1  ${dropdownHandler && 'show'}`} /*onChange={(e) => handleChecked(e)}*/>
+                        <div className={`dropdown-menu px-1 ${dropdownHandler && 'show'}`} /*onChange={(e) => handleChecked(e)}*/>
                             {
                                 graphs.map((v, i) => (
                                     <div key={i} className="px-2 d-flex flex-row align-items-center dropdown-item" data-value="option1" tabIndex="-1" onClick={e => setGraphs(graphs.map(c => ({ name: c.name, selected: c.name === v.name ? !c.selected : c.selected })))}>
@@ -57,29 +112,36 @@ const DropdownContainerAnormaly = props => {
                     <div className='p-1 justify-content-center' >
                         <div className='d-flex justify-content-around align-items-center '>
                             <div className=''>
+                                <div className="btn btn-sm" value='text' onClick={props.changeTripleSquareView}>
+                                    {isTripleSquareClicked?
+                                          <i className="fas fa-columns" style={{ color: '#23c49e', fontSize: 26 }} />:
+                                          <i className="fas fa-columns" style={{ color: '#d0d0d0', fontSize: 26 }} />
+                                    }
+                                      
+                                    
+                                </div>
+                            </div>
+                            <div className=''>
                                 <div className="btn btn-sm" value='text' onClick={props.changeContentView}>
-                                     {/* <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }}></i> */}
                                     {isContentClicked? 
-                                        <i className="fa fa-th-large" style={{ color: '#23c49e', fontSize: 26 }}></i> : 
-                                        <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }}></i>
+                                        <i className="fa fa-th-large" style={{ color: '#23c49e', fontSize: 26 }} />: 
+                                        <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }} />
                                     }   
                                 </div>
                             </div>
                             <div className=''>
                                 <div className="btn btn-sm" value='text' onClick={props.changeSquareView}>
-                                    {/* <i className="fa fa-square" style={{ color: '#d0d0d0', fontSize: 26 }}></i> */}
                                     {isSquareClicked?
-                                        <i className="fa fa-square" style={{ color: '#23c49e', fontSize: 26 }}></i> :
-                                        <i className="fa fa-square" style={{ color: '#d0d0d0', fontSize: 26 }}></i>
+                                        <i className="fa fa-square" style={{ color: '#23c49e', fontSize: 26 }} />:
+                                        <i className="fa fa-square" style={{ color: '#d0d0d0', fontSize: 26 }} />
                                     }
                                 </div>
                             </div>
                             <div className=''>
                                 <div className="btn btn-sm" value='text' onClick={props.changeBurgerView}>
-                                    {/* <i className="fa fa-bars" style={{ color: '#23c49e', fontSize: 26 }}></i> */}
                                     {isClicked?
-                                        <i className="fa fa-bars" style={{ color: '#23c49e', fontSize: 26 }}></i> :
-                                        <i className="fa fa-bars" style={{ color: '#d0d0d0', fontSize: 26 }}></i>
+                                        <i className="fa fa-bars" style={{ color: '#23c49e', fontSize: 26 }} />:
+                                        <i className="fa fa-bars" style={{ color: '#d0d0d0', fontSize: 26 }} />
                                     }
                                 </div>
                             </div>
