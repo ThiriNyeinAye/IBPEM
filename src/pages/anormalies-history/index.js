@@ -47,9 +47,9 @@ class AnormaliesHistory extends Component {
   handleDoFilter = () => {
     // console.log(this.state.filter)
     const HistoryTableData = HistoryTableDataOrignal.filter( v => {
-        return this.state.filter.user===null? true : v.LabelledBy===this.state.filter.user
+        return (this.state.filter.user===null || this.state.filter.user === "No Filter")? true : v.LabelledBy===this.state.filter.user
     })
-    this.setState( prev => ({ HistoryTableData }))
+    this.setState( prev => ({ HistoryTableData ,filter:{user:null}}))
   }
 
   render() {
@@ -90,10 +90,10 @@ class AnormaliesHistory extends Component {
               </div>
       {/* ======================= */}
               <div className="" style={{ cursor: "pointer" }}  data-toggle="modal" data-target="#exampleModal">
-                <span> filter </span>  
+                <span> Filter </span>  
                 <span><i className="fas fa-list"></i></span>
             </div>
-            <div className="modal fade" id="exampleModal" tabIndex="-1" role="dialog" >
+            <div className="modal fade" id="exampleModal" tabIndex="-1" role="dialog" style={{top:180}}>
             <div className="modal-dialog" role="document">
     <div className="modal-content">
       <div className="modal-header">
@@ -112,12 +112,13 @@ class AnormaliesHistory extends Component {
     <div><i className="fa fa-sort-down" /></div>
     </div>
   
-      <div className=" dropdown-menu w-100">
-                    <div onClick={e => this.setState(prev => ({ filter: {...prev.filter, user: "No filter"} }))} className="px-2 dropdown-item" >
-                        <input id="no-filter" type="checkbox"
+      <div className=" dropdown-menu w-100 ">
+                    <div onClick={e => this.setState(prev => ({ filter: {...prev.filter, user: 'No Filter'} }))} className="px-2  dropdown-item" >
+                        {/* <input id="no-filter" type="checkbox"
                             value={filter.user}
                             onChange={e => this.setState({ filter: { ...filter, no_filter: e.target.checked } })  }
-                            />  <label htmlFor="no-filter" style={{cursor:'pointer'}}> No Filter </label>
+                            />  */}
+                         <label htmlFor="no-filter" style={{cursor:'pointer'}}> No Filter </label>
                     </div>
                       {HistoryTableDataOrignal.map(v => v.LabelledBy)
                         .reduce(
@@ -126,8 +127,8 @@ class AnormaliesHistory extends Component {
                           []
                         )
                         .map((v, k) => (
-                          <div key={k} className="px-2 dropdown-item">
-                            <input
+                          <div key={k} className="px-2 dropdown-item" onClick={e =>  this.setState({ filter: { ...filter, user: v }  })  }>
+                            {/* <input
                               id={v}
                               type="checkbox"
                               name={v}
@@ -137,8 +138,8 @@ class AnormaliesHistory extends Component {
                                 this.setState({
                                   filter: { ...filter, user: v }
                                 })
-                              }
-                            />  <label htmlFor={v} style={{cursor:'pointer'}}> {v} </label>
+                              } />  */}
+                             <label htmlFor={v} style={{cursor:'pointer'}}> {v} </label>
                           </div>
                         ))}
         </div>
