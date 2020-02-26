@@ -162,7 +162,7 @@ class Anormalies extends Component {
             const anoDivStyle = document.getElementById("anomalyDivContainer").style
             const sidebarMenuIcon = document.getElementById("sidebarMenuIcon")
 
-            if(windowWidth < 1200 && sidebarMenuIcon.style.display !== "block") {                
+            if(windowWidth <= 1200 && sidebarMenuIcon.style.display !== "block") {                
                 sidebarStyle.position = "absolute"
                 sidebarStyle.zIndex = 1000
                 sidebarStyle.left = "-340px"
@@ -176,19 +176,8 @@ class Anormalies extends Component {
                     sidebarStyle.left = sidebarStyle.left==="0px" ? "-340px" : "0px"
                     anoDivStyle.opacity = sidebarStyle.left==="0px" ? 0.1 : 1
                 }
-                // this.sidebarRef.current.onclick = e => {
-                //     console.log("targetId: ", e.target.id)
-                //     if(sidebarMenuIcon.style.display === "block" && e.target.id!=="sidebarMenuIconI") {
-                //         e.preventDefault()
-                //         e.stopPropagation()
-                //         sidebarStyle.left = sidebarStyle.left==="0px" ? "-240px" : "0px"
-                //     }
-                // }
             } 
-            // else if(windowWidth < 1200 && sidebarMenuIcon.style.display !== "block") {
-                
-            // } 
-            else if(windowWidth > 992){ 
+            else if(windowWidth > 1200){ 
                 sidebarStyle.position = "relative"
                 sidebarStyle.zIndex = 1000
                 sidebarStyle.left = "0px"
@@ -415,10 +404,10 @@ class Anormalies extends Component {
                                                     }
                                             </div>
                                        </div>
-                                        <div className='d-flex '>
+                                        <div className='d-flex flex-wrap'>
                                             {
                                             graphShowData.map((v, i) =>
-                                                <div key={i} className="p-1 w-100">
+                                                <div key={i} className="col-lg-6 p-1">
                                                     {v.selected &&
                                                         <div className="p-4 bg-white rounded">
                                                             <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} height={this.state.height}/>
