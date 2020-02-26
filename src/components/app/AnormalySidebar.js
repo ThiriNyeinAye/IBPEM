@@ -3,6 +3,7 @@ import {routeName} from '../../routes/index.js'
 import {Link} from 'react-router-dom'
 import { Progress } from 'reactstrap';
 import { ItemNavbar } from './Navbar.js';
+import OutsideClickHandler from "react-outside-click-handler";
 
 const AnormalySidebar = props => {
     const { 
@@ -29,70 +30,78 @@ const AnormalySidebar = props => {
     ))
 
     const AnormalyView = anormalyBy === 2 ? anormalyByEquipmentList : AnormalyByTimeFrameList
+    
+    const outsideClicked = () => {
+        const sidebarMenuIcon = document.getElementById("sidebarMenuIcon")
+        
+    }
 
     return (
-        <div className='bg-white shadow-lg py-3 rounded h-100 d-flex flex-column justify-content-between' >
-            <div className="">
-                <div className="pl-3 pr-2 pb-3 d-flex flex-row flex-wrap justify-content-between">
-                    <div>
-                        <Link to="/" > <img src={"/ecomlogo.jpeg"} alt='LoGo' className='img-fluid' style={{cursor:'pointer'}} /> </Link>
-                        <ItemNavbar />
+        <OutsideClickHandler
+            onOutsideClick={outsideClicked}
+        >
+            <div className='bg-white shadow-lg py-3 rounded h-100 d-flex flex-column justify-content-between' >
+                <div className="">
+                    <div className="pl-3 pr-2 pb-3 d-flex flex-row flex-wrap justify-content-between">
+                        <div>
+                            <Link to="/" > <img src={"/ecomlogo.jpeg"} alt='LoGo' className='img-fluid' style={{cursor:'pointer'}} /> </Link>
+                            <ItemNavbar />
+                        </div>
+                        <div id="sidebarMenuIcon" style={{ cursor: "pointer", }}>
+                            <div className="px-1" >
+                                <i id="sidebarMenuIconI" className="fa fa-bars fa-2x" style={{ color: "#0087b5" }} />
+                            </div>
+                        </div>
                     </div>
-                    <div id="sidebarMenuIcon" style={{ cursor: "pointer", }}>
-                        <div className="px-1" >
-                            <i id="sidebarMenuIconI" className="fa fa-bars fa-2x" style={{ color: "#0087b5" }} />
+                    <div className='px-3 px-1 text-dark' style={{ fontSize: 24 }}>Anomalies</div>
+
+                    <AnormalyViewSelector selectedAnormalyView={anormalyBy} onSelectChanged={setAnormalyBy} />
+
+                    {/* <div className="pb-3" data-toggle="collapse" href="#SortBy" role="button" aria-expanded="false" aria-controls="SortBy">
+                        Sort By Equipment
+                        <i className="fa fa-sort-down px-1"></i>
+                    </div>
+                    <div className="d-flex flex-row pb-4 ">
+                        <div className="col" style={{backgroundColor:'#EDEFEE'}}>
+                            <div className="collapse multi-collapse border border-right-0 border-left-0 py-3 w-100" id="SortBy">
+                                TimeFrame
+                            </div>
+                            <div className="collapse multi-collapse border border-top-0 border-right-0 border-left-0 py-3 w-100" id="SortBy">
+                                Equipment
+                            </div>
+                            <div className="collapse multi-collapse border border-top-0 border-right-0 border-left-0 py-3" id="SortBy">
+                                Severity
+                            </div>
+                        </div>
+                    </div> */}
+
+                    <div className="p-3">
+                        <div className='p-2 d-flex flex-column shadow-lg rounded' style={{ backgroundColor: '#23c49e', lineHeight: 0 }}>
+                            <div className='px-2 py-3 text-white font-weight-bold' >
+                                34 of 123 <span style={{ color: "#e0e5e0", fontWeight: 'normal' }}>Detections</span>
+                            </div>
+                            <div className='px-2 py-2'>
+                                <Progress color='success' value='34' style={{ height: 8 }} />
+                            </div>
+                        </div> 
+                    </div>
+
+                    { AnormalyView }
+
+                    <div className='px-3 d-flex py-3 pt-4 justify-content-between'>
+                        <div className=''>New Detection</div>
+                        <div className="px-1 rounded" value='text'>
+                            <i className="fa fa-plus-square" style={{ color: '#23c49e', fontSize: 16 }}></i>
                         </div>
                     </div>
                 </div>
-                <div className='px-3 px-1 text-dark' style={{ fontSize: 24 }}>Anomalies</div>
-
-                <AnormalyViewSelector selectedAnormalyView={anormalyBy} onSelectChanged={setAnormalyBy} />
-
-                {/* <div className="pb-3" data-toggle="collapse" href="#SortBy" role="button" aria-expanded="false" aria-controls="SortBy">
-                    Sort By Equipment
-                    <i className="fa fa-sort-down px-1"></i>
-                </div>
-                <div className="d-flex flex-row pb-4 ">
-                    <div className="col" style={{backgroundColor:'#EDEFEE'}}>
-                        <div className="collapse multi-collapse border border-right-0 border-left-0 py-3 w-100" id="SortBy">
-                            TimeFrame
-                        </div>
-                        <div className="collapse multi-collapse border border-top-0 border-right-0 border-left-0 py-3 w-100" id="SortBy">
-                            Equipment
-                        </div>
-                        <div className="collapse multi-collapse border border-top-0 border-right-0 border-left-0 py-3" id="SortBy">
-                            Severity
-                        </div>
-                    </div>
-                </div> */}
-
-                <div className="p-3">
-                    <div className='p-2 d-flex flex-column shadow-lg rounded' style={{ backgroundColor: '#23c49e', lineHeight: 0 }}>
-                        <div className='px-2 py-3 text-white font-weight-bold' >
-                            34 of 123 <span style={{ color: "#e0e5e0", fontWeight: 'normal' }}>Detections</span>
-                        </div>
-                        <div className='px-2 py-2'>
-                            <Progress color='success' value='34' style={{ height: 8 }} />
-                        </div>
-                    </div> 
-                </div>
-
-                { AnormalyView }
-
-                <div className='px-3 d-flex py-3 pt-4 justify-content-between'>
-                    <div className=''>New Detection</div>
-                    <div className="px-1 rounded" value='text'>
-                        <i className="fa fa-plus-square" style={{ color: '#23c49e', fontSize: 16 }}></i>
+                <div className='py-4'>
+                    <div className="pt-4 border border-bottom-0 border-left-0 border-right-0 text-secondary text-center " style={{ cursor: "pointer", }}>
+                        <Link className="text-secondary" to={routeName.routeAnormaliesHistory} style={{textDecoration:"none" }}> View History</Link> 
                     </div>
                 </div>
             </div>
-            <div className='py-4'>
-                <div className="pt-4 border border-bottom-0 border-left-0 border-right-0 text-secondary text-center " style={{ cursor: "pointer", }}>
-                    <Link className="text-secondary" to={routeName.routeAnormaliesHistory} style={{textDecoration:"none" }}> View History</Link> 
-                </div>
-            </div>
-        </div>
-
+        </OutsideClickHandler>
     )
 }
 

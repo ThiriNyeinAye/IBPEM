@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// import onClickOutside from "react-onclickoutside";
 import OutsideClickHandler from "react-outside-click-handler";
 
 export const DropDown = props => {
@@ -110,16 +109,17 @@ export const DropDown = props => {
               ) : (
                 <div
                   key={k}
-                  className={`dropdown-item ${
-                    defaultValue[dataType].findIndex(v1 => v1 === v) > -1
-                      ? "bg-success text-light"
-                      : ""
-                  }`}
+                  className={`dropdown-item btn btn-block rounded-0 text-left py-2 my-0`}
+                  style={{ 
+                    backgroundColor: defaultValue[dataType].findIndex(v1 => v1 === v) > -1
+                      ? "#2b916933"
+                      : undefined,
+                      
+                  }}
                   onClick={e => {
                     onDropDownItemClicked(v, dataType);
                     setMenuShow(false);
                   }}
-                  style={{ cursor: "pointer" }}
                 >
                   {v}
                 </div>
@@ -130,7 +130,7 @@ export const DropDown = props => {
       </div>
     </OutsideClickHandler>
   );
-};
+}
 
 export const DropDownBlock = props => {
   const {
@@ -170,11 +170,12 @@ export const DropDownBlock = props => {
           {additionalValue.map((v, k) => (
             <div
               key={k}
-              className={`btn btn-block text-left ${
-                defaultValue[dataType].findIndex(v1 => v1 === v) > -1
-                  ? "bg-success text-light"
-                  : ""
-              }`}
+              className={`btn btn-block rounded-0 text-left `}
+              style={{ 
+                backgroundColor: defaultValue[dataType].findIndex(v1 => v1 === v) > -1
+                  ? "#2b916933"
+                  : undefined
+              }}
               onClick={e => onDropDownItemClicked(v, dataType)}
             >
               {" "}

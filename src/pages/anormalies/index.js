@@ -162,35 +162,28 @@ class Anormalies extends Component {
             const anoDivStyle = document.getElementById("anomalyDivContainer").style
             const sidebarMenuIcon = document.getElementById("sidebarMenuIcon")
 
-            if(windowWidth < 993 && sidebarMenuIcon.style.display !== "block") {                
-                sidebarStyle.position = "fixed"
+            if(windowWidth <= 1200 && sidebarMenuIcon.style.display !== "block") {                
+                sidebarStyle.position = "absolute"
                 sidebarStyle.zIndex = 1000
-                sidebarStyle.left = "-240px"
+                sidebarStyle.left = "-340px"
                 sidebarStyle.top = "0px"
+                // sidebarStyle.bottom = "0px"
+                console.log(document.body.style)
         
                 anoDivStyle.paddingLeft = "60px"
                 sidebarMenuIcon.style.display = "block"
                 sidebarMenuIcon.onclick = e => {
-                    sidebarStyle.left = sidebarStyle.left==="0px" ? "-240px" : "0px"
+                    sidebarStyle.left = sidebarStyle.left==="0px" ? "-340px" : "0px"
+                    anoDivStyle.opacity = sidebarStyle.left==="0px" ? 0.1 : 1
                 }
-                // this.sidebarRef.current.onclick = e => {
-                //     console.log("targetId: ", e.target.id)
-                //     if(sidebarMenuIcon.style.display === "block" && e.target.id!=="sidebarMenuIconI") {
-                //         e.preventDefault()
-                //         e.stopPropagation()
-                //         sidebarStyle.left = sidebarStyle.left==="0px" ? "-240px" : "0px"
-                //     }
-                // }
             } 
-            // else if(windowWidth < 993 && sidebarMenuIcon.style.display !== "block") {
-                
-            // } 
-            else if(windowWidth > 992){ 
+            else if(windowWidth > 1200){ 
                 sidebarStyle.position = "relative"
                 sidebarStyle.zIndex = 1000
                 sidebarStyle.left = "0px"
         
                 anoDivStyle.paddingLeft = "8px"
+                anoDivStyle.opacity = 1
                 sidebarMenuIcon.style.display = "none"
             }
         }
@@ -360,10 +353,10 @@ class Anormalies extends Component {
         const minorChartData = [data1, data2]
           
         return (
-            <div className="" style={{ overflow: 'hidden' }}>
+            <div className="" style={{ overflow: 'auto' }}>
                 <div className="d-flex flex-row flex-wrap flex-md-nowrap" >
 
-                    <div className="d-flex flex-column flex-fill p-2" style={{ minWidth: '300px' }} ref={this.sidebarRef} >
+                    <div className="d-flex flex-column flex-fill p-2" style={{ width: 400 }} ref={this.sidebarRef} >
                         <AnormalySidebar
                             anomalyDataByEquipment={anomalyDataByEquipment}
                             handleAnomalyTimeClicked={this.handleAnomalyTimeClicked} />
@@ -411,10 +404,10 @@ class Anormalies extends Component {
                                                     }
                                             </div>
                                        </div>
-                                        <div className='d-flex '>
+                                        <div className='d-flex flex-wrap'>
                                             {
                                             graphShowData.map((v, i) =>
-                                                <div key={i} className="p-1 w-100">
+                                                <div key={i} className="col-lg-6 p-1">
                                                     {v.selected &&
                                                         <div className="p-4 bg-white rounded">
                                                             <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} height={this.state.height}/>
