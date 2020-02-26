@@ -154,9 +154,9 @@ class SingleAreaChart extends Component {
 
         return (
             <div className="">
-                {/* <div>{JSON.stringify(this.state.monitorText)} </div> */}
-                <HighchartsReact ref={this.chartRef} highcharts={Highcharts} constructorType={"stockChart"} options={this.state.options} />
-            </div>
+            {/* <div>{JSON.stringify(this.state.monitorText)} </div> */}
+            <HighchartsReact ref={this.chartRef} highcharts={Highcharts} constructorType={"stockChart"} options={this.state.options} containerProps={{ className: "" }} />
+         </div>
         )
 
 
