@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from "react"
 import "../../App.css"
+import moment from "moment-timezone"
 
 export default class TestComponent extends Component {
     constructor(props) {
@@ -24,17 +25,30 @@ export default class TestComponent extends Component {
     }
 
     render() {
-        // const h = data.length>0 ? data.length : 60
-        // const w = data[0]!==undefined ? data[0].length : 100
-
+        
         const rows = data.map((v1,k1) => {
+            const year = v1.year
+            let startDate = moment(`01-01-${year}`).startOf('year')
+            let endDate = moment(`01-01-${year}`).endOf('year')
+            const months = []
+            console.log("startDate: \n", startDate.format("YYYY-MM-DD"), endDate.format("YYYY-MM-DD"))
+            while(startDate.isBefore(endDate)) {
+                const mname = startDate.format("MMM")
+                if(months.findIndex(v => v===mname)===-1)
+                    months.push(mname)
+                else {
+                    months.push(null)
+                }
+                startDate = startDate.add(8, 'days')
+            }
+            console.log("months: ", months)
             return (
                 <div className="py-2 d-flex " id="gContainer" style={{ overflowX: "auto"}}>
                     <div className="pr-1 my-auto">
                         {v1.year}
                     </div>
                     <div style={{ overflowX: "auto"}}>
-                        <Row5 dataRow={v1.data} rowNo={k1} handleClickOnSvgRect={this.handleClickOnSvgRect} />
+                        <Row5 months={months} dataRow={v1.data} rowNo={k1} handleClickOnSvgRect={this.handleClickOnSvgRect} />
                     </div>
                 </div>
             )
@@ -43,25 +57,19 @@ export default class TestComponent extends Component {
         return (
             <div className="rounded" style={{ overflowX: "auto"}}>
                 {rows}
-                {/* <svg viewBox="0 0 600 60" style={{ height: 20, width: 200 }} >
-                    <rect x="0" y="0" width="60" height="60" fill="#e5e5e5" style={{ stroke: "#c5c5d5", strokeWidth: 0.04 }}></rect>
-                    <rect x="1" y="0" width="60" height="60" fill="#e5e5e5" style={{ stroke: "#c5c5d5", strokeWidth: 0.04 }}></rect>
-                    <rect x="2" y="0" width="60" height="60" fill="#e5e5e5" style={{ stroke: "#c5c5d5", strokeWidth: 0.04 }}></rect>
-                </svg> */}
             </div>
         )
     }
 }
 
-const Row5 = ({ dataRow, rowNo, handleClickOnSvgRect }) => {
+const Row5 = ({ months, dataRow, rowNo, handleClickOnSvgRect }) => {
     const rects = dataRow.map((v2, k2) => {
             if(v2.count>0) 
                 return (
-                    <g>
+                    <g key={`${rowNo}${k2}`}>
                         <rect  
                             key={`${rowNo}${k2}`}
                             onClick={e => handleClickOnSvgRect(v2)}
-                            // onMouseLeave={this.handleLeaveOnSvgRect}
                             className="rect-22" 
                             x={k2} y={0} width={1} height={1} fill={ v2.value===2 ? "#ff4d4dee" : "#2b916933" } 
                             style={{ stroke: "#10ac8455", strokeWidth: 0.05, opacity: 0.9, }}>
@@ -69,7 +77,10 @@ const Row5 = ({ dataRow, rowNo, handleClickOnSvgRect }) => {
                                 {v2.startDate} ~ {v2.endDate}
                             </title>
                         </rect>
-                        <text x={k2+0.3} y={0.7} fill="white" font-size={0.6} >{ v2.value===2 ? v2.count : "" }</text>
+                        <text 
+                            onClick={e => handleClickOnSvgRect(v2)}
+                            x={k2+0.3} y={0.7} fill="white" font-size={0.6} >
+                            { v2.value===2 ? v2.count : "" }</text>
                     </g> 
                 )  
             else 
@@ -79,18 +90,25 @@ const Row5 = ({ dataRow, rowNo, handleClickOnSvgRect }) => {
                         className="rect-22" 
                         x={k2} y={0.5} width={1} height={0.01}
                         style={{ stroke: "#8395a711", strokeWidth: 0.05, opacity: 0.9 }}
-                        >
+                    >
                     </rect>
                 )
     })
+    const tips = months.map((v, k) => {
+
+    }) 
     let cWidth = 1000
     if(document.getElementById("gContainer")!==null)
-
         cWidth = document.getElementById("gContainer").offsetWidth-40
     return(
-        <svg viewBox={`0 0 ${46} ${1}`} style={{ width: cWidth, height: cWidth/46, cursor: "default" }}>
-            { rects }
-        </svg>
+        <Fragment>
+            <svg viewBox={`0 0 ${46} ${1}`} style={{ width: cWidth, height: cWidth/46, cursor: "default" }}>
+                
+            </svg>
+            <svg viewBox={`0 0 ${46} ${1}`} style={{ width: cWidth, height: cWidth/46, cursor: "default" }}>
+                { rects }
+            </svg>
+        </Fragment>
     )
 }
 

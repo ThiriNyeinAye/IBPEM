@@ -364,7 +364,7 @@ class Anormalies extends Component {
         const minorChartData = [data1, data2]
           
         return (
-            <div className="" style={{ overflow: 'hidden' }}>
+            <div className="" style={{ overflow: 'auto' }}>
                 <div className="d-flex flex-row flex-wrap flex-md-nowrap" >
 
                     <div className="d-flex flex-column flex-fill p-2" style={{ width: 400 }} ref={this.sidebarRef} >
