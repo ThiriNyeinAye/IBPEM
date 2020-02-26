@@ -13,7 +13,7 @@ export const LogoNavbar = props => {
                 <div className="px-3 h4"><i className="fas fa-bell"></i></div>
                 <div className="px-3 h5">
                     <SampleDropdown label={"Mary Silvestre"}
-                        additionalValue={["Other action", "Other action", "Other action",]}
+                        additionalValue={[""]}
                     />
                 </div>
             </div>
