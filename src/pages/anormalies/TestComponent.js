@@ -37,8 +37,8 @@ export default class TestComponent extends Component {
         
         const rows = data.map((v1,k1) => {
             return (
-                <div className="py-2 d-flex " id="gContainer" style={{ overflowX: "hide"}}>
-                    <div className="pr-2 pt-1">
+                <div key={k1} className="py-2 d-flex " id="gContainer" style={{ overflowX: "hide"}}>
+                    <div className="pr-2">
                         <small className="font-weight-bold text-secondary">{v1.year}</small>
                     </div>
                     <div>
@@ -61,15 +61,15 @@ const Row5Tip = ({ months }) => {
     const tips = months.map((v, k) => {
         if(v!==null) {
             return (
-                <g>
+                <g key={k}>
                     {/* Grid Line (vertical) */}
                     {/* <line x1={k} y1={0.8} x2={k} y2={6} style={{ strokeWidth: 0.01, stroke: "#8395a7" }}></line> */}
                     {/* Base Line */}
-                    <line key={k} x1={k} y1={0.8} x2={k+1} y2={0.8} style={{ strokeWidth: 0.03, stroke: "#8395a766" }}></line> 
+                    <line x1={k} y1={0.8} x2={k+1} y2={0.8} style={{ strokeWidth: 0.03, stroke: "#8395a766" }}></line> 
                     {/* Tip vertical line */}
-                    <line key={k} x1={k} y1={0.6} x2={k} y2={0.8} style={{ strokeWidth: 0.04, stroke: "#8395a766" }}></line>
+                    <line x1={k} y1={0.6} x2={k} y2={0.8} style={{ strokeWidth: 0.04, stroke: "#8395a766" }}></line>
                     {/* Tip label */}
-                    <text x={k} y={0.5} fill="#8395a7" font-size={0.5} >{v}</text>
+                    <text x={k} y={0.5} fill="#8395a7" fontSize={0.5} >{v}</text>
                 </g>
             )
         } else {
@@ -93,7 +93,7 @@ const Row5 = ({ dataRow, rowNo, handleClickOnSvgRect }) => {
     const rects = dataRow.map((v2, k2) => {
             if(v2.count>0) 
                 return (
-                    <g key={`${rowNo}${k2}`}>
+                    <g key={`$row5-{rowNo}${k2}`}>
                         <rect  
                             key={`${rowNo}${k2}`}
                             onClick={e => handleClickOnSvgRect(v2)}
@@ -106,7 +106,7 @@ const Row5 = ({ dataRow, rowNo, handleClickOnSvgRect }) => {
                         </rect>
                         <text 
                             onClick={e => handleClickOnSvgRect(v2)}
-                            x={k2+0.3} y={0.7} fill="white" font-size={0.6} >
+                            x={k2+0.3} y={0.7} fill="white" fontSize={0.6} >
                             { v2.value===2 ? v2.count : "" }</text>
                     </g> 
                 )  

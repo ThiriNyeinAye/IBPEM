@@ -33,7 +33,7 @@ const AnormalySidebar = props => {
     
     const outsideClicked = () => {
         const sidebarMenuIcon = document.getElementById("sidebarMenuIcon")
-        
+
     }
 
     return (
@@ -75,7 +75,7 @@ const AnormalySidebar = props => {
                         </div>
                     </div> */}
 
-                    <div className="p-3">
+                    {/* <div className="p-3">
                         <div className='p-2 d-flex flex-column shadow-lg rounded' style={{ backgroundColor: '#23c49e', lineHeight: 0 }}>
                             <div className='px-2 py-3 text-white font-weight-bold' >
                                 34 of 123 <span style={{ color: "#e0e5e0", fontWeight: 'normal' }}>Detections</span>
@@ -84,7 +84,7 @@ const AnormalySidebar = props => {
                                 <Progress color='success' value='34' style={{ height: 8 }} />
                             </div>
                         </div> 
-                    </div>
+                    </div> */}
 
                     { AnormalyView }
 
@@ -119,7 +119,7 @@ const AnormalyByTimeFrameItem = ({ selected = false, date = "", time = "", delet
                 </div>
                 <div className='d-flex flex-column pl-2'>
                     <div className='py-2 text-secondary' style={{ fontSize: 13, lineHeight: 0 }}>{date}</div>
-                    <div style={{ color: selected ? '#23c49e' : undefined }}>{time}</div>
+                    <div className="py-1 text-secondary font-weight-bold" style={{ color: selected ? '#23c49e' : undefined }}>{time}</div>
                 </div>
             </div>
             <div className=''>

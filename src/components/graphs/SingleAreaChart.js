@@ -269,8 +269,12 @@ class SingleAreaChart extends Component {
                 }
             },
             navigator: {
+                style: {
+                    backgroundColor: "red"
+                },  
                 top: 20,
                 series: {
+                    color: "#ff7777",
                     data: props.data,
                     type: 'column',
                     pointRange: undefined,
