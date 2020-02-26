@@ -190,7 +190,7 @@ class SingleAreaChart extends Component {
                     color: '#00BF8E'
                 },
                 lineColor: '#00BF8E',
-                spacing: [0, 0, 30, 0],
+                spacing: [60, 0, 0, 0],
                 zoomType: '', // removed by @nayhtet
                 type: 'area',
                 events: {
@@ -204,7 +204,6 @@ class SingleAreaChart extends Component {
                 split: 'true'
             },
             title: {
-                text: "My chart",
                 style: {
                     color: '#fff',
                     font: ' 16px "Trebuchet MS", Verdana, sans-serif',
@@ -270,6 +269,7 @@ class SingleAreaChart extends Component {
                 }
             },
             navigator: {
+                top: 20,
                 series: {
                     data: props.data,
                     type: 'column',

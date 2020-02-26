@@ -25,30 +25,24 @@ export default class TestComponent extends Component {
     }
 
     render() {
+        let startDate = moment().startOf('year')
+        let endDate = moment().endOf('year')
+        const months = []
+        while(startDate.isBefore(endDate)) {
+            const mname = startDate.format("MMM")
+            if(months.findIndex(v => v===mname)===-1) months.push(mname)
+            else months.push(null)
+            startDate = startDate.add(8, 'days')
+        }
         
         const rows = data.map((v1,k1) => {
-            const year = v1.year
-            let startDate = moment(`01-01-${year}`).startOf('year')
-            let endDate = moment(`01-01-${year}`).endOf('year')
-            const months = []
-            // console.log("startDate: \n", startDate.format("YYYY-MM-DD"), endDate.format("YYYY-MM-DD"))
-            while(startDate.isBefore(endDate)) {
-                const mname = startDate.format("MMM")
-                if(months.findIndex(v => v===mname)===-1)
-                    months.push(mname)
-                else {
-                    months.push(null)
-                }
-                startDate = startDate.add(8, 'days')
-            }
-            // console.log("months: ", months)
             return (
                 <div className="py-2 d-flex " id="gContainer" style={{ overflowX: "hide"}}>
                     <div className="pr-2 pt-1">
                         <small className="font-weight-bold text-secondary">{v1.year}</small>
                     </div>
                     <div>
-                        <Row5 months={months} dataRow={v1.data} rowNo={k1} handleClickOnSvgRect={this.handleClickOnSvgRect} />
+                        <Row5 dataRow={v1.data} rowNo={k1} handleClickOnSvgRect={this.handleClickOnSvgRect} />
                     </div>
                 </div>
             )
@@ -56,13 +50,46 @@ export default class TestComponent extends Component {
 
         return (
             <div className="rounded" style={{ overflowX: "hide"}}>
+                <Row5Tip months={months} />
                 {rows}
             </div>
         )
     }
 }
 
-const Row5 = ({ months, dataRow, rowNo, handleClickOnSvgRect }) => {
+const Row5Tip = ({ months }) => {
+    const tips = months.map((v, k) => {
+        if(v!==null) {
+            return (
+                <g>
+                    {/* Grid Line (vertical) */}
+                    {/* <line x1={k} y1={0.8} x2={k} y2={6} style={{ strokeWidth: 0.01, stroke: "#8395a7" }}></line> */}
+                    {/* Base Line */}
+                    <line key={k} x1={k} y1={0.8} x2={k+1} y2={0.8} style={{ strokeWidth: 0.03, stroke: "#8395a766" }}></line> 
+                    {/* Tip vertical line */}
+                    <line key={k} x1={k} y1={0.6} x2={k} y2={0.8} style={{ strokeWidth: 0.04, stroke: "#8395a766" }}></line>
+                    {/* Tip label */}
+                    <text x={k} y={0.5} fill="#8395a7" font-size={0.5} >{v}</text>
+                </g>
+            )
+        } else {
+            return <line key={k} x1={k} y1={0.8} x2={k+1} y2={0.8} style={{ strokeWidth: 0.03, stroke: "#8395a766" }}></line>
+        }
+    }) 
+    let cWidth = 1000
+    if(document.getElementById("gContainer")!==null)
+        cWidth = document.getElementById("gContainer").offsetWidth-50
+    return(
+        <div className="d-flex p-0 m-0" style={{ position: "relative" }}>
+            <div className="" style={{ height: 24 }}></div>
+            <svg viewBox={`0 0 ${46} ${6}`} style={{ width: cWidth, height: cWidth/(46/6), cursor: "default", position: 'absolute', left: 40, right: 0, top: 0, bottom: 0 }}>
+                { tips }
+            </svg>
+        </div>
+    )
+}
+
+const Row5 = ({ dataRow, rowNo, handleClickOnSvgRect }) => {
     const rects = dataRow.map((v2, k2) => {
             if(v2.count>0) 
                 return (
@@ -94,35 +121,14 @@ const Row5 = ({ months, dataRow, rowNo, handleClickOnSvgRect }) => {
                     </rect>
                 )
     })
-    const tips = months.map((v, k) => {
-        if(v!==null) {
-            return (
-                <g>
-                    {/* Base Line */}
-                    <line key={k} x1={k} y1={0.8} x2={k+1} y2={0.8} style={{ strokeWidth: 0.03, stroke: "#8395a766" }}></line> 
-                    {/* Tip vertical line */}
-                    <line key={k} x1={k} y1={0.6} x2={k} y2={0.8} style={{ strokeWidth: 0.04, stroke: "#8395a766" }}></line>
-                    {/* Tip label */}
-                    <text 
-                        x={k} y={0.5} fill="#8395a7" font-size={0.5} >{v}</text>
-                </g>
-            )
-        } else {
-            return <line key={k} x1={k} y1={0.8} x2={k+1} y2={0.8} style={{ strokeWidth: 0.03, stroke: "#8395a766" }}></line>
-        }
-    }) 
+
     let cWidth = 1000
     if(document.getElementById("gContainer")!==null)
         cWidth = document.getElementById("gContainer").offsetWidth-50
     return(
-        <Fragment>
-            <svg viewBox={`0 0 ${46} ${1}`} style={{ width: cWidth, height: cWidth/46, cursor: "default" }}>
-                { tips }
-            </svg>
-            <svg viewBox={`0 0 ${46} ${1}`} style={{ width: cWidth, height: cWidth/46, cursor: "default" }}>
-                { rects }
-            </svg>
-        </Fragment>
+        <svg viewBox={`0 0 ${46} ${1}`} style={{ width: cWidth, height: cWidth/46, cursor: "default" }}>
+            { rects }
+        </svg>
     )
 }
 
