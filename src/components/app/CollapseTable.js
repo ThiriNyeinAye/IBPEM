@@ -2,9 +2,8 @@ import React, { useState, Fragment, useEffect } from "react";
 import SingleAreaChart from "../../components/graphs/SingleAreaChart.js";
 
 const CollapseTable = props => {
-  // const [expand, setExpand] = useState(false)
-  const { data = [], FilteronChangeValue, HistoryTableData } = props;
-
+  const { data = [], FilteronChangeValue, HistoryTableData ,} = props;
+  
   return (
     <div className="table-responsive ">
       <table
@@ -42,20 +41,15 @@ const CollapseTable = props => {
         </thead>
         <tbody>
           {HistoryTableData.map((v, k) => {
-            //    let SortedData =[v]
-            //  const filter={ ...SortedData.filter(c => c.LabelledBy === FilteronChangeValue) }
-            //  console.log(filter)
             return (
               <Row
                 data={data}
-                history={/*FilteronChangeValue.length > 0 ? filter :*/ v}
+                history={ v}
                 key={k}
+                
               />
             );
           })}
-          {/* <Row data={data} />
-                    <Row data={data} />
-                    <Row data={data} />  */}
         </tbody>
       </table>
     </div>
@@ -63,22 +57,23 @@ const CollapseTable = props => {
 };
 
 const Row = props => {
-  const [expand, setExpand] = useState(false);
-  const { data, history } = props;
+   const [expand, setExpand] = useState(false);
+  const { data, history} = props;
+ 
   return (
     <Fragment>
-      <TableRow expand={expand} setExpand={setExpand} history={history} />
+      <TableRow expand={expand} setExpand={setExpand} history={history}/>
       <ExpandedRow expand={expand} data={data} />
     </Fragment>
   );
 };
 
 const TableRow = ({ expand, setExpand, history }) => {
-  // console.log(history)
+  const clickRow = ()=> setExpand(!expand)  
   return (
     <tr
-      className=""
-      style={{ background: "#f5f5f5", borderBottom: "1px solid red" }}
+      style={{ background: "#f5f5f5", borderBottom: "1px solid red",cursor:'pointer' }}
+      onClick={clickRow}
     >
       <td
         className="py-3 px-2"
@@ -131,12 +126,8 @@ const TableRow = ({ expand, setExpand, history }) => {
             display: "inline-block",
             background: "#FEFEFE"
           }}
-          onClick={() => setExpand(!expand)}
         >
-          <span className="">
-            {" "}
-            <i className={`fas fa-chevron-${expand ? "up" : "down"}`} />
-          </span>
+          <span className="">  <i className={`fas fa-chevron-${expand ? "up" : "down"}`} />   </span>
         </div>
       </td>
     </tr>
@@ -145,14 +136,10 @@ const TableRow = ({ expand, setExpand, history }) => {
 
 const ExpandedRow = ({ expand, data }) => {
   return (
-    <tr>
-      <td colSpan={7}>
-        <div
-          className={`p-3 collapse ${
-            expand ? `show` : `none`
-          } border my-1 bg-white rounded `}
-        >
-          <SingleAreaChart data={data} />
+    <tr >
+      <td colSpan={7} >
+        <div className={`p-3 collapse ${ expand && `show` } border my-1 bg-white rounded `}>
+          <SingleAreaChart data={data } />
         </div>
       </td>
     </tr>

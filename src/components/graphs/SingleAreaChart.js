@@ -154,9 +154,9 @@ class SingleAreaChart extends Component {
 
         return (
             <div className="">
-                {/* <div>{JSON.stringify(this.state.monitorText)} </div> */}
-                <HighchartsReact ref={this.chartRef} highcharts={Highcharts} constructorType={"stockChart"} options={this.state.options} />
-            </div>
+            {/* <div>{JSON.stringify(this.state.monitorText)} </div> */}
+            <HighchartsReact ref={this.chartRef} highcharts={Highcharts} constructorType={"stockChart"} options={this.state.options} containerProps={{ className: "" }} />
+         </div>
         )
 
 
@@ -211,6 +211,8 @@ class SingleAreaChart extends Component {
             },
             yAxis: [
                 {
+                    min: this.props.data.map(v => v[1]).reduce((r,c) => c<r ? c : r ,0),
+                    max: this.props.data.map(v => v[1]).reduce((r,c) => c>r ? c : r ,0),
                     labels: {
                         align: 'right',
                         x: 4
