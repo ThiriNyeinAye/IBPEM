@@ -138,16 +138,19 @@ class Anormalies extends Component {
             const anoDivStyle = document.getElementById("anomalyDivContainer").style
             const sidebarMenuIcon = document.getElementById("sidebarMenuIcon")
 
-            if(windowWidth < 993 && sidebarMenuIcon.style.display !== "block") {                
-                sidebarStyle.position = "fixed"
+            if(windowWidth < 1200 && sidebarMenuIcon.style.display !== "block") {                
+                sidebarStyle.position = "absolute"
                 sidebarStyle.zIndex = 1000
-                sidebarStyle.left = "-240px"
+                sidebarStyle.left = "-340px"
                 sidebarStyle.top = "0px"
+                // sidebarStyle.bottom = "0px"
+                console.log(document.body.style)
         
                 anoDivStyle.paddingLeft = "60px"
                 sidebarMenuIcon.style.display = "block"
                 sidebarMenuIcon.onclick = e => {
-                    sidebarStyle.left = sidebarStyle.left==="0px" ? "-240px" : "0px"
+                    sidebarStyle.left = sidebarStyle.left==="0px" ? "-340px" : "0px"
+                    anoDivStyle.opacity = sidebarStyle.left==="0px" ? 0.1 : 1
                 }
                 // this.sidebarRef.current.onclick = e => {
                 //     console.log("targetId: ", e.target.id)
@@ -158,7 +161,7 @@ class Anormalies extends Component {
                 //     }
                 // }
             } 
-            // else if(windowWidth < 993 && sidebarMenuIcon.style.display !== "block") {
+            // else if(windowWidth < 1200 && sidebarMenuIcon.style.display !== "block") {
                 
             // } 
             else if(windowWidth > 992){ 
@@ -167,6 +170,7 @@ class Anormalies extends Component {
                 sidebarStyle.left = "0px"
         
                 anoDivStyle.paddingLeft = "8px"
+                anoDivStyle.opacity = 1
                 sidebarMenuIcon.style.display = "none"
             }
         }
@@ -332,7 +336,7 @@ class Anormalies extends Component {
             <div className="" style={{ overflow: 'hidden' }}>
                 <div className="d-flex flex-row flex-wrap flex-md-nowrap" >
 
-                    <div className="d-flex flex-column flex-fill p-2" style={{ minWidth: '300px' }} ref={this.sidebarRef} >
+                    <div className="d-flex flex-column flex-fill p-2" style={{ width: 400 }} ref={this.sidebarRef} >
                         <AnormalySidebar
                             anomalyDataByEquipment={anomalyDataByEquipment}
                             handleAnomalyTimeClicked={this.handleAnomalyTimeClicked} />

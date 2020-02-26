@@ -1,16 +1,21 @@
 import React, { useState } from "react";
+import onClickOutside from "react-onclickoutside";
 
-export const DropDown = props => {
-  const [inputData,setInputData]  = useState('')
+var clickOutsideConfig = {
+  handleClickOutside: () => DropDown.handleClickOutsideDropDown
+};
+
+export const DropDown = onClickOutside(props => {
+  const [inputData, setInputData] = useState('')
   const [menuShow, setMenuShow] = useState(false)
   const [Open, setOpen] = useState(false)
   const { label, defaultValue, additionalValue, onDropDownItemClicked, dataType } = props;
-  const defaultValueData = defaultValue[dataType].reduce((r,c) => `${r}${c}`,"")
+  const defaultValueData = defaultValue[dataType].reduce((r, c) => `${r}${c}`, "")
 
-  const url="http://192.168.100.27:3003/addlabel"
+  const url = "http://192.168.100.27:3003/addlabel"
 
   const handleAddData = e => {
-    const data = {"faultType": inputData };
+    const data = { "faultType": inputData };
     fetch(url, {
       method: "POST",
       headers: {
@@ -18,19 +23,27 @@ export const DropDown = props => {
       },
       body: JSON.stringify(data)
     })
-    .then(res => res.json())
+      .then(res => res.json())
     console.log("Custom data>>", data)
     window.location.reload();
   }
- 
+
   const handleChange = e => {
     setInputData(e.target.value)
   }
 
+  DropDown.handleClickOutsideDropDown = (e) => {
+    // console.log("dddddddddddd outside: ", e.target.id)
+    return setMenuShow(false)
+  }
 
+  // console.log("props: ", props)
+  // props.handleClickOutside = e => {
+  //   console.log("outside clicked e : ", e)
+  // }
 
   return (
-    <div className=" d-flex flex-row p-1" style={{ minWidth: 100 }}>
+    <div className=" d-flex flex-row p-1" id={dataType.replace(" ", "_")} style={{ minWidth: 100 }}>
       <div className="dropdown border rounded">
         <div className="d-flex align-items-center justify-content-between w-100" /*data-toggle="dropdown"*/ onClick={e => setMenuShow(!menuShow)}>
           <div className="d-flex flex-row align-items-center">
@@ -43,39 +56,39 @@ export const DropDown = props => {
         </div>
         <div className={`dropdown-menu ${menuShow ? 'show' : ''}`} >
           {
-            additionalValue.map((v, k) => v==='Add custom'? 
+            additionalValue.map((v, k) => v === 'Add custom' ?
               <div key={k} >
-                <hr /> 
-                <div className="dropdown-item pb-3" onClick={e => Open? setOpen(false) : setOpen(true)} style={{ cursor: 'pointer' }}>{v}</div>
+                <hr />
+                <div className="dropdown-item pb-3" onClick={e => Open ? setOpen(false) : setOpen(true)} style={{ cursor: 'pointer' }}>{v}</div>
                 {Open && (
                   <div className="container">
                     <input type="text" className="w-100" onChange={handleChange} autoFocus></input>
-                    <div className="btn btn-sm btn-block my-1" style={{backgroundColor: '#20b390', color: '#ffffff'}} onClick={e =>{handleAddData(); setOpen(false)}}>ADD</div>
+                    <div className="btn btn-sm btn-block my-1" style={{ backgroundColor: '#20b390', color: '#ffffff' }} onClick={e => { handleAddData(); setOpen(false) }}>ADD</div>
                   </div>
                 )}
-                
-              </div> 
-             : 
-              <div key={k} className={`dropdown-item ${defaultValue[dataType].findIndex(v1=>v1===v)>-1 ? 'bg-success text-light' : ''}`} onClick={e=> { onDropDownItemClicked(v, dataType); setMenuShow(false)}} style={{ cursor: 'pointer' }} >{v}</div>
+
+              </div>
+              :
+              <div key={k} className={`dropdown-item ${defaultValue[dataType].findIndex(v1 => v1 === v) > -1 ? 'bg-success text-light' : ''}`} onClick={e => { onDropDownItemClicked(v, dataType); setMenuShow(false) }} style={{ cursor: 'pointer' }} >{v}</div>
             )}
         </div>
       </div>
     </div>
   );
-};
+}, clickOutsideConfig);
 
 export const DropDownBlock = props => {
   const { label, defaultValue, additionalValue, showEditAllDropdown = false, onDropDownItemClicked, dataType } = props;
-  const defaultValueData = defaultValue[dataType].reduce((r,c) => `${r} ${c}`,"")
+  const defaultValueData = defaultValue[dataType].reduce((r, c) => `${r} ${c}`, "")
 
-    const [inputData,setInputData]  = useState('')
+  const [inputData, setInputData] = useState('')
   const [menuShow, setMenuShow] = useState(false)
   const [Open, setOpen] = useState(false)
 
-  const url="http://192.168.100.27:3003/addlabel"
+  const url = "http://192.168.100.27:3003/addlabel"
 
   const handleAddData = e => {
-    const data = {"faultType": inputData };
+    const data = { "faultType": inputData };
     fetch(url, {
       method: "POST",
       headers: {
@@ -83,11 +96,11 @@ export const DropDownBlock = props => {
       },
       body: JSON.stringify(data)
     })
-    .then(res => res.json())
+      .then(res => res.json())
     console.log("Custom data>>", data)
     window.location.reload();
   }
- 
+
   const handleChange = e => {
     setInputData(e.target.value)
   }
@@ -105,21 +118,21 @@ export const DropDownBlock = props => {
           <span className="btn dropdown-toggle px-3"> {defaultValueData} </span>
         </div>
         <div className={`dropdown-menu w-100 ${showEditAllDropdown && "show"}`} style={showEditAllDropdown ? customDropdownMenuStyle : {}}>
-        {
-            additionalValue.map((v, k) => v==='Add custom'? 
+          {
+            additionalValue.map((v, k) => v === 'Add custom' ?
               <div key={k}>
-                <hr /> 
-                <div className="dropdown-item pb-3" onClick={e => Open? setOpen(false) : setOpen(true)} style={{ cursor: 'pointer' }}>{v}</div>
+                <hr />
+                <div className="dropdown-item pb-3" onClick={e => Open ? setOpen(false) : setOpen(true)} style={{ cursor: 'pointer' }}>{v}</div>
                 {Open && (
                   <div className="container">
                     <input type="text" className="w-100" onChange={handleChange} autoFocus></input>
-                    <div className="btn btn-sm btn-block my-1" style={{backgroundColor: '#20b390', color: '#ffffff'}} onClick={e =>{handleAddData(); setOpen(false)}}>ADD</div>
+                    <div className="btn btn-sm btn-block my-1" style={{ backgroundColor: '#20b390', color: '#ffffff' }} onClick={e => { handleAddData(); setOpen(false) }}>ADD</div>
                   </div>
                 )}
-                
-              </div> 
-             : 
-              <div key={k} className={`dropdown-item ${defaultValue[dataType].findIndex(v1=>v1===v)>-1 ? 'bg-success text-light' : ''}`} onClick={e=> { onDropDownItemClicked(v, dataType); setMenuShow(false)}} style={{ cursor: 'pointer' }} >{v}</div>
+
+              </div>
+              :
+              <div key={k} className={`dropdown-item ${defaultValue[dataType].findIndex(v1 => v1 === v) > -1 ? 'bg-success text-light' : ''}`} onClick={e => { onDropDownItemClicked(v, dataType); setMenuShow(false) }} style={{ cursor: 'pointer' }} >{v}</div>
             )}
         </div>
       </div>
@@ -157,7 +170,7 @@ export const SampleDropdown = props => {
       </div>
       <div className="dropdown-menu py-0">
         {additionalValue.map((v, k) => ([
-          <div key={k} className="dropdown-item my-2" style={{ cursor: 'pointer', borderBottom: "1px solid #a5a5a5" }} onClick={()=>null}>{v}</div>,
+          <div key={k} className="dropdown-item my-2" style={{ cursor: 'pointer', borderBottom: "1px solid #a5a5a5" }} onClick={() => null}>{v}</div>,
           // <div key={v} className="dropdown-divider my-0" />
         ])
         )}

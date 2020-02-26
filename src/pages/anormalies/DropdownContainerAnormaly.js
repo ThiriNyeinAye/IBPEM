@@ -21,7 +21,6 @@ const DropdownContainerAnormaly = props => {
     const [data,setData]=useState()
     const [addCustom] =["Add custom"]
 
-    DropdownContainerAnormaly.handleClickOutside = () => setShowEditAllDropdown(false)
 
     const showGraphClick = (e, g) => {
         setdropdownHandler(false)
@@ -83,57 +82,67 @@ const DropdownContainerAnormaly = props => {
                         onDropDownItemClicked={onAnormalyInputChanged}
                         label={"FAULT TYPE"}
                         dataType={"faultType"}
-                        defaultValue={anomalyInputData/*"Refregerant Lean"*/}
+                        defaultValue={anomalyInputData}
                         additionalValue={FaultTypeLabel} />
                     <DropDown
                         onDropDownItemClicked={onAnormalyInputChanged}
                         label={"SEVERITY"}
                         dataType={"severity"}
-                        defaultValue={anomalyInputData/*"Low"*/}
+                        defaultValue={anomalyInputData}
                         additionalValue={severityLabel} />
-                    <DropDown
+                    {/* <DropDown
                         onDropDownItemClicked={onAnormalyInputChanged}
                         label={"SENSOR SIGNAL"}
                         dataType={"sensorSignal"}
-                        defaultValue={anomalyInputData/*"Plant EMG"*/}
-                        additionalValue={sensorSignalLabel} />
+                        defaultValue={anomalyInputData}
+                        additionalValue={sensorSignalLabel} /> */}
+
                     <div className='d-flex flex-column justify-content-center'>
                         <div className="btn" onClick={e => { e.stopPropagation(); return setShowEditAllDropdown(true) }}>Edit All <i className="fa fa-caret-down" /></div>
                     </div>
                 </div>
                 {showEditAllDropdown &&
+                    <EditAllDropdown 
+                        onAnormalyInputChanged={onAnormalyInputChanged}
+                        anomalyInputData={anomalyInputData}
+                        FaultTypeLabel={FaultTypeLabel}
+                        showEditAllDropdown={showEditAllDropdown}
+                        setShowEditAllDropdown={setShowEditAllDropdown}
+                        severityLabel={severityLabel}
+                        sensorSignalLabel={sensorSignalLabel}
+                    />
                     // d-flex flex-lg-nowrap flex-wrap row
-                    <div className="" style={{ position: "absolute", left: 0, right: 0, top: 0, zIndex: 20, }} onClick={e => e.stopPropagation()}>
-                        <div className="d-flex flex-lg-nowrap flex-wrap justify-content-start bg-white border bg-white rounded">
-                            <div className="bg-white ">
-                                <DropDownBlock
-                                    onDropDownItemClicked={onAnormalyInputChanged}
-                                    label={"FAULT TYPE"}
-                                    dataType={"faultType"}
-                                    defaultValue={anomalyInputData/*"Refregerant Lean"*/}
-                                    additionalValue={FaultTypeLabel}
-                                    showEditAllDropdown={showEditAllDropdown} />
-                            </div>
-                            <div className="bg-white border border-top-0 border-bottom-0 ">
-                                <DropDownBlock
-                                    onDropDownItemClicked={onAnormalyInputChanged}
-                                    label={"SEVRITY"}
-                                    dataType={"severity"}
-                                    defaultValue={anomalyInputData/*"Low"*/}
-                                    additionalValue={severityLabel}
-                                    showEditAllDropdown={showEditAllDropdown} />
-                            </div>
-                            <div className="bg-white ">
-                                <DropDownBlock
-                                    onDropDownItemClicked={onAnormalyInputChanged}
-                                    label={"SENSOR SIGNAL"}
-                                    dataType={"sensorSignal"}
-                                    defaultValue={anomalyInputData/*"Plant EMG"*/}
-                                    additionalValue={sensorSignalLabel}
-                                    showEditAllDropdown={showEditAllDropdown} />
-                            </div>
-                        </div>
-                    </div>
+                    // <div className="" style={{ position: "absolute", left: 0, right: 0, top: 0, zIndex: 20, }} onClick={e => e.stopPropagation()}>
+                    //     <div className="d-flex flex-lg-nowrap flex-wrap justify-content-start bg-white border bg-white rounded">
+                    //         <div className="bg-white ">
+                    //             <DropDownBlock
+                    //                 onDropDownItemClicked={onAnormalyInputChanged}
+                    //                 label={"FAULT TYPE"}
+                    //                 dataType={"faultType"}
+                    //                 defaultValue={anomalyInputData/*"Refregerant Lean"*/}
+                    //                 additionalValue={FaultTypeLabel}
+                    //                 showEditAllDropdown={showEditAllDropdown} />
+                    //         </div>
+                    //         <div className="bg-white border border-top-0 border-bottom-0 ">
+                    //             <DropDownBlock
+                    //                 onDropDownItemClicked={onAnormalyInputChanged}
+                    //                 label={"SEVRITY"}
+                    //                 dataType={"severity"}
+                    //                 defaultValue={anomalyInputData/*"Low"*/}
+                    //                 additionalValue={severityLabel}
+                    //                 showEditAllDropdown={showEditAllDropdown} />
+                    //         </div>
+                    //         <div className="bg-white ">
+                    //             <DropDownBlock
+                    //                 onDropDownItemClicked={onAnormalyInputChanged}
+                    //                 label={"SENSOR SIGNAL"}
+                    //                 dataType={"sensorSignal"}
+                    //                 defaultValue={anomalyInputData/*"Plant EMG"*/}
+                    //                 additionalValue={sensorSignalLabel}
+                    //                 showEditAllDropdown={showEditAllDropdown} />
+                    //         </div>
+                    //     </div>
+                    // </div>
                 }
             </div>
 
@@ -204,12 +213,52 @@ const DropdownContainerAnormaly = props => {
     )
 }
 
+export default DropdownContainerAnormaly
+
 const clickOutsideConfig = {
-    handleClickOutside: () => DropdownContainerAnormaly.handleClickOutside
-  };
+    handleClickOutside: () => EditAllDropdown.handleClickOutsideEditAll
+};
 
-export default onClickOutside(DropdownContainerAnormaly, clickOutsideConfig)
-
-
-
-
+const EditAllDropdown = onClickOutside( ({ 
+    onAnormalyInputChanged, 
+    anomalyInputData, 
+    FaultTypeLabel, 
+    severityLabel,
+    sensorSignalLabel,
+    showEditAllDropdown, 
+    setShowEditAllDropdown }) => {
+    EditAllDropdown.handleClickOutsideEditAll = () => setShowEditAllDropdown(false)
+    return (
+        <div className="" style={{ position: "absolute", left: 0, right: 0, top: 0, zIndex: 20, }} onClick={e => e.stopPropagation()}>
+            <div className="d-flex flex-lg-nowrap flex-wrap justify-content-start bg-white border bg-white rounded">
+                <div className="bg-white ">
+                    <DropDownBlock
+                        onDropDownItemClicked={onAnormalyInputChanged}
+                        label={"FAULT TYPE"}
+                        dataType={"faultType"}
+                        defaultValue={anomalyInputData/*"Refregerant Lean"*/}
+                        additionalValue={FaultTypeLabel}
+                        showEditAllDropdown={showEditAllDropdown} />
+                </div>
+                <div className="bg-white border border-top-0 border-bottom-0 ">
+                    <DropDownBlock
+                        onDropDownItemClicked={onAnormalyInputChanged}
+                        label={"SEVRITY"}
+                        dataType={"severity"}
+                        defaultValue={anomalyInputData/*"Low"*/}
+                        additionalValue={severityLabel}
+                        showEditAllDropdown={showEditAllDropdown} />
+                </div>
+                <div className="bg-white ">
+                    <DropDownBlock
+                        onDropDownItemClicked={onAnormalyInputChanged}
+                        label={"SENSOR SIGNAL"}
+                        dataType={"sensorSignal"}
+                        defaultValue={anomalyInputData/*"Plant EMG"*/}
+                        additionalValue={sensorSignalLabel}
+                        showEditAllDropdown={showEditAllDropdown} />
+                </div>
+            </div>
+        </div>
+    )
+}, clickOutsideConfig)
