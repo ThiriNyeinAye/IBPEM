@@ -211,6 +211,8 @@ class SingleAreaChart extends Component {
             },
             yAxis: [
                 {
+                    min: this.props.data.map(v => v[1]).reduce((r,c) => c<r ? c : r ,0),
+                    max: this.props.data.map(v => v[1]).reduce((r,c) => c>r ? c : r ,0),
                     labels: {
                         align: 'right',
                         x: 4
