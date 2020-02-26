@@ -13,14 +13,14 @@ export default class TestComponent extends Component {
 
     }
 
-    handleHoverOnSvgRect = e => {
-        e.preventDefault()
-        // console.log("hover : ", e)
-        alert("clicked")
-    }
-
-    handleHoverOnSvgRect = e => {
-        alert("Clicked")
+    handleClickOnSvgRect = value => {
+        const value1 = {
+            startDate: value.startDate,
+            endDate: value.endDate,
+            dataState: value.value,
+            dataCount: value.count,
+        }
+        alert(JSON.stringify(value1, null, 2))
     }
 
     render() {
@@ -34,7 +34,7 @@ export default class TestComponent extends Component {
                         {v1.year}
                     </div>
                     <div style={{ overflowX: "auto"}}>
-                        <Row5 dataRow={v1.data} rowNo={k1} handleHoverOnSvgRect={this.handleHoverOnSvgRect} />
+                        <Row5 dataRow={v1.data} rowNo={k1} handleClickOnSvgRect={this.handleClickOnSvgRect} />
                     </div>
                 </div>
             )
@@ -53,23 +53,23 @@ export default class TestComponent extends Component {
     }
 }
 
-const Row5 = ({ dataRow, rowNo, handleHoverOnSvgRect }) => {
+const Row5 = ({ dataRow, rowNo, handleClickOnSvgRect }) => {
     const rects = dataRow.map((v2, k2) => {
             if(v2.count>0) 
                 return (
                     <g>
                         <rect  
                             key={`${rowNo}${k2}`}
-                            onClick={handleHoverOnSvgRect}
+                            onClick={e => handleClickOnSvgRect(v2)}
                             // onMouseLeave={this.handleLeaveOnSvgRect}
                             className="rect-22" 
                             x={k2} y={0} width={1} height={1} fill={ v2.value===2 ? "#ff4d4dee" : "#2b916933" } 
-                            style={{ stroke: "#10ac8455", strokeWidth: 0.05, opacity: 0.9 }}>
+                            style={{ stroke: "#10ac8455", strokeWidth: 0.05, opacity: 0.9, }}>
                             <title>
                                 {v2.startDate} ~ {v2.endDate}
                             </title>
                         </rect>
-                        <text x={k2+0.3} y={0.7} fill="white" font-size={0.6}>{ v2.value===2 ? v2.count : "" }</text>
+                        <text x={k2+0.3} y={0.7} fill="white" font-size={0.6} >{ v2.value===2 ? v2.count : "" }</text>
                     </g> 
                 )  
             else 
@@ -78,7 +78,7 @@ const Row5 = ({ dataRow, rowNo, handleHoverOnSvgRect }) => {
                         key={`${rowNo}${k2}`}
                         className="rect-22" 
                         x={k2} y={0.5} width={1} height={0.01}
-                        style={{ stroke: "#8395a744", strokeWidth: 0.05, opacity: 0.9 }}
+                        style={{ stroke: "#8395a711", strokeWidth: 0.05, opacity: 0.9 }}
                         >
                     </rect>
                 )
@@ -88,7 +88,7 @@ const Row5 = ({ dataRow, rowNo, handleHoverOnSvgRect }) => {
 
         cWidth = document.getElementById("gContainer").offsetWidth-40
     return(
-        <svg viewBox={`0 0 ${46} ${1}`} style={{ width: cWidth, height: cWidth/46 }}>
+        <svg viewBox={`0 0 ${46} ${1}`} style={{ width: cWidth, height: cWidth/46, cursor: "default" }}>
             { rects }
         </svg>
     )
