@@ -161,20 +161,19 @@ class Anormalies extends Component {
             const sidebarStyle = this.sidebarRef.current.style
             const anoDivStyle = document.getElementById("anomalyDivContainer").style
             const sidebarMenuIcon = document.getElementById("sidebarMenuIcon")
+            const sidebarRestDiv = document.getElementById("dropdown-sidebar-rest").style
 
             if(windowWidth <= 1200 && sidebarMenuIcon.style.display !== "block") {                
                 sidebarStyle.position = "absolute"
                 sidebarStyle.zIndex = 1000
                 sidebarStyle.left = "-340px"
                 sidebarStyle.top = "0px"
-                // sidebarStyle.bottom = "0px"
-                console.log(document.body.style)
         
                 anoDivStyle.paddingLeft = "60px"
                 sidebarMenuIcon.style.display = "block"
                 sidebarMenuIcon.onclick = e => {
                     sidebarStyle.left = sidebarStyle.left==="0px" ? "-340px" : "0px"
-                    anoDivStyle.opacity = sidebarStyle.left==="0px" ? 0.1 : 1
+                    sidebarRestDiv.display = sidebarStyle.left==="0px" ? "block" : "none"
                 }
             } 
             else if(windowWidth > 1200){ 
@@ -183,7 +182,6 @@ class Anormalies extends Component {
                 sidebarStyle.left = "0px"
         
                 anoDivStyle.paddingLeft = "8px"
-                anoDivStyle.opacity = 1
                 sidebarMenuIcon.style.display = "none"
             }
         }
@@ -354,14 +352,28 @@ class Anormalies extends Component {
           
         return (
             <div className="" style={{ overflow: 'auto' }}>
-                <div className="d-flex flex-row flex-wrap flex-md-nowrap" >
+                <div 
+                    onClick={e => {
+                        const sidebarStyle = document.getElementById("sidebarContainer").style
+                        const sidebarMenuIcon = document.getElementById("sidebarMenuIcon")
+                        const sidebarRestDiv = document.getElementById("dropdown-sidebar-rest").style
+                        if(sidebarMenuIcon.style.display === "block" && sidebarStyle.left==="0px") {
+                            sidebarStyle.left = "-340px"
+                            sidebarRestDiv.display = "none"
+                        } 
+                    }}
+                    id="dropdown-sidebar-rest"
+                    style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, backgroundColor: "#00000099", zIndex: 100, display: "none" }}>
 
-                    <div className="d-flex flex-column flex-fill p-2" style={{ width: 400 }} ref={this.sidebarRef} >
+                </div>
+                <div className="d-flex flex-row flex-wrap flex-md-nowrap" >
+                    
+                    <div className="d-flex flex-column flex-fill p-2" style={{ width: 400, zIndex: 101 }} id="sidebarContainer" ref={this.sidebarRef} >
                         <AnormalySidebar
                             anomalyDataByEquipment={anomalyDataByEquipment}
                             handleAnomalyTimeClicked={this.handleAnomalyTimeClicked} />
                     </div>
-                    
+
                     <DialogNewAnormaly onSubmitAnomaly={this.onSubmitAnomaly} />
                     
                     <div id="anomalyDivContainer" className="container-fluid ">
