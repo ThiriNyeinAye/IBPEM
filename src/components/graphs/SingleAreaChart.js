@@ -154,9 +154,9 @@ class SingleAreaChart extends Component {
 
         return (
             <div className="">
-            {/* <div>{JSON.stringify(this.state.monitorText)} </div> */}
-            <HighchartsReact ref={this.chartRef} highcharts={Highcharts} constructorType={"stockChart"} options={this.state.options} containerProps={{ className: "" }} />
-         </div>
+                {/* <div>{JSON.stringify(this.state.monitorText)} </div> */}
+                <HighchartsReact ref={this.chartRef} highcharts={Highcharts} constructorType={"stockChart"} options={this.state.options} containerProps={{ className: "py-4" }} />
+            </div>
         )
 
 
@@ -185,12 +185,8 @@ class SingleAreaChart extends Component {
                 enabled: false
             },
             chart: {
-                style: {
-                    marginBottom: 10,
-                    color: '#00BF8E'
-                },
                 lineColor: '#00BF8E',
-                spacing: [60, 0, 0, 0],
+                spacing: [120, 0, -80, 0],
                 zoomType: '', // removed by @nayhtet
                 type: 'area',
                 events: {
@@ -218,7 +214,7 @@ class SingleAreaChart extends Component {
                         x: 4
                     },
                     title: {
-                        text: 'Temperature (Â°C)',
+                        text: 'Temperature (°C)',
                         style: {
                             color: '#000'
                         },
@@ -274,7 +270,7 @@ class SingleAreaChart extends Component {
                 style: {
                     backgroundColor: "red"
                 },  
-                top: 20,
+                top: 10,
                 series: {
                     color: "#ff7777",
                     data: props.data,
@@ -313,7 +309,7 @@ class SingleAreaChart extends Component {
                 name: 'Temperature',
                 data: props.data,//.filter((v,i) => i>30),
                 tooltip: {
-                    valueSuffix: 'Â°C'
+                    valueSuffix: '°C'
                 },
                 turboThreshold: 0,
             }]
