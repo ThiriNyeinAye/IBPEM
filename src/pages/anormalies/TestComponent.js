@@ -37,7 +37,7 @@ export default class TestComponent extends Component {
         
         const rows = data.map((v1,k1) => {
             return (
-                <div key={k1} className="py-2 d-flex " id="gContainer" style={{ overflowX: "hide"}}>
+                <div key={k1} className="py-2 d-flex " style={{ overflowX: "hide", }}>
                     <div className="pr-2">
                         <small className="font-weight-bold text-secondary">{v1.year}</small>
                     </div>
@@ -49,7 +49,7 @@ export default class TestComponent extends Component {
         })
 
         return (
-            <div className="rounded" style={{ overflowX: "hide"}}>
+            <div className="rounded" id="gContainer" style={{ overflowX: "hide"}}>
                 <Row5Tip months={months} />
                 {rows}
             </div>
@@ -80,7 +80,7 @@ const Row5Tip = ({ months }) => {
     if(document.getElementById("gContainer")!==null)
         cWidth = document.getElementById("gContainer").offsetWidth-50
     return(
-        <div className="d-flex p-0 m-0" style={{ position: "relative" }}>
+        <div className="d-flex p-0 m-0" style={{ position: "relative", zIndex: -1 }}>
             <div className="" style={{ height: 24 }}></div>
             <svg viewBox={`0 0 ${46} ${6}`} style={{ width: cWidth, height: cWidth/(46/6), cursor: "default", position: 'absolute', left: 40, right: 0, top: 0, bottom: 0 }}>
                 { tips }
@@ -126,7 +126,7 @@ const Row5 = ({ dataRow, rowNo, handleClickOnSvgRect }) => {
     if(document.getElementById("gContainer")!==null)
         cWidth = document.getElementById("gContainer").offsetWidth-50
     return(
-        <svg viewBox={`0 0 ${46} ${1}`} style={{ width: cWidth, height: cWidth/46, cursor: "default" }}>
+        <svg viewBox={`0 0 ${46} ${1}`} style={{ width: cWidth, height: cWidth/46, cursor: "default", }}>
             { rects }
         </svg>
     )

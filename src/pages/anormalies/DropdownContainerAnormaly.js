@@ -79,7 +79,7 @@ const DropdownContainerAnormaly = props => {
             <div className="d-flex flex-column" style={{ position: "relative" }}>
                 <NormalDropDownView anomalyInputData={anomalyInputData} onAnormalyInputChanged={onAnormalyInputChanged} setShowEditAllDropdown={setShowEditAllDropdown} />
                
-     {showEditAllDropdown &&
+                        {showEditAllDropdown &&
                         <div className="" style={{ position: "absolute", left: 0, right: 0, top: 0, zIndex: 20, }} onClick={e => {e.stopPropagation()}}>
                        <AllDropdownBlockView anomalyInputData={anomalyInputData} onAnormalyInputChanged={onAnormalyInputChanged} showEditAllDropdown={showEditAllDropdown} setShowEditAllDropdown={setShowEditAllDropdown}/>
                         </div>

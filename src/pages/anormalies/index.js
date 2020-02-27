@@ -364,7 +364,6 @@ class Anormalies extends Component {
                     }}
                     id="dropdown-sidebar-rest"
                     style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, backgroundColor: "#00000099", zIndex: 100, display: "none" }}>
-
                 </div>
                 <div className="d-flex flex-row flex-wrap flex-md-nowrap" >
                     
