@@ -22,9 +22,12 @@ export default class TestComponent extends Component {
             dataCount: value.count,
         }
         alert(JSON.stringify(value1, null, 2))
+        this.props.handleFirstTierDateRangeChange({ startDate: value1.startDate, endDate: value1.endDate })
     }
 
     render() {
+        const { yearlyData } = this.props
+        // calcuate months
         let startDate = moment().startOf('year')
         let endDate = moment().endOf('year')
         const months = []
@@ -34,12 +37,14 @@ export default class TestComponent extends Component {
             else months.push(null)
             startDate = startDate.add(8, 'days')
         }
+
+        // console.log("YearlyData: \n", yearlyData)
         
-        const rows = data.map((v1,k1) => {
+        const rows = yearlyData.map((v1,k1) => {
             return (
                 <div key={k1} className="py-2 d-flex " style={{ overflowX: "hide", }}>
-                    <div className="pr-2">
-                        <small className="font-weight-bold text-secondary">{v1.year}</small>
+                    <div style={{ width: 40}} className="my-auto">
+                        <div className="font-weight-bold text-secondary" style={{ fontSize: 12 }}>{v1.year}</div>
                     </div>
                     <div>
                         <Row5 dataRow={v1.data} rowNo={k1} handleClickOnSvgRect={this.handleClickOnSvgRect} />
@@ -49,9 +54,11 @@ export default class TestComponent extends Component {
         })
 
         return (
-            <div className="rounded" id="gContainer" style={{ overflowX: "hide"}}>
+            <div className="rounded border p-2 shadow py-3" id="gContainer" style={{ overflowX: "hide" }}>
                 <Row5Tip months={months} />
-                {rows}
+                <div>
+                    {rows}
+                </div>
             </div>
         )
     }
@@ -69,7 +76,7 @@ const Row5Tip = ({ months }) => {
                     {/* Tip vertical line */}
                     <line x1={k} y1={0.6} x2={k} y2={0.8} style={{ strokeWidth: 0.04, stroke: "#8395a766" }}></line>
                     {/* Tip label */}
-                    <text x={k} y={0.5} fill="#8395a7" fontSize={0.5} >{v}</text>
+                    <text x={k} y={0.5} fill="#8395a7" fontSize={0.4} >{v}</text>
                 </g>
             )
         } else {
@@ -80,46 +87,56 @@ const Row5Tip = ({ months }) => {
     if(document.getElementById("gContainer")!==null)
         cWidth = document.getElementById("gContainer").offsetWidth-50
     return(
-        <div className="d-flex p-0 m-0" style={{ position: "relative", zIndex: -1 }}>
-            <div className="" style={{ height: 24 }}></div>
-            <svg viewBox={`0 0 ${46} ${6}`} style={{ width: cWidth, height: cWidth/(46/6), cursor: "default", position: 'absolute', left: 40, right: 0, top: 0, bottom: 0 }}>
-                { tips }
-            </svg>
+        <div className="d-flex " style={{ overflowX: "hide" }}>
+            <div className="" style={{ width: 40}}>
+            </div>
+            <div>
+                <svg viewBox={`0 0 ${46} ${1}`} style={{ width: cWidth, height: cWidth/(46/1), cursor: "default", /*position: 'absolute', left: 40, right: 0, top: 0, bottom: 0*/ }}>
+                    { tips }
+                </svg>
+            </div>
         </div>
+        // <div className="d-flex p-0 m-0" >
+        //     <div className="" style={{ height: 24 }}></div>
+        //     <svg viewBox={`0 0 ${46} ${1}`} style={{ width: cWidth, height: cWidth/(46/1), cursor: "default", /*position: 'absolute', left: 40, right: 0, top: 0, bottom: 0*/ }}>
+        //         { tips }
+        //     </svg>
+        // </div>
     )
 }
 
 const Row5 = ({ dataRow, rowNo, handleClickOnSvgRect }) => {
     const rects = dataRow.map((v2, k2) => {
-            if(v2.count>0) 
-                return (
-                    <g key={`$row5-{rowNo}${k2}`}>
-                        <rect  
-                            key={`${rowNo}${k2}`}
-                            onClick={e => handleClickOnSvgRect(v2)}
-                            className="rect-22" 
-                            x={k2} y={0} width={1} height={1} fill={ v2.value===2 ? "#ff4d4dee" : "#2b916933" } 
-                            style={{ stroke: "#10ac8455", strokeWidth: 0.05, opacity: 0.9, }}>
-                            <title>
-                                {v2.startDate} ~ {v2.endDate}
-                            </title>
-                        </rect>
-                        <text 
-                            onClick={e => handleClickOnSvgRect(v2)}
-                            x={k2+0.3} y={0.7} fill="white" fontSize={0.6} >
-                            { v2.value===2 ? v2.count : "" }</text>
-                    </g> 
-                )  
-            else 
-                return (
+        const dataState = v2.dataState[1] // stateId=1 for Anomaly Data
+        if(v2.count>0) 
+            return (
+                <g key={`$row5-{rowNo}${k2}`}>
                     <rect  
                         key={`${rowNo}${k2}`}
+                        onClick={e => handleClickOnSvgRect(v2)}
                         className="rect-22" 
-                        x={k2} y={0.5} width={1} height={0.01}
-                        style={{ stroke: "#8395a711", strokeWidth: 0.05, opacity: 0.9 }}
-                    >
+                        x={k2} y={0} width={1} height={1} fill={ dataState.dataCount>0 ? "#ff4d4dee" : "#2b916933" } 
+                        style={{ stroke: "#10ac8455", strokeWidth: 0.05, opacity: 0.9, }}>
+                        <title>
+                            {v2.startDate} ~ {v2.endDate}
+                        </title>
                     </rect>
-                )
+                    <text 
+                        onClick={e => handleClickOnSvgRect(v2)}
+                        x={k2+0.3} y={0.7} fill="white" fontSize={0.6} >
+                        { dataState.dataCount>0 ? dataState.dataCount: "" }</text>
+                </g> 
+            )  
+        else 
+            return (
+                <rect  
+                    key={`${rowNo}${k2}`}
+                    className="rect-22" 
+                    x={k2} y={0.5} width={1} height={0.01}
+                    style={{ stroke: "#8395a711", strokeWidth: 0.05, opacity: 0.9 }}
+                >
+                </rect>
+            )
     })
 
     let cWidth = 1000

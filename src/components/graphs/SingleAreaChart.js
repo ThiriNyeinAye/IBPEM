@@ -92,6 +92,10 @@ class SingleAreaChart extends Component {
         return this.chartRef.current.chart.xAxis[0].toValue(pixel)
     }
 
+    setChartOption = () => {
+        this.setState({ options: this.initChartOption(this.chartRef.chart, this.props) })
+    }
+
     componentDidMount() {
         const chart = this.chartRef.current.chart;
        
@@ -155,7 +159,7 @@ class SingleAreaChart extends Component {
         return (
             <div className="">
                 {/* <div>{JSON.stringify(this.state.monitorText)} </div> */}
-                <HighchartsReact ref={this.chartRef} highcharts={Highcharts} constructorType={"stockChart"} options={this.state.options} containerProps={{ className: "py-4" }} />
+                <HighchartsReact ref={this.chartRef} highcharts={Highcharts} constructorType={"stockChart"} options={this.state.options} containerProps={{ className: "p-2" }} />
             </div>
         )
 
@@ -165,11 +169,25 @@ class SingleAreaChart extends Component {
     //====================================================================
 
     initChartOption = (chart, props) => {
-        const navigatorZoneColors = props.data.map((v, i, arr) => {
-            if (i === 0) return { value: v[0], color: "#B6B6B6" }
-            return ((i>20 && i<26) ? { value: v[0], color: "#BF0B2399", } : { value: v[0], color: "#B6B6B6" })
+        const anomalyDataByTime = props.anomalyDataByTime.map(v => ({ 
+            startDate: moment.tz(v.startDate, "Europe/Lisbon").unix() * 1000, 
+            endDate: moment.tz(v.endDate, "Europe/Lisbon").unix() * 1000, 
+        }))
+        console.log("props:", anomalyDataByTime )
+        let navigatorZoneColors = props.data.map((v, i, arr) => {
+            // const flag = i>0 ? anomalyDataByTime.findIndex( v1 => arr[i-1][0]>=v1.startDate-60000 && arr[i-1][0]<=v1.endDate )>-1 : false
+            const flag = anomalyDataByTime.findIndex( v1 => v[0]>=v1.startDate && v[0]<=v1.endDate )>-1 
+            return ({
+                value: v[0],
+                color: flag ? "#BF0B2399" : "#B6B6B6"
+            })
+            // if (i === 0) return { value: v[0], color: "#B6B6B6" }
+            // return ((i>20 && i<26) ? { value: v[0], color: "#BF0B2399", } : { value: v[0], color: "#B6B6B6" })
             // return ((arr[i - 1][0] >= 1581639130000 && arr[i - 1][0] <= 1581639190000) ? { value: v[0], color: "#BF0B2399", } : { value: v[0], color: "#B6B6B6" })
         })
+        navigatorZoneColors.push(...anomalyDataByTime.map(v => {
+            return ({ value: v.startDate, color: "#BF0B2399" })
+        }))
         return {
             credits: {
                 enabled: false
@@ -273,14 +291,21 @@ class SingleAreaChart extends Component {
                 top: 10,
                 series: {
                     color: "#ff7777",
-                    data: props.data,
+                    data: props.data, //TODO:
                     type: 'column',
                     pointRange: undefined,
                     // dataGrouping: {
                     //     groupPixelWidth: 1
                     // },
                     zoneAxis: 'x',
-                    zones: [...navigatorZoneColors, { color: "#B6B6B6" }],
+                    zones: [
+                        ...navigatorZoneColors, { color: "#B6B6B6" }
+                    ] /*[
+                        { value: 1582761720000, color: "#B6b6b6" },
+                        { value: 1582761780000, color: "#aa2222" },
+                        // { value: 1582761960000, color: "#44aa22" },
+                        { color: "#B6B6B6" }
+                    ]//[...navigatorZoneColors, { color: "#B6B6B6" }], */
                 },
                 height: 60,
                 maskFill: "#00000015",
@@ -307,7 +332,7 @@ class SingleAreaChart extends Component {
                 yAxis: 0,
                 showInNavigator: true,
                 name: 'Temperature',
-                data: props.data,//.filter((v,i) => i>30),
+                data: props.data,//.filter((v,i) => i>30), //TODO:
                 tooltip: {
                     valueSuffix: '°C'
                 },
@@ -317,17 +342,17 @@ class SingleAreaChart extends Component {
     } // end chart Options
 
     refreshSelectedTimeRange = ({ chart, leftLine, rightLine }) => {
-        if (leftLine !== null && leftLine.element !== null) {
+        if (chart && leftLine !== null && leftLine.element !== null) {
             leftLine.element.attr({
                 transform: `translate(${chart.xAxis[0].toPixels(leftLine.xValue)},${0})`
             })
         }
-        if (rightLine !== null && rightLine.element !== null) {
+        if (chart && rightLine !== null && rightLine.element !== null) {
             rightLine.element.attr({
                 transform: `translate(${chart.xAxis[0].toPixels(rightLine.xValue)},${0})`
             })
         }
-        if (leftLine !== null !== null && rightLine !== null) {
+        if (chart && leftLine !== null !== null && rightLine !== null) {
             if (document.getElementById("redRoof") !== null)
                 document.getElementById("redRoof").attributes.d.value = `M ${chart.xAxis[0].toPixels(leftLine.xValue)} ${chart.plotTop} L ${chart.xAxis[0].toPixels(rightLine.xValue)} ${chart.plotTop}`
         }
