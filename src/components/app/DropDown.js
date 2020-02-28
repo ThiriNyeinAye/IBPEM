@@ -75,7 +75,7 @@ export const DropDown = props => {
                <div 
                  key={k} 
                  className="dropdown-item pb-3" 
-                 onClick={e => addCustomOpen? setAddCustomOpen(false) : setAddCustomOpen(true)} 
+                 onClick={e => setAddCustomOpen(!addCustomOpen)} 
                  style={{ cursor: 'pointer' }}
                >
                  {v}
@@ -138,7 +138,7 @@ export const DropDownBlock = props => {
 
  const [inputData,setInputData]  = useState('')
  const [menuShow, setMenuShow] = useState(false)
- const [Open, setOpen] = useState(false)
+ const [addCustomOpen, setAddCustomOpen] = useState(false)
 
  const handleChange = e => {
    setInputData(e.target.value)
@@ -174,12 +174,12 @@ export const DropDownBlock = props => {
                <div 
                  key={k} 
                  className="dropdown-item pb-3" 
-                 onClick={e => Open? setOpen(false) : setOpen(true)} 
+                 onClick={e => setAddCustomOpen(!addCustomOpen)} 
                  style={{ cursor: 'pointer' }}
                >
                  {v}
                </div>
-               {Open && (
+               {addCustomOpen && (
                  <div className="container">
                    <input 
                      type="text" 
@@ -192,7 +192,7 @@ export const DropDownBlock = props => {
                      style={{backgroundColor: '#20b390', color: '#ffffff'}} 
                      onClick={e => { 
                        handleAddData(inputData);
-                       setOpen(false)
+                       setAddCustomOpen(false)
                      }}
                    >
                      ADD
