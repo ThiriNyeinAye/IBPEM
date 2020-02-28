@@ -13,7 +13,7 @@ import { SampleDropdown } from '../../components/app/DropDown'
 import { withLStorage } from "../../components/hoc.js"
 
 import TestComponent from "./TestComponent"
-import { Fade } from "reactstrap"
+import queryString from  "querystring"
 
 const HOST = {
     local: "http://192.168.100.7:3003",
@@ -21,8 +21,10 @@ const HOST = {
     maythu: "http://192.168.100.27:3003"
 }
 
-const DataFetcher = (callback) => {
-    return fetch(`${HOST.test}/dummy-data`)
+const DataFetcher = (callback, queryParams) => {
+    const queryParamString = queryString.stringify(queryParams)
+    // console.log("queryParams: ", queryParamString)
+    return fetch(`${HOST.maythu}/dummy-data?${queryParamString}`)
         .then(res => res.json())
         .then(data => callback(data.error, data))
         .catch(error => callback(error, null))
@@ -37,7 +39,7 @@ const YearlyDataFetcher = (callback) => {
 
 const CreateAnomalyData = (data, callback) => {
     // console.log("data: ", data)
-    return fetch(`${HOST.test}/anomalies`, {
+    return fetch(`${HOST.maythu}/anomalies`, {
         method: 'POST',
         headers: {
             'Content-Type': "application/json"
@@ -46,14 +48,15 @@ const CreateAnomalyData = (data, callback) => {
     })
         .then(res => res.json())
         .then(data => callback(null, data))
-        .then(error => callback(error, null))
+        .catch(error => callback(error, null))
 }
 
-const ReadAnomalyData = (callback) => {
-    return fetch(`${HOST.test}/anomalies`)
+const ReadAnomalyData = (callback, queryParams) => {
+    const queryParamString = queryString.stringify(queryParams)
+    return fetch(`${HOST.maythu}/anomalies?${queryParamString}`)
         .then(res => res.json())
         .then(data => callback(null, data))
-        .then(error => callback(error, null))
+        .catch(error => callback(error, null))
 }
 
 class Anormalies extends Component {
@@ -61,7 +64,7 @@ class Anormalies extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            data: [],
+            data: {},
             anomalyDataByTime: [],
             anomalyDataByEquipment: {},
             height: 200,
@@ -78,8 +81,8 @@ class Anormalies extends Component {
             graphShowData: [],
             dimensions: null,
             yearlyData: [],
-            firstTierStartDate: null,
-            firstTierEndDate: null
+            firstTierStartDate: "2020-02-13",
+            firstTierEndDate: "2020-02-20"
         }
         this.singleAreaChartRef = React.createRef()
         this.multiAreaChartRef = React.createRef()
@@ -157,24 +160,30 @@ class Anormalies extends Component {
         DataFetcher((error, data) => {
             if (error) console.log("Error:DataFetcher: ", error)
             else {
-                this.setState({ data: data.payload/*.filter((v,i)=> i<200)*/ }, () => {
-                    return this.fetchAnomalyData()
+                const data0 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
+                const data1 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
+                const data2 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
+                this.setState({ data: data.payload, data0, data1, data2 /*.filter((v,i)=> i<200)*/ }, () => {
+                    this.fetchAnomalyData()
                 })
             }
-        })
+        }, { startDate: this.state.firstTierStartDate, endDate: this.state.firstTierEndDate })
         YearlyDataFetcher((error, data) => {
             if (error) console.log("Error:YearlyDataFetcher: ", error)
             else {
                 this.setState({ 
-                    yearlyData: [
-                        { 
-                            year:  "2019",
-                            data: data.payload.map( v => ({ ...v, value: 1 }) )
-                        }
-                    ]
+                    yearlyData: data.payload
+                    // [
+                    //     { 
+                    //         year:  "2019",
+                    //         data: data.payload.map( v => ({ ...v, value: 1 }) )
+                    //     }
+                    // ]
                 })
             }
         })
+        if(this.singleAreaChartRef.current!==null) 
+            this.singleAreaChartRef.current.setChartOption()
         
     }
 
@@ -227,6 +236,7 @@ class Anormalies extends Component {
                     else R[c.deviceType].push(value)
                     return R
                 }, {})
+                // console.log("anomalyDateByTime: ", data.payload)
                 this.setState({
                     anomalyDataByTime: data.payload,
                     anomalyDataByEquipment
@@ -239,14 +249,17 @@ class Anormalies extends Component {
                     //     ...prev.option, 
                     //     navigator
                     // } }))
-                    this.singleAreaChartRef.current.setChartOption()
+
+                    // if(this.singleAreaChartRef.current!==null)
+                    //     this.singleAreaChartRef.current.setChartOption()
+
                     // console.log("Ref: ", this.singleAreaChartRef.current)
                     // console.log("Chartt: ", this.singleAreaChartRef.current.chartRef.current.chart)
                 })
             } else {
-                console.log("Error:123:ReadAnomaly ", error)
+                console.log("Error:123:ReadAnomaly : ", error, " : ", data)
             }
-        })
+        }, { startDate: this.state.firstTierStartDate, endDate: this.state.firstTierEndDate })
     }
 
     onAnormalyInputChanged = (value, dataType) => { 
@@ -368,9 +381,11 @@ class Anormalies extends Component {
             graphShowData: value.additionalGraphs.map(v => ({ selected: true, name: v }))
         }, () => {
             const areaChart = this.singleAreaChartRef.current
-            const startTs = moment.tz(value.startDate, "Europe/Lisbon").unix() * 1000
-            const endTs = moment.tz(value.endDate, "Europe/Lisbon").unix() * 1000
-            areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
+            if(areaChart!==null) {
+                const startTs = moment.tz(value.startDate, "Europe/Lisbon").unix() * 1000
+                const endTs = moment.tz(value.endDate, "Europe/Lisbon").unix() * 1000
+                areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
+            }
         })
     }
 
@@ -380,28 +395,41 @@ class Anormalies extends Component {
             firstTierEndDate: endDate!==undefined ? endDate : prev.firstTierEndDate
         }), () => {
             // alert(JSON.stringify({ start: this.state.firstTierStartDate, end: this.state.firstTierEndDate }, null, 2))
+            // if(this.singleAreaChartRef.current!==null) {
+            //     const areaChart = this.singleAreaChartRef.current
+            //     // areaChart.chartRef.current.chart.destroy()
+            //     console.log("const areaChart = this.singleAreaChartRef.current", this.singleAreaChartRef.current.chartRef.current.chart)
+            // }
+            const singlerAreaChart = this.singleAreaChartRef.current
+            if(singlerAreaChart!==null) singlerAreaChart.setLoading(true)
             DataFetcher((error, data) => {
                 if (error) console.log("Error:DataFetcher: ", error)
                 else {
                     const data0 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
-                    // const arrSize = this.singleAreaChartRef.current.chartRef.current.chart.series[0].length
-                    // this.singleAreaChartRef.current.chartRef.current.chart.series[0].splice(0, arrSize)
-                    // this.singleAreaChartRef.current.chartRef.current.chart.series[0].push(...data0)
-                    // console.log("SingleChartREf: ", this.singleAreaChartRef.current.chartRef.current.chart.series)
-                    this.setState({ data: data.payload/*.filter((v,i)=> i<200)*/ }, () => {
-                        return this.fetchAnomalyData()
+                    const data1 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
+                    const data2 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
+                    this.setState({ data: data.payload, data0, data1, data2 /*.filter((v,i)=> i<200)*/ }, () => {
+                        this.fetchAnomalyData()
+                        const singlerAreaChart = this.singleAreaChartRef.current
+                            if(singlerAreaChart!==null) singlerAreaChart.setLoading(false)
                     })
                 }
-            })
+            }, { startDate: this.state.firstTierStartDate, endDate: this.state.firstTierEndDate })
         })
 
     }
 
     render() {
-        const { yearlyData, data, graphShowData, anomalyInputData, anomalyDataByTime, anomalyDataByEquipment, dimensions} = this.state;
-        const data0 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
-        const data1 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
-        const data2 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
+        const { yearlyData, data, data0, data1, data2, firstTierStartDate, firstTierEndDate,
+            graphShowData, 
+            anomalyInputData, 
+            anomalyDataByTime, 
+            anomalyDataByEquipment, 
+            dimensions} = this.state;
+        // const data0 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
+        // const data1 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
+        // const data2 = data.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
+ 
         const minorChartData = [data1, data2]
           
         return (
@@ -458,13 +486,13 @@ class Anormalies extends Component {
                                             <div className=" bg-white rounded p-4">
                                                 <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
                                                     <div className="p-2 bg-white rounded">
-                                                        <TestComponent handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
+                                                        <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstfirstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }}TierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
                                                     </div>
                                                     {
                                                         data.length > 0 ?
-                                                            <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
+                                                            <SingleAreaChart  anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
                                                             // <MultiAreaChart data1={data0} data2={data2} />
-                                                            : <div className="p-4 text-secondary text-center">Loading...</div>
+                                                            : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
                                                     }
                                             </div>
                                        </div>
@@ -488,13 +516,13 @@ class Anormalies extends Component {
                                         <div className=" bg-white rounded p-4">
                                             <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
                                             <div className="py-2 bg-white rounded">
-                                                <TestComponent handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
+                                                <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
                                             </div>
                                             {
                                                 data.length > 0 ?
                                                     <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
                                                     // <MultiAreaChart data1={data0} data2={data2} />
-                                                    : <div className="p-4 text-secondary text-center">Loading...</div>
+                                                    : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
                                             }
                                         </div>
                                         {
@@ -520,13 +548,13 @@ class Anormalies extends Component {
                                             <div className="col bg-white rounded p-4">
                                                 <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
                                                 <div className="p-2 bg-white rounded">
-                                                    <TestComponent handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
+                                                    <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
                                                 </div>
                                                 {
                                                     data.length > 0 ?
                                                         <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
                                                         //  <MultiAreaChart data1={data0} data2={data2} /> 
-                                                        : <div className="p-4 text-secondary text-center">Loading...</div>
+                                                        : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
                                                 }
                                             </div>
                                             <div className='col pl-2'>
@@ -551,13 +579,13 @@ class Anormalies extends Component {
                                       <div className="col bg-white rounded p-4">
                                                 <AnormalyControlPanel handleZoomIn={this.handleMultiZoomIn} handleZoomOut={this.handleMultiZoomOut} />
                                                 <div className="p-2 bg-white rounded">
-                                                    <TestComponent handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
+                                                    <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
                                                 </div>
                                                 {
                                                     data.length > 0 ?
                                                         // <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
                                                         <MultiAreaChart ref={this.multiAreaChartRef} data1={data0} data2={data2} /> 
-                                                        : <div className="p-4 text-secondary text-center">Loading...</div>
+                                                        : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
                                                 }
                                             </div>
                                     </Fragment>
