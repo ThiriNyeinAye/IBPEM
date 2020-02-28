@@ -29,7 +29,7 @@ const DataFetcher = (callback) => {
 }
 
 const YearlyDataFetcher = (callback) => {
-    return fetch(`${HOST.maythu}/eight-days`)
+    return fetch(`${HOST.test}/eight-days`)
         .then(res => res.json())
         .then(data => callback(data.error, data))
         .catch(error => callback(error, null))
