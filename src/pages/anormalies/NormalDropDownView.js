@@ -5,10 +5,16 @@ const NormalDropDownView = props => {
   const {
     onAnormalyInputChanged,
     anomalyInputData,
-    setShowEditAllDropdown
+    setShowEditAllDropdown,
+    FaultTypeLabel,
+    severityLabel,
+    sensorSignalLabel,
+    inputData,
+    handleAddData
   } = props;
-  // const outsideClickControl = p => {setoutsideClick(p); };
 
+  // const outsideClickControl = p => {setoutsideClick(p); };
+  console.log("NormalDropDown>>>", inputData)
   return (
     <div className="d-flex flex-wrap flex-md-wrap flex-sm-wrap justify-content-start ">
       <DropDown
@@ -16,17 +22,8 @@ const NormalDropDownView = props => {
         label={"FAULT TYPE"}
         dataType={"faultType"}
         defaultValue={anomalyInputData /*"Refregerant Lean"*/}
-        additionalValue={[
-          "Condenser Fouling",
-          "Excess Oil",
-          "Low Condenser Water Flow",
-          "Non-Condensable",
-          "Normal",
-          "Reduced Condenser Flow",
-          "Refrigerant Leak",
-          "Refrigerant Overcharge",
-          "Add custom"
-        ]}
+        additionalValue={FaultTypeLabel}
+        handleAddData={handleAddData}
         // outsideClickControl={outsideClickControl}
       />
       <DropDown
@@ -34,7 +31,7 @@ const NormalDropDownView = props => {
         label={"SEVERITY"}
         dataType={"severity"}
         defaultValue={anomalyInputData /*"Low"*/}
-        additionalValue={["1-Low", "2-Medium", "3-High"]}
+        additionalValue={severityLabel}
         // outsideClickControl={outsideClickControl}
       />
       <DropDown
@@ -42,18 +39,7 @@ const NormalDropDownView = props => {
         label={"SENSOR SIGNAL"}
         dataType={"sensorSignal"}
         defaultValue={anomalyInputData /*"Plant EMG"*/}
-        additionalValue={[
-          "Chiller KW",
-          "Chiller Running Count",
-          "CHW DP STPT",
-          "CHW DP",
-          "CHW KW",
-          "CHW MIN",
-          "CHW RL",
-          "CHWP-VSD-OP",
-          "CHWP-StageDNSP",
-          "CHWP-StageINSP"
-        ]}
+        additionalValue={sensorSignalLabel}
         // outsideClickControl={outsideClickControl}
       />
       <div className="d-flex flex-column justify-content-center">
