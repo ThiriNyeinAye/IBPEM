@@ -188,9 +188,10 @@ class SingleAreaChart extends Component {
     }
 
     initChartOption = (chart, props) => {
-        const anomalyDataByTime = props.anomalyDataByTime.map(v => ({
-            startDate: moment.tz(v.startDate, "Europe/Lisbon").unix() * 1000,
-            endDate: moment.tz(v.endDate, "Europe/Lisbon").unix() * 1000,
+        const anomalyDataByTimeProps = props.anomalyDataByTime === undefined ? [] : props.anomalyDataByTime /*@lucy */
+        const anomalyDataByTime = anomalyDataByTimeProps.map(v => ({ 
+            startDate: moment.tz(v.startDate, "Europe/Lisbon").unix() * 1000, 
+            endDate: moment.tz(v.endDate, "Europe/Lisbon").unix() * 1000, 
         }))
         let navigatorZoneColors = props.data.map((v, i, arr) => {
             // const flag = i>0 ? anomalyDataByTime.findIndex( v1 => arr[i-1][0]>=v1.startDate-60000 && arr[i-1][0]<=v1.endDate )>-1 : false

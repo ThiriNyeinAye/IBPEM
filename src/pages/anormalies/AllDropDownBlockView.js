@@ -7,7 +7,11 @@ const AllDropDownBlockView = props => {
     anomalyInputData,
     onAnormalyInputChanged,
     showEditAllDropdown,
-    setShowEditAllDropdown
+    setShowEditAllDropdown,
+    handleAddData,
+    FaultTypeLabel,
+    severityLabel,
+    sensorSignalLabel
   } = props;
   // AllDropDownBlockView.handleClickOutside = () =>  
   return (
@@ -20,18 +24,9 @@ const AllDropDownBlockView = props => {
           onDropDownItemClicked={onAnormalyInputChanged}
           label={"FAULT TYPE"}
           dataType={"faultType"}
+          handleAddData={handleAddData}
           defaultValue={anomalyInputData /*"Refregerant Lean"*/}
-          additionalValue={[
-            "Condenser Fouling",
-            "Excess Oil",
-            "Low Condenser Water Flow",
-            "Non-Condensable",
-            "Normal",
-            "Reduced Condenser Flow",
-            "Refrigerant Leak",
-            "Refrigerant Overcharge",
-            "Add custom"
-          ]}
+          additionalValue={FaultTypeLabel}
           showEditAllDropdown={showEditAllDropdown}
         />
       </div>
@@ -41,7 +36,7 @@ const AllDropDownBlockView = props => {
           label={"SEVRITY"}
           dataType={"severity"}
           defaultValue={anomalyInputData /*"Low"*/}
-          additionalValue={["1-Low", "2-Medium", "3-High"]}
+          additionalValue={severityLabel}
           showEditAllDropdown={showEditAllDropdown}
         />
       </div>
@@ -51,18 +46,7 @@ const AllDropDownBlockView = props => {
           label={"SENSOR SIGNAL"}
           dataType={"sensorSignal"}
           defaultValue={anomalyInputData /*"Plant EMG"*/}
-          additionalValue={[
-            "Chiller KW",
-            "Chiller Running Count",
-            "CHW DP STPT",
-            "CHW DP",
-            "CHW KW",
-            "CHW MIN",
-            "CHW RL",
-            "CHWP-VSD-OP",
-            "CHWP-StageDNSP",
-            "CHWP-StageINSP"
-          ]}
+          additionalValue={sensorSignalLabel}
           showEditAllDropdown={showEditAllDropdown}
         />
       </div>

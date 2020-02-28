@@ -17,7 +17,12 @@ const DataFetcher = callback => {
     .then(data => callback(data.error, data))
     .catch(error => callback(error, null));
 };
-
+const GetHistoryData = callback =>{
+  return fetch(`${HOST.maythu}/history`)
+  .then(res => res.json())
+  .then(data => callback(data.error,data))
+  .catch(error => callback(error,null))
+}
 class AnormaliesHistory extends Component {
   constructor(props) {
     super(props);
@@ -29,7 +34,9 @@ class AnormaliesHistory extends Component {
         user: null,
         dateTime: null
       },
-      HistoryTableData: [...HistoryTableDataOrignal]
+      // HistoryTableData: [...HistoryTableDataOrignal]
+      HistoryTableData:[],
+      HistoryTableDataOrigin:[]
     };
   }
 
@@ -38,25 +45,30 @@ class AnormaliesHistory extends Component {
       if (error) console.log("Error: ", error);
       else this.setState({ data: data.payload });
     });
+    GetHistoryData((error,data)=>{
+      if(error)console.log("Error :",error)
+      else{
+        const HistoryTableDataOrigin = data.payload
+        this.setState({HistoryTableData:data.payload,HistoryTableDataOrigin})
+      } 
+    })
   }
   //   changeSampleDropDown = stateData => {  return this.setState({ FilteronChangeValue: stateData }); };
 
   handleDoFilter = () => {
-    const HistoryTableData = HistoryTableDataOrignal.filter(v => {
-      return this.state.filter.user === null ||
-        this.state.filter.user === "No Filter"
+    const HistoryTableData =this.state.HistoryTableDataOrigin.filter(v => {
+      return (this.state.filter.user === null ||this.state.filter.user === "All Labeled")
         ? true
-        : v.LabelledBy === this.state.filter.user;
+        : v.labeledBy === this.state.filter.user;
     });
     this.setState(prev => ({
       HistoryTableData,
-      filter: { user: null }
     }));
   };
 
   render() {
-    const { data, FilteronChangeValue, filter, HistoryTableData } = this.state;
-
+    const { data, FilteronChangeValue, filter, HistoryTableData ,HistoryTableDataOrigin} = this.state;
+  
     const data0 = data.map(v => [
       moment.tz(v.ts, "Europe/Lisbon").unix() * 1000,
       v.efficiency
@@ -89,7 +101,7 @@ class AnormaliesHistory extends Component {
                   {"1293 Anomalies have been reviewed"}
                 </div>
               </div>
-              {/* ======================= */}
+  {/* ======================= */}
               <div
                 className=""
                 style={{ cursor: "pointer" }}
@@ -127,41 +139,40 @@ class AnormaliesHistory extends Component {
                       {/* user-lable filter */}
                       <div className="d-flex flex-row align-items-center py-2">
                         <div className="dropdown flex-fill">
+                        <div className="pb-2"> User LabelledBy :</div>
                           <div
-                            className="border rounded p-2 d-flex justify-content-between align-items-center"
+                            className="border rounded p-2 d-flex align-items-center"
                             data-toggle="dropdown"
                           >
-                            <div>
+                           {filter.user !== null ? filter.user : "All Labeled"}
+                            <div className="ml-auto"> <i className="fa fa-sort-down" /> </div>
+                            {/* <div>
                               User LabelledBy :{" "}
                               {filter.user !== null ? filter.user : ""}
-                            </div>
-                            <div>
+                            </div> */}
+                            {/* <div>
                               <i className="fa fa-sort-down" />
-                            </div>
+                            </div> */}
                           </div>
 
-                          <div className=" dropdown-menu w-100 ">
+                          <div className=" dropdown-menu w-100 " >
                             <div
+                            
                               onClick={e =>
-                                this.setState(prev => ({
-                                  filter: { ...prev.filter, user: "No Filter" }
-                                }))
+                                this.setState(prev =>   ({
+                                  filter: { ...prev.filter, user: 'All Labeled' }
+                                }) )
                               }
-                              className="px-2  dropdown-item"
+                              className="px-2  dropdown-item "
                             >
-                              {/* <input id="no-filter" type="checkbox"
-                            value={filter.user}
-                            onChange={e => this.setState({ filter: { ...filter, no_filter: e.target.checked } })  }
-                            />  */}
                               <label
                                 htmlFor="no-filter"
                                 style={{ cursor: "pointer" }}
                               >
-                                {" "}
-                                No Filter{" "}
+                               All Labeled
                               </label>
                             </div>
-                            {HistoryTableDataOrignal.map(v => v.LabelledBy)
+                            {HistoryTableDataOrigin.map(v => v.labeledBy )
                               .reduce(
                                 (r, c) =>
                                   r.findIndex(v1 => c === v1) === -1
@@ -172,33 +183,16 @@ class AnormaliesHistory extends Component {
                               .map((v, k) => (
                                 <div
                                   key={k}
-                                  className="px-2 dropdown-item"
+                                  className="px-2 dropdown-item "
                                   onClick={e =>
-                                    this.setState({
+                                    this.setState(prev =>({
                                       filter: { ...filter, user: v }
-                                    })
+                                    }))
                                   }
                                 >
-                                  {/* <input
-                              id={v}
-                              type="checkbox"
-                              name={v}
-                              checked={!filter.no_filter && filter.user === v}
-                              value={v}
-                              onChange={e =>
-                                this.setState({
-                                  filter: { ...filter, user: v }
-                                })
-                              } />  */}
-                                  <label
-                                    htmlFor={v}
-                                    style={{ cursor: "pointer" }}
-                                  >
-                                    {" "}
-                                    {v}{" "}
-                                  </label>
+                                  <label   htmlFor={v}   style={{ cursor: "pointer" }} > {v} </label>
                                 </div>
-                              ))}
+                              )  )}
                           </div>
                         </div>
                       </div>
@@ -241,42 +235,47 @@ export default withLStorage(AnormaliesHistory);
 const HistoryTableDataOrignal = [
   {
     id: "1",
-    No: "1",
-    Building: "The Star Vista",
-    Time: "12/03/2020 14:00-16:00",
-    EquipmentType: "Chiller 3",
-    LabelledBy: "Mark Taiwan"
+    no: "1",
+    building: "The Star Vista",
+    time: "12/03/2020 14:00-16:00",
+    equipmentType: "Chiller 3",
+    label: [ "Refrigerant","High", "CHW KW"],
+    labeledBy: "Mark Taiwan"
   },
   {
-    id: "2",
-    No: "2",
-    Building: "The Star Vista",
-    Time: "12/03/2020 14:00-16:00",
-    EquipmentType: "Chiller 3",
-    LabelledBy: "Mark Taiwan"
+    id: "1",
+    no: "1",
+    building: "The Star Vista",
+    time: "12/03/2020 14:00-16:00",
+    equipmentType: "Chiller 3",
+    label: [ "Refrigerant","High", "CHW KW"],
+    labeledBy: "Mark Taiwan"
   },
   {
-    id: "3",
-    No: "3",
-    Building: "The Star Vista",
-    Time: "12/03/2020 14:00-16:00",
-    EquipmentType: "Chiller 3",
-    LabelledBy: "Mark Taiwan"
+    id: "1",
+    no: "1",
+    building: "The Star Vista",
+    time: "12/03/2020 14:00-16:00",
+    equipmentType: "Chiller 3",
+    label: [ "Refrigerant","High", "CHW KW"],
+    labeledBy: "Mark Taiwan"
   },
   {
-    id: "4",
-    No: "4",
-    Building: "The Star Vista",
-    Time: "12/03/2020 14:00-16:00",
-    EquipmentType: "Chiller 3",
-    LabelledBy: "Mark Taiwan"
+    id: "1",
+    no: "1",
+    building: "The Star Vista",
+    time: "12/03/2020 14:00-16:00",
+    equipmentType: "Chiller 3",
+    label: [ "Refrigerant","High", "CHW KW"],
+    labeledBy: "Mark Taiwan"
   },
   {
-    id: "5",
-    No: "5",
-    Building: "The Star Vista",
-    Time: "12/03/2020 14:00-16:00",
-    EquipmentType: "Chiller 3",
-    LabelledBy: "Lucy"
+    id: "1",
+    no: "1",
+    building: "The Star Vista",
+    time: "12/03/2020 14:00-16:00",
+    equipmentType: "Chiller 3",
+    label: [ "Refrigerant","High", "CHW KW"],
+    labeledBy: "Lucy"
   }
 ];
