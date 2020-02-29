@@ -24,14 +24,14 @@ const HOST = {
 const DataFetcher = (callback, queryParams) => {
     const queryParamString = queryString.stringify(queryParams)
     // console.log("queryParams: ", queryParamString)
-    return fetch(`${HOST.maythu}/dummy-data?${queryParamString}`)
+    return fetch(`${HOST.test}/dummy-data?${queryParamString}`)
         .then(res => res.json())
         .then(data => callback(data.error, data))
         .catch(error => callback(error, null))
 }
 
 const YearlyDataFetcher = (callback) => {
-    return fetch(`${HOST.maythu}/eight-days`)
+    return fetch(`${HOST.test}/eight-days`)
         .then(res => res.json())
         .then(data => callback(data.error, data))
         .catch(error => callback(error, null))
@@ -39,7 +39,7 @@ const YearlyDataFetcher = (callback) => {
 
 const CreateAnomalyData = (data, callback) => {
     // console.log("data: ", data)
-    return fetch(`${HOST.maythu}/anomalies`, {
+    return fetch(`${HOST.test}/anomalies`, {
         method: 'POST',
         headers: {
             'Content-Type': "application/json"
@@ -53,7 +53,7 @@ const CreateAnomalyData = (data, callback) => {
 
 const ReadAnomalyData = (callback, queryParams) => {
     const queryParamString = queryString.stringify(queryParams)
-    return fetch(`${HOST.maythu}/anomalies?${queryParamString}`)
+    return fetch(`${HOST.test}/anomalies?${queryParamString}`)
         .then(res => res.json())
         .then(data => callback(null, data))
         .catch(error => callback(error, null))
