@@ -42,19 +42,19 @@ class Solutions extends Component {
                         </div>
                         <div className="row justify-content-around align-items-stretch">
                             <Detection 
-                                logo={"/detection-1.jpeg"} title={"Anomaly Detection"} info={"142 Alerts"} 
+                                logo={"/detection-1.png"} title={"Anomaly Detection"} info={"142 Alerts"} 
                                 onAnormalyClicked={()=>this.onRouteChanged(routeName.routeAnormalies)} 
                                 onHistoryClicked={()=>this.onRouteChanged(routeName.routeAnormaliesHistory)} />
                             <Detection 
-                                logo={"/detection-2.jpeg"} title={"False Alarms Detection"} info={"82 Alerts"} 
+                                logo={"/detection-2.png"} title={"False Alarms Detection"} info={"82 Alerts"} 
                                 onAnormalyClicked={()=>null/*this.onRouteChanged(routeName.routeAnormalies)*/} 
                                 onHistoryClicked={()=>null/*this.onRouteChanged(routeName.routeAnormaliesHistory)*/} />
                             <Detection 
-                                logo={"/detection-3.jpeg"} title={"Fault Detection -Diagnosis"} info={"14 Alerts"} 
+                                logo={"/detection-3.png"} title={"Fault Detection -Diagnosis"} info={"14 Alerts"} 
                                 onAnormalyClicked={()=>null/*this.onRouteChanged(routeName.routeAnormalies)*/} 
                                 onHistoryClicked={()=>null/*this.onRouteChanged(routeName.routeAnormaliesHistory)*/} />
                             <Detection 
-                                logo={"/detection-4.jpeg"} title={"CALM"} info={"4 Alerts"} 
+                                logo={"/detection-4.png"} title={"CALM"} info={"4 Alerts"} 
                                 onAnormalyClicked={()=>null/*this.onRouteChanged(routeName.routeAnormalies)*/} 
                                 onHistoryClicked={()=>null/*this.onRouteChanged(routeName.routeAnormaliesHistory)*/} />
                         </div>

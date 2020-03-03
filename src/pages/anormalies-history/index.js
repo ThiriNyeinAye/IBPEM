@@ -12,13 +12,13 @@ const HOST = {
 };
 
 const DataFetcher = callback => {
-  return fetch(`${HOST.test}/dummy-data`)
+  return fetch(`${HOST.test}/dummy-data?startDate=2020-01-10&endDate=2020-01-11`)
     .then(res => res.json())
     .then(data => callback(data.error, data))
     .catch(error => callback(error, null));
 };
 const GetHistoryData = callback =>{
-  return fetch(`${HOST.test}/history`)
+  return fetch(`${HOST.maythu}/history`)
   .then(res => res.json())
   .then(data => callback(data.error,data))
   .catch(error => callback(error,null))
@@ -32,12 +32,14 @@ class AnormaliesHistory extends Component {
       FilteronChangeValue: "",
       filter: {
         user: null,
+        equipmentType:null,
         dateTime: null
       },
       // HistoryTableData: [...HistoryTableDataOrignal]
       HistoryTableData:[],
-      HistoryTableDataOrigin:[]
-    };
+      HistoryTableDataOrigin:[],
+  
+    }; 
   }
 
   componentDidMount() {
@@ -48,8 +50,8 @@ class AnormaliesHistory extends Component {
     GetHistoryData((error,data)=>{
       if(error)console.log("Error :",error)
       else{
-        const HistoryTableDataOrigin = data.payload
-        this.setState({HistoryTableData:data.payload,HistoryTableDataOrigin})
+        const HistoryTableDataOrigin = data.payload === null ? []: data.payload
+        this.setState({HistoryTableData:HistoryTableDataOrigin,HistoryTableDataOrigin})
       } 
     })
   }
@@ -57,17 +59,24 @@ class AnormaliesHistory extends Component {
 
   handleDoFilter = () => {
     const HistoryTableData =this.state.HistoryTableDataOrigin.filter(v => {
-      return (this.state.filter.user === null ||this.state.filter.user === "All Labeled")
-        ? true
-        : v.labeledBy === this.state.filter.user;
-    });
+      //  this.state.filter.user === null  ? true:  v.labeledBy === this.state.filter.user
+         if(this.state.filter.user !== null ) {
+        return  v.labeledBy === this.state.filter.user
+         }if(this.state.filter.equipmentType !== null){
+          return v.equipmentType === this.state.filter.equipmentType
+         }else return v;
+     
+        }) ;
+  
     this.setState(prev => ({
       HistoryTableData,
+      filter:prev.filter
     }));
   };
 
   render() {
-    const { data, FilteronChangeValue, filter, HistoryTableData ,HistoryTableDataOrigin} = this.state;
+    const { data, FilteronChangeValue, filter, HistoryTableData ,HistoryTableDataOrigin,selectedFilter} = this.state;
+  //  console.log(HistoryTableData)
   
     const data0 = data.map(v => [
       moment.tz(v.ts, "Europe/Lisbon").unix() * 1000,
@@ -82,8 +91,10 @@ class AnormaliesHistory extends Component {
       v.evaOutput
     ]);
 
-    if (data.length === 0)
+    if (data.length === 0  )
       return <div className="text-center p-4">Loading...</div>;
+   
+    // console.log(HistoryTableDataOrigin.length)
 
     return (
       <div className="container-fluid">
@@ -136,43 +147,31 @@ class AnormaliesHistory extends Component {
                       </button>
                     </div>
                     <div className="modal-body">
-                      {/* user-lable filter */}
-                      <div className="d-flex flex-row align-items-center py-2">
-                        <div className="dropdown flex-fill">
+                      <div className="d-flex flex-column align-items-stretch justify-content-center  py-2">
+                         {/* user-labelled filter  */}
+                        <div className="dropdown ">
                         <div className="pb-2"> User LabelledBy :</div>
-                          <div
-                            className="border rounded p-2 d-flex align-items-center"
-                            data-toggle="dropdown"
-                          >
-                           {filter.user !== null ? filter.user : "All Labeled"}
+                          <div  className="border rounded p-2 d-flex align-items-center "  data-toggle="dropdown" >
+                           {filter.user !== null ? filter.user : "All"}
                             <div className="ml-auto"> <i className="fa fa-sort-down" /> </div>
-                            {/* <div>
-                              User LabelledBy :{" "}
-                              {filter.user !== null ? filter.user : ""}
-                            </div> */}
-                            {/* <div>
-                              <i className="fa fa-sort-down" />
-                            </div> */}
                           </div>
-
                           <div className=" dropdown-menu w-100 " >
                             <div
-                            
                               onClick={e =>
                                 this.setState(prev =>   ({
-                                  filter: { ...prev.filter, user: 'All Labeled' }
+                                  filter: { ...prev.filter, user: null }
                                 }) )
                               }
-                              className="px-2  dropdown-item "
+                              className={`px-2  dropdown-item`}
                             >
                               <label
                                 htmlFor="no-filter"
                                 style={{ cursor: "pointer" }}
                               >
-                               All Labeled
+                               All 
                               </label>
                             </div>
-                            {HistoryTableDataOrigin.map(v => v.labeledBy )
+                            { HistoryTableDataOrigin.map(v =>v.labeledBy)
                               .reduce(
                                 (r, c) =>
                                   r.findIndex(v1 => c === v1) === -1
@@ -180,10 +179,10 @@ class AnormaliesHistory extends Component {
                                     : r,
                                 []
                               )
-                              .map((v, k) => (
+                              .map((v, k) =>(
                                 <div
                                   key={k}
-                                  className="px-2 dropdown-item "
+                                  className={`px-2 dropdown-item  `}
                                   onClick={e =>
                                     this.setState(prev =>({
                                       filter: { ...filter, user: v }
@@ -194,7 +193,54 @@ class AnormaliesHistory extends Component {
                                 </div>
                               )  )}
                           </div>
+                        
                         </div>
+                    {/* equipmentType filter */}
+                        <div className="dropdown flex-fill">
+                          <div className="pb-2 pt-3"> EquipmentType :</div>
+                          <div  className="border rounded p-2 d-flex align-items-center"  data-toggle="dropdown" >
+                           {filter.equipmentType !== null ? filter.equipmentType : "All Equipment Type"}
+                            <div className="ml-auto"> <i className="fa fa-sort-down" /> </div>
+                          </div>
+                          <div className=" dropdown-menu w-100 " >
+                            <div
+                              onClick={e =>
+                                this.setState(prev =>   ({
+                                  filter: { ...prev.filter, equipmentType: null }
+                                }) )
+                              }
+                              className={`px-2  dropdown-item`}
+                            >
+                              <label
+                                htmlFor="no-filter"
+                                style={{ cursor: "pointer" }}
+                              >
+                               All Equipment Type
+                              </label>
+                            </div>
+                            { HistoryTableDataOrigin.map(v =>v.equipmentType).sort()
+                              .reduce(
+                                (r, c) =>
+                                  r.findIndex(v1 => c === v1) === -1
+                                    ? [...r, c]
+                                    : r,
+                                []
+                              )
+                              .map((v, k) => (
+                                <div
+                                  key={k}
+                                  className={`px-2 dropdown-item  `}
+                                  onClick={e =>
+                                    this.setState(prev =>({
+                                      filter: { ...filter, equipmentType: v }
+                                    }))
+                                  }
+                                >
+                                  <label style={{ cursor: "pointer" }} > {v} </label>
+                                </div>
+                              )  )}
+                          </div>
+                          </div>
                       </div>
                       {/* ============================================================================ */}
                     </div>
@@ -210,7 +256,7 @@ class AnormaliesHistory extends Component {
                         type="button"
                         className="btn btn-primary "
                         onClick={this.handleDoFilter}
-                        data-dismiss={filter.user !== null && "modal"}
+                        data-dismiss={filter !== null && "modal"}
                       >
                         Do Filter
                       </button>

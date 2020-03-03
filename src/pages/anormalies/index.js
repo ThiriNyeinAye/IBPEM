@@ -21,10 +21,15 @@ const HOST = {
     maythu: "http://192.168.100.27:3003"
 }
 
+
+// const DataFetcher = (callback) => {
+//     return fetch(`${HOST.test}/dummy-data?startDate=2020-01-10&endDate=2020-01-11`)
+
 const DataFetcher = (callback, queryParams) => {
     const queryParamString = queryString.stringify(queryParams)
     // console.log("queryParams: ", queryParamString)
     return fetch(`${HOST.test}/dummy-data?${queryParamString}`)
+
         .then(res => res.json())
         .then(data => callback(data.error, data))
         .catch(error => callback(error, null))
