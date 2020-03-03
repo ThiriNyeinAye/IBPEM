@@ -14,7 +14,7 @@ const NormalDropDownView = props => {
   } = props;
 
   // const outsideClickControl = p => {setoutsideClick(p); };
-  console.log("NormalDropDown>>>", inputData)
+  // console.log("NormalDropDown>>>", inputData)
   return (
     <div className="d-flex flex-wrap flex-md-wrap flex-sm-wrap justify-content-start ">
       <DropDown

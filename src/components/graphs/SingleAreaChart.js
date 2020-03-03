@@ -97,15 +97,29 @@ class SingleAreaChart extends Component {
         this.setState({ options: this.initChartOption(this.chartRef.chart, this.props) })
     }
 
-    componentDidUpdate(prevProps, prevState) {
-        if (!deepEqual(prevProps.data, this.props.data) && this.chartRef.current !== null) {
-            const chart = this.chartRef.current.chart;
+    // shouldComponentUpdate(nextProps, nextState) {
+    //     console.log(nextProps, nextState)
+    //     return true
+    //     // if(!deepEqual(nextProps, this.props) || !deepEqual(nextState, this.state)) return true
+    //     // else return false
+    //     // const empty = nextProps.data.length===0 && nextProps.anomalyDataByTime.length===0
+    //     // if (!empty && !deepEqual(nextProps.data, this.props.data) && this.chartRef.current !== null) 
+    //     //     return true
+    //     // else if(!empty && !deepEqual(nextProps.anomalyDataByTime, this.props.anomalyDataByTime) && this.chartRef.current !== null) 
+    //     //     return true 
+    //     // else 
+    //     //     return false
+    // }
+
+    componentDidUpdate(prevProps, prevState) {   
+        const chart = this.chartRef.current.chart; 
+        const empty = this.props.length===0 && this.props.anomalyDataByTime.length===0    
+        if (!empty && !deepEqual(prevProps.data, this.props.data) && this.chartRef.current !== null) {
             this.setState({ options: this.initChartOption(chart, this.props) })
         }
-        if(!deepEqual(prevProps.anomalyDataByTime, this.props.anomalyDataByTime) && this.chartRef.current !== null) {
-            const chart = this.chartRef.current.chart;
+        else if(!empty && !deepEqual(prevProps.anomalyDataByTime, this.props.anomalyDataByTime) && this.chartRef.current !== null) {
             this.setState({ options: this.initChartOption(chart, this.props) })
-        }
+        } 
     }
 
     componentDidMount() {
@@ -148,7 +162,6 @@ class SingleAreaChart extends Component {
     } // end Did mount
 
     render() {
-
         // Define a custom symbol path
         // Highcharts.SVGRenderer.prototype.symbols.leftarrow = (x, y, w, h) => {
         //     return [

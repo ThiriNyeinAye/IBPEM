@@ -69,7 +69,10 @@ class Anormalies extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            data: {},
+            // data: null,
+            data0: [],
+            data1: [],
+            data2: [],
             anomalyDataByTime: [],
             anomalyDataByEquipment: {},
             height: 200,
@@ -163,27 +166,40 @@ class Anormalies extends Component {
         }
         this.responsiveHandler(window)
         
+        const singlerAreaChart = this.singleAreaChartRef.current
+        if(singlerAreaChart!==null) singlerAreaChart.setLoading(true)
+        this.readDataFromApi()
+        // if(this.singleAreaChartRef.current!==null) 
+        //     this.singleAreaChartRef.current.setChartOption()
+        
+    }
+
+    readDataFromApi = () => {
         YearlyDataFetcher((error, data) => {
             if (error) console.log("Error:YearlyDataFetcher: ", error)
             else {
-                this.setState({ yearlyData: data.payload })
+                this.setState({ yearlyData: data.payload }, () => { 
+
+                 })
             }
         })
         this.fetchAnomalyData()
         DataFetcher((error, data) => {
             if (error) console.log("Error:DataFetcher: ", error)
             else {
-                const data0 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
-                const data1 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
-                const data2 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
-                this.setState({ data: data.payload, data0, data1, data2 /*.filter((v,i)=> i<200)*/ }, () => {
-                    
+                const { data0, data1, data2 } = data.payload.reduce((r, v) => {
+                    const R = {...r}
+                    R.data0.push([moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
+                    R.data1.push([moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
+                    R.data2.push([moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
+                    return R
+                }, { data0: [], data1: [], data2: [] })
+                this.setState({ /*data: data.payload,*/ data0, data1, data2 /*.filter((v,i)=> i<200)*/ }, () => {
+                    const singlerAreaChart = this.singleAreaChartRef.current
+                    if(singlerAreaChart!==null) singlerAreaChart.setLoading(false)
                 })
             }
         }, { startDate: this.state.firstTierStartDate, endDate: this.state.firstTierEndDate })
-        
-        if(this.singleAreaChartRef.current!==null) 
-            this.singleAreaChartRef.current.setChartOption()
         
     }
 
@@ -321,7 +337,7 @@ class Anormalies extends Component {
 
                 if(this.state.temp <= 0)
                 {
-                    console.log()
+        
                 }else {
                     this.singleAreaChartRef.current.setZoomOut(chart)
                     this.setState({temp: this.state.temp-1})
@@ -354,15 +370,17 @@ class Anormalies extends Component {
 
             return CreateAnomalyData(anomalyData, (error, data) => {
                 if (error === null) {
-                    YearlyDataFetcher((error, data) => {
-                        if (error) console.log("Error:YearlyDataFetcher: ", error)
-                        else {
-                            this.setState({ yearlyData: data.payload }, () => {
-                                this.fetchAnomalyData()
-                                callback()
-                            })
-                        }
-                    })
+                    this.readDataFromApi()
+                    callback()
+                    // YearlyDataFetcher((error, data) => {
+                    //     if (error) console.log("Error:YearlyDataFetcher: ", error)
+                    //     else {
+                    //         this.setState({ yearlyData: data.payload }, () => {
+                    //             this.fetchAnomalyData()
+                    //             callback()
+                    //         })
+                    //     }
+                    // })
                 } else console.log("Anomaly Create: ERROR: ", error)
             })
         } else {
@@ -410,19 +428,20 @@ class Anormalies extends Component {
             // }
             const singlerAreaChart = this.singleAreaChartRef.current
             if(singlerAreaChart!==null) singlerAreaChart.setLoading(true)
-            DataFetcher((error, data) => {
-                if (error) console.log("Error:DataFetcher: ", error)
-                else {
-                    const data0 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
-                    const data1 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
-                    const data2 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
-                    this.setState({ data: data.payload, data0, data1, data2 /*.filter((v,i)=> i<200)*/ }, () => {
-                        this.fetchAnomalyData()
-                        const singlerAreaChart = this.singleAreaChartRef.current
-                            if(singlerAreaChart!==null) singlerAreaChart.setLoading(false)
-                    })
-                }
-            }, { startDate: this.state.firstTierStartDate, endDate: this.state.firstTierEndDate })
+            this.readDataFromApi()
+        //     DataFetcher((error, data) => {
+        //         if (error) console.log("Error:DataFetcher: ", error)
+        //         else {
+        //             const data0 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
+        //             const data1 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
+        //             const data2 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
+        //             this.setState({ data: data.payload, data0, data1, data2 /*.filter((v,i)=> i<200)*/ }, () => {
+        //                 this.fetchAnomalyData()
+        //                 const singlerAreaChart = this.singleAreaChartRef.current
+        //                     if(singlerAreaChart!==null) singlerAreaChart.setLoading(false)
+        //             })
+        //         }
+        //     }, { startDate: this.state.firstTierStartDate, endDate: this.state.firstTierEndDate })
         })
 
     }
@@ -497,10 +516,10 @@ class Anormalies extends Component {
                                                         <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstfirstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }}TierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
                                                     </div>
                                                     {
-                                                        data.length > 0 ?
+                                                        // data.length > 0 ?
                                                             <SingleAreaChart  anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
                                                             // <MultiAreaChart data1={data0} data2={data2} />
-                                                            : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
+                                                            // : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
                                                     }
                                             </div>
                                        </div>
@@ -527,10 +546,10 @@ class Anormalies extends Component {
                                                 <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
                                             </div>
                                             {
-                                                data.length > 0 ?
+                                                // data.length > 0 ?
                                                     <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
                                                     // <MultiAreaChart data1={data0} data2={data2} />
-                                                    : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
+                                                    // : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
                                             }
                                         </div>
                                         {
@@ -559,10 +578,10 @@ class Anormalies extends Component {
                                                     <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
                                                 </div>
                                                 {
-                                                    data.length > 0 ?
+                                                    // data.length > 0 ?
                                                         <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
                                                         //  <MultiAreaChart data1={data0} data2={data2} /> 
-                                                        : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
+                                                        // : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
                                                 }
                                             </div>
                                             <div className='col pl-2'>
@@ -590,10 +609,10 @@ class Anormalies extends Component {
                                                     <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
                                                 </div>
                                                 {
-                                                    data.length > 0 ?
+                                                    // data.length > 0 ?
                                                         // <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
                                                         <MultiAreaChart ref={this.multiAreaChartRef} data1={data0} data2={data2} /> 
-                                                        : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
+                                                        // : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
                                                 }
                                             </div>
                                     </Fragment>
