@@ -2,7 +2,7 @@ import React, { useState, Fragment, useEffect } from "react";
 import SingleAreaChart from "../../components/graphs/SingleAreaChart.js";
 
 const CollapseTable = props => {
-  const { data = [], FilteronChangeValue, HistoryTableData } = props;
+  const { data = [], FilteronChangeValue, HistoryTableData=[] } = props;
   const [expandedId, setExpandedId] = useState(-1);
 
   return (
@@ -61,6 +61,7 @@ const Row = props => {
          setExpand={setExpand}
         history={history}
         setExpandedId={()=>{expandedId!==id ? setExpandedId(id) : setExpandedId(-1);setExpand(!expand)} }
+        expandedId={expandedId}
         id={id}
       />
       <ExpandedRow
@@ -72,7 +73,8 @@ const Row = props => {
   );
 };
 
-const TableRow = ({ expand, history, setExpandedId,}) => {
+const TableRow = ({  history, setExpandedId,expandedId,id}) => {
+  
   return (
     <tr
       style={{
@@ -135,7 +137,7 @@ const TableRow = ({ expand, history, setExpandedId,}) => {
           }}
         >
           <span className="">
-            <i className={`fas fa-chevron-down`} />
+            <i className={`fas fa-chevron-${expandedId !== id ? 'down': 'up'}`} />
           </span>
         </div>
       </td>
@@ -154,7 +156,7 @@ const ExpandedRow = ({ expand, data, history }) => {
           <div className="d-flex justify-content-between align-items-center">
             <div>
               <span>{history.labeledBy}</span>
-              <span className="text-secondary">
+              <span className="text-secondary px-2">
                 {history.equipmentType} show some issues due to water pump{" "}
               </span>
             </div>

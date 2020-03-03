@@ -22,7 +22,7 @@ const HOST = {
 }
 
 const DataFetcher = (callback) => {
-    return fetch(`${HOST.test}/dummy-data`)
+    return fetch(`${HOST.test}/dummy-data?startDate=2020-01-10&endDate=2020-01-11`)
         .then(res => res.json())
         .then(data => callback(data.error, data))
         .catch(error => callback(error, null))
