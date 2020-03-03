@@ -111,7 +111,7 @@ const AnormalyByTimeFrameItem = ({ selected = false, date = "", time = "", delet
                 </div>
                 <div className='d-flex flex-column pl-2'>
                     <div className='py-2 text-secondary' style={{ fontSize: 13, lineHeight: 0 }}>{date}</div>
-                    <div className="py-1 text-secondary font-weight-bold" style={{ color: selected ? '#23c49e' : undefined }}>{time}</div>
+                <div className="py-1 font-weight-bold" style={{ color: selected ? '#23c49e' : "#666666" }}>{time}</div>
                 </div>
             </div>
             <div className=''>

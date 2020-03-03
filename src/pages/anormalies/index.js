@@ -384,6 +384,7 @@ class Anormalies extends Component {
             if(areaChart!==null) {
                 const startTs = moment.tz(value.startDate, "Europe/Lisbon").unix() * 1000
                 const endTs = moment.tz(value.endDate, "Europe/Lisbon").unix() * 1000
+                areaChart.setZoom(startTs, endTs)
                 areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
             }
         })
@@ -482,8 +483,8 @@ class Anormalies extends Component {
                             <div className="py-2 col-lg-12 col-12 ">
                                 {this.state.isTripleSquareState&&(
                                     <Fragment>
-                                       <div className='p-1'>
-                                            <div className=" bg-white rounded p-4">
+                                       <div className='p-1' >
+                                            <div className=" bg-white rounded p-4"> 
                                                 <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
                                                     <div className="p-2 bg-white rounded">
                                                         <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstfirstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }}TierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
@@ -513,7 +514,7 @@ class Anormalies extends Component {
                                 )}
                                 {this.state.isEmptystate && (
                                     <Fragment>
-                                        <div className=" bg-white rounded p-4">
+                                        <div className=" bg-white rounded p-4" >
                                             <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
                                             <div className="py-2 bg-white rounded">
                                                 <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
@@ -529,7 +530,7 @@ class Anormalies extends Component {
                                             graphShowData.map((v, i) =>
                                                 <div key={i} className="pt-2 ">
                                                     {v.selected &&
-                                                        <div className="p-4 bg-white rounded">
+                                                        <div className="p-4 bg-white rounded" >
                                                             <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} />
                                                         </div>
                                                     }
@@ -562,7 +563,7 @@ class Anormalies extends Component {
                                                     graphShowData.map((v, i) =>
                                                         <div key={i} className="pb-2 col-lg-12 col-12 justify-content-center pl-2 p-0">
                                                             {v.selected &&
-                                                                <div className="bg-white rounded p-5">
+                                                                <div className="bg-white rounded p-5" >
                                                                     <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} height={this.state.height} />
                                                                 </div>
                                                             }
@@ -576,7 +577,7 @@ class Anormalies extends Component {
                                 
                                 {this.state.isSquareState&&(
                                     <Fragment>
-                                      <div className="col bg-white rounded p-4">
+                                      <div className="col bg-white rounded p-4" >
                                                 <AnormalyControlPanel handleZoomIn={this.handleMultiZoomIn} handleZoomOut={this.handleMultiZoomOut} />
                                                 <div className="p-2 bg-white rounded">
                                                     <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />

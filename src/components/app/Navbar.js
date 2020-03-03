@@ -23,7 +23,7 @@ export const LogoNavbar = props => {
 export const ItemNavbar = props => {
     return (
         <div className='d-flex justify-content-between py-3'>
-            <div className='pr-2 text-secondary'>
+            <div className='text-secondary'>
                 <SampleDropdown label={"Star Vista"}
                     additionalValue={["Star Vista"]}
                 />

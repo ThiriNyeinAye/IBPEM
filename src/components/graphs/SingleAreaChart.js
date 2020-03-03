@@ -305,7 +305,7 @@ class SingleAreaChart extends Component {
                 }
             },
             navigator: {
-                // adaptToUpdatedData: false,
+                enabled: true,
                 style: {
                     backgroundColor: "red"
                 },
@@ -365,7 +365,34 @@ class SingleAreaChart extends Component {
                 // zones: [
                 //     ...navigatorZoneColors, { color: "#B6B6B6" }
                 // ],
-            }]
+            }],
+            /*responsive: {
+                rules: [{
+                    condition: {
+                        maxWidth: 500
+                    },
+                    // Make the labels less space demanding on mobile
+                    chartOptions: {
+                        xAxis: {
+                            labels: {
+                                formatter: function () {
+                                    return this.value.charAt(0);
+                                }
+                            }
+                        },
+                        yAxis: {
+                            labels: {
+                                align: 'left',
+                                x: 0,
+                                y: -2
+                            },
+                            title: {
+                                text: ''
+                            }
+                        }
+                    }
+                }]
+            }*/
         };
     } // end chart Options
 
@@ -552,6 +579,12 @@ class SingleAreaChart extends Component {
         setLeftLine({ xValue: chart.xAxis[0].toValue(offsetXLeft), element: groupLeft })
         setRightLine({ xValue: chart.xAxis[0].toValue(offsetXRight), element: groupRight })
         // }     
+    }
+
+    setZoom = (startTime, endTime) => {
+        const chart = this.chartRef.current.chart
+        const diff = endTime-startTime
+        chart.xAxis[0].setExtremes(startTime-diff*4, endTime+diff*4);
     }
 
     setZoomIn = (chart) => {
