@@ -178,12 +178,6 @@ class Anormalies extends Component {
             else {
                 this.setState({ 
                     yearlyData: data.payload
-                    // [
-                    //     { 
-                    //         year:  "2019",
-                    //         data: data.payload.map( v => ({ ...v, value: 1 }) )
-                    //     }
-                    // ]
                 })
             }
         })
@@ -359,8 +353,15 @@ class Anormalies extends Component {
 
             return CreateAnomalyData(anomalyData, (error, data) => {
                 if (error === null) {
-                    this.fetchAnomalyData()
-                    callback()
+                    YearlyDataFetcher((error, data) => {
+                        if (error) console.log("Error:YearlyDataFetcher: ", error)
+                        else {
+                            this.setState({ yearlyData: data.payload }, () => {
+                                this.fetchAnomalyData()
+                                callback()
+                            })
+                        }
+                    })
                 } else console.log("Anomaly Create: ERROR: ", error)
             })
         } else {
