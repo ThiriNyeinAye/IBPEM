@@ -210,10 +210,10 @@ class SingleAreaChart extends Component {
         //         color: flag ? "#BF0B2399" : "#00BF8E"
         //     })
         // })
-        // navigatorZoneColors.push(...anomalyDataByTime.map(v => {
-        //     return ({ value: v.startDate, color: "#BF0B2399" })
-        // }))
         return {
+            boost: {
+                useGPUTranslations: true
+            },
             credits: {
                 enabled: false
             },
@@ -321,12 +321,7 @@ class SingleAreaChart extends Component {
                     zoneAxis: 'x',
                     zones: [
                         ...navigatorZoneColors, { color: "#B6B6B6" }
-                    ] /*[
-                        { value: 1582761720000, color: "#B6b6b6" },
-                        { value: 1582761780000, color: "#aa2222" },
-                        // { value: 1582761960000, color: "#44aa22" },
-                        { color: "#B6B6B6" }
-                    ]//[...navigatorZoneColors, { color: "#B6B6B6" }], */
+                    ] 
                 },
                 height: 60,
                 maskFill: "#44aa2210",
@@ -358,6 +353,7 @@ class SingleAreaChart extends Component {
                     valueSuffix: '°C'
                 },
                 turboThreshold: 0,
+                boostThreshold: 1,
                 // zones: [
                 //     ...lineZoneColors,
                 //     {color: '#00BF8E'}

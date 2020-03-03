@@ -162,6 +162,14 @@ class Anormalies extends Component {
             this.responsiveHandler(e.target)
         }
         this.responsiveHandler(window)
+        
+        YearlyDataFetcher((error, data) => {
+            if (error) console.log("Error:YearlyDataFetcher: ", error)
+            else {
+                this.setState({ yearlyData: data.payload })
+            }
+        })
+        this.fetchAnomalyData()
         DataFetcher((error, data) => {
             if (error) console.log("Error:DataFetcher: ", error)
             else {
@@ -169,18 +177,11 @@ class Anormalies extends Component {
                 const data1 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
                 const data2 = data.payload.map(v => [moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
                 this.setState({ data: data.payload, data0, data1, data2 /*.filter((v,i)=> i<200)*/ }, () => {
-                    this.fetchAnomalyData()
+                    
                 })
             }
         }, { startDate: this.state.firstTierStartDate, endDate: this.state.firstTierEndDate })
-        YearlyDataFetcher((error, data) => {
-            if (error) console.log("Error:YearlyDataFetcher: ", error)
-            else {
-                this.setState({ 
-                    yearlyData: data.payload
-                })
-            }
-        })
+        
         if(this.singleAreaChartRef.current!==null) 
             this.singleAreaChartRef.current.setChartOption()
         
