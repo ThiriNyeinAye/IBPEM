@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from "react"
 import "../../App.css"
 import moment from "moment-timezone"
+import cliTruncate from 'cli-truncate';
 
 export default class TestComponent extends Component {
     constructor(props) {
@@ -26,7 +27,7 @@ export default class TestComponent extends Component {
     }
 
     render() {
-        const { yearlyData } = this.props
+        const { yearlyData, firstTierDate } = this.props
         // calcuate months
         let startDate = moment().startOf('year')
         let endDate = moment().endOf('year')
@@ -37,8 +38,6 @@ export default class TestComponent extends Component {
             else months.push(null)
             startDate = startDate.add(8, 'days')
         }
-
-        // console.log("YearlyData: \n", yearlyData)
         
         const rows = yearlyData.map((v1,k1) => {
             return (
@@ -47,7 +46,7 @@ export default class TestComponent extends Component {
                         <div className="font-weight-bold text-secondary" style={{ fontSize: 12 }}>{v1.year}</div>
                     </div>
                     <div>
-                        <Row5 dataRow={v1.data} rowNo={k1} handleClickOnSvgRect={this.handleClickOnSvgRect} />
+                        <Row5 firstTierDate={firstTierDate} dataRow={v1.data} rowNo={k1} handleClickOnSvgRect={this.handleClickOnSvgRect} />
                     </div>
                 </div>
             )
@@ -105,7 +104,7 @@ const Row5Tip = ({ months }) => {
     )
 }
 
-const Row5 = ({ dataRow, rowNo, handleClickOnSvgRect }) => {
+const Row5 = ({ firstTierDate, dataRow, rowNo, handleClickOnSvgRect }) => {
     const rects = dataRow.map((v2, k2) => {
         const dataState = v2.dataState[1] // stateId=1 for Anomaly Data
         if(v2.count>0) 
@@ -123,8 +122,20 @@ const Row5 = ({ dataRow, rowNo, handleClickOnSvgRect }) => {
                     </rect>
                     <text 
                         onClick={e => handleClickOnSvgRect(v2)}
+                        x={k2+0.5}/* y={0.7}*/ fill="white" fontSize={0.4} 
+                        y="50%" dominantBaseline="middle" textAnchor="middle" >
+                        { cliTruncate((dataState.dataCount>0 ? `${dataState.dataCount}` : ""), 4) }
+                    </text>
+                    {
+                        firstTierDate.startDate===v2.startDate && <line x1={k2} y1={0} x2={k2} y1={1} style={{ strokeWidth: 0.2, stroke: "#232323" }} />
+                    }
+                    {
+                        firstTierDate.endDate===v2.endDate && <line x1={k2+1} y1={1} x2={k2+1} y1={1} style={{ strokeWidth: 0.2, stroke: "#232323" }} />
+                    }
+                    {/* <text 
+                        onClick={e => handleClickOnSvgRect(v2)}
                         x={k2+0.3} y={0.7} fill="white" fontSize={0.6} >
-                        { dataState.dataCount>0 ? dataState.dataCount: "" }</text>
+                        { dataState.dataCount>0 ? dataState.dataCount: "" }</text> */}
                 </g> 
             )  
         else 

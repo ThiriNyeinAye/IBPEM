@@ -28,7 +28,7 @@ const DropdownContainerAnormaly = props => {
     }
     
     const CustomDataFetcher = (callback) => {
-        const getURL = `${HOST.maythu}/labels`
+        const getURL = `${HOST.test}/labels`
         fetch(getURL)
             .then(res => res.json())
             .then(data => callback(data.error, data.payload))
@@ -36,7 +36,7 @@ const DropdownContainerAnormaly = props => {
     }
 
     const handleAddData = inputData => {
-        const postURL=`${HOST.maythu}/addlabel`
+        const postURL=`${HOST.test}/addlabel`
         const data = {"faultType": inputData.trim() };
         fetch(postURL, {
           method: "POST",

@@ -3,6 +3,7 @@ import { createPortal } from "react-dom"
 import Highcharts, { Axis } from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
 import moment from "moment-timezone"
+import deepEqual from "deep-equal"
 // import moment from 'moment'
 
 // const PlotBands = props => {
@@ -96,9 +97,20 @@ class SingleAreaChart extends Component {
         this.setState({ options: this.initChartOption(this.chartRef.chart, this.props) })
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (!deepEqual(prevProps.data, this.props.data) && this.chartRef.current !== null) {
+            const chart = this.chartRef.current.chart;
+            this.setState({ options: this.initChartOption(chart, this.props) })
+        }
+        if(!deepEqual(prevProps.anomalyDataByTime, this.props.anomalyDataByTime) && this.chartRef.current !== null) {
+            const chart = this.chartRef.current.chart;
+            this.setState({ options: this.initChartOption(chart, this.props) })
+        }
+    }
+
     componentDidMount() {
         const chart = this.chartRef.current.chart;
-       
+
         this.setState({ options: this.initChartOption(chart, this.props) })
 
         chart.container.ondblclick = (e) => {
@@ -136,7 +148,6 @@ class SingleAreaChart extends Component {
     } // end Did mount
 
     render() {
-        const { props } = this
 
         // Define a custom symbol path
         // Highcharts.SVGRenderer.prototype.symbols.leftarrow = (x, y, w, h) => {
@@ -167,6 +178,14 @@ class SingleAreaChart extends Component {
     }
 
     //====================================================================
+    
+    setLoading = (isLoading) => {
+        const chartContainer = this.chartRef.current;
+        if(chartContainer!==null) {
+            if(isLoading) chartContainer.chart.showLoading()
+            else chartContainer.chart.hideLoading()
+        }
+    }
 
     initChartOption = (chart, props) => {
         const anomalyDataByTimeProps = props.anomalyDataByTime === undefined ? [] : props.anomalyDataByTime /*@lucy */
@@ -176,26 +195,28 @@ class SingleAreaChart extends Component {
         }))
         let navigatorZoneColors = props.data.map((v, i, arr) => {
             // const flag = i>0 ? anomalyDataByTime.findIndex( v1 => arr[i-1][0]>=v1.startDate-60000 && arr[i-1][0]<=v1.endDate )>-1 : false
-            const flag = anomalyDataByTime.findIndex( v1 => v[0]>=v1.startDate && v[0]<=v1.endDate )>-1 
+            const flag = anomalyDataByTime.findIndex(v1 => v[0] >= v1.startDate && v[0] <= v1.endDate) > -1
             return ({
                 value: v[0],
                 color: flag ? "#BF0B2399" : "#B6B6B6"
             })
-            // if (i === 0) return { value: v[0], color: "#B6B6B6" }
-            // return ((i>20 && i<26) ? { value: v[0], color: "#BF0B2399", } : { value: v[0], color: "#B6B6B6" })
-            // return ((arr[i - 1][0] >= 1581639130000 && arr[i - 1][0] <= 1581639190000) ? { value: v[0], color: "#BF0B2399", } : { value: v[0], color: "#B6B6B6" })
         })
-        navigatorZoneColors.push(...anomalyDataByTime.map(v => {
-            return ({ value: v.startDate, color: "#BF0B2399" })
-        }))
+        // console.log("navigatorZoneColors: \n", anomalyDataByTime, "\n", navigatorZoneColors)
+        // let lineZoneColors = props.data.map((v, i, arr) => {
+        //     // const flag = i>0 ? anomalyDataByTime.findIndex( v1 => arr[i-1][0]>=v1.startDate-60000 && arr[i-1][0]<=v1.endDate )>-1 : false
+        //     const flag = anomalyDataByTime.findIndex(v1 => v[0] >= v1.startDate && v[0] <= v1.endDate) > -1
+        //     return ({
+        //         value: v[0],
+        //         color: flag ? "#BF0B2399" : "#00BF8E"
+        //     })
+        // })
+        // navigatorZoneColors.push(...anomalyDataByTime.map(v => {
+        //     return ({ value: v.startDate, color: "#BF0B2399" })
+        // }))
         return {
             credits: {
                 enabled: false
             },
-            // loading: {
-            //     hideDuration: 1000,
-            //     showDuration: 1000
-            // },
             rangeSelector: {
                 enabled: false
             },
@@ -209,7 +230,6 @@ class SingleAreaChart extends Component {
                 type: 'area',
                 events: {
                     click: function (event) {
-                        //console.log('event', event);
                         alert('x : ' + event.xAxis[0].value + '\ny : ' + event.yAxis[0].value)
                     }
                 }
@@ -225,8 +245,8 @@ class SingleAreaChart extends Component {
             },
             yAxis: [
                 {
-                    min: this.props.data.map(v => v[1]).reduce((r,c) => c<r ? c : r ,0),
-                    max: this.props.data.map(v => v[1]).reduce((r,c) => c>r ? c : r ,0),
+                    min: this.props.data.map(v => v[1]).reduce((r, c) => c < r ? c : r, 0),
+                    max: this.props.data.map(v => v[1]).reduce((r, c) => c > r ? c : r, 0),
                     labels: {
                         align: 'right',
                         x: 4
@@ -285,9 +305,10 @@ class SingleAreaChart extends Component {
                 }
             },
             navigator: {
+                // adaptToUpdatedData: false,
                 style: {
                     backgroundColor: "red"
-                },  
+                },
                 top: 10,
                 series: {
                     color: "#ff7777",
@@ -308,7 +329,7 @@ class SingleAreaChart extends Component {
                     ]//[...navigatorZoneColors, { color: "#B6B6B6" }], */
                 },
                 height: 60,
-                maskFill: "#00000015",
+                maskFill: "#44aa2210",
                 xAxis: {
                     labels: {
                         enabled: true,
@@ -337,6 +358,13 @@ class SingleAreaChart extends Component {
                     valueSuffix: '°C'
                 },
                 turboThreshold: 0,
+                // zones: [
+                //     ...lineZoneColors,
+                //     {color: '#00BF8E'}
+                // ]
+                // zones: [
+                //     ...navigatorZoneColors, { color: "#B6B6B6" }
+                // ],
             }]
         };
     } // end chart Options
@@ -364,7 +392,7 @@ class SingleAreaChart extends Component {
             right: chart.plotLeft + chart.plotWidth
         };
         if (chartX >= extremes.left && chartX <= extremes.right) {
-            
+
             if (rightLine !== null && rightLine.element !== null && rightLine.element.drag) {
                 rightLine.element.attr({
                     transform: `translate(${offsetX},${0})`
@@ -422,10 +450,12 @@ class SingleAreaChart extends Component {
             })
             .add(groupLeft);
         draggablePlotHandleLeft.element.onmousedown = (e) => {
-            this.setState({ monitorText: {
-                ...this.state.monitorText,
-                mouse: "down"
-            }})
+            this.setState({
+                monitorText: {
+                    ...this.state.monitorText,
+                    mouse: "down"
+                }
+            })
             groupLeft.drag = true
             e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
         }
@@ -434,10 +464,12 @@ class SingleAreaChart extends Component {
             e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
         }
         draggablePlotHandleLeft.element.onmouseup = (e) => {
-            this.setState({ monitorText: {
-                ...this.state.monitorText,
-                mouse: "down"
-            }})
+            this.setState({
+                monitorText: {
+                    ...this.state.monitorText,
+                    mouse: "down"
+                }
+            })
             groupLeft.drag = false
             e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
         }
@@ -446,7 +478,7 @@ class SingleAreaChart extends Component {
             e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
         }
         draggablePlotHandleLeft.element.onmouseenter = (e) => {
-            e.target.attributes.style.value = e.target.attributes.style.value+"; fill: #daeeda;"
+            e.target.attributes.style.value = e.target.attributes.style.value + "; fill: #daeeda;"
         }
         draggablePlotHandleLeft.element.onmouseleave = (e) => {
             e.target.attributes.style.value = e.target.attributes.style.value.replace("; fill: #daeeda;", "")
@@ -495,13 +527,13 @@ class SingleAreaChart extends Component {
             groupRight.drag = false
             e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
         }
-   
+
         draggablePlotHandleRight.element.ontouchend = (e) => {
             groupRight.drag = false
             e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
         }
         draggablePlotHandleRight.element.onmouseenter = (e) => {
-            e.target.attributes.style.value = e.target.attributes.style.value+"; fill: #daeeda;"
+            e.target.attributes.style.value = e.target.attributes.style.value + "; fill: #daeeda;"
         }
         draggablePlotHandleRight.element.onmouseleave = (e) => {
             e.target.attributes.style.value = e.target.attributes.style.value.replace("; fill: #daeeda;", "")
