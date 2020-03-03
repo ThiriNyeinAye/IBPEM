@@ -127,10 +127,10 @@ const Row5 = ({ firstTierDate, dataRow, rowNo, handleClickOnSvgRect }) => {
                         { cliTruncate((dataState.dataCount>0 ? `${dataState.dataCount}` : ""), 4) }
                     </text>
                     {
-                        firstTierDate.startDate===v2.startDate && <line x1={k2} y1={0} x2={k2} y1={1} style={{ strokeWidth: 0.2, stroke: "#232323" }} />
+                        firstTierDate.startDate===v2.startDate && <line x1={k2} y1={0} x2={k2} y2={1} style={{ strokeWidth: 0.2, stroke: "#232323" }} />
                     }
                     {
-                        firstTierDate.endDate===v2.endDate && <line x1={k2+1} y1={1} x2={k2+1} y1={1} style={{ strokeWidth: 0.2, stroke: "#232323" }} />
+                        firstTierDate.endDate===v2.endDate && <line x1={k2+1} y1={0} x2={k2+1} y2={1} style={{ strokeWidth: 0.2, stroke: "#232323" }} />
                     }
                     {/* <text 
                         onClick={e => handleClickOnSvgRect(v2)}
@@ -140,13 +140,14 @@ const Row5 = ({ firstTierDate, dataRow, rowNo, handleClickOnSvgRect }) => {
             )  
         else 
             return (
-                <rect  
-                    key={`${rowNo}${k2}`}
-                    className="rect-22" 
-                    x={k2} y={0.5} width={1} height={0.01}
-                    style={{ stroke: "#8395a711", strokeWidth: 0.05, opacity: 0.9 }}
-                >
-                </rect>
+                // <rect  
+                //     key={`${rowNo}${k2}`}
+                //     className="rect-22" 
+                //     x={k2} y={0.5} width={1} height={0.01}
+                //     style={{ stroke: "#8395a711", strokeWidth: 0.05, opacity: 0.9 }}
+                // >
+                // </rect>
+                <line key={`${rowNo}${k2}`} x1={k2} y1={0.5} x2={k2+1} y2={0.5} style={{ strokeWidth: 0.05, stroke: "#23232333", strokeDasharray: "0.2 0.2" }} />
             )
     })
 
