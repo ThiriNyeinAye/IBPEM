@@ -389,41 +389,45 @@ class Anormalies extends Component {
     }
 
     handleAnomalyTimeClicked = value => {
-        const anomalyDataByEquipment1 = { ...this.state.anomalyDataByEquipment }
+        const areaChart = this.singleAreaChartRef.current
+        const startTs = moment.tz(value.startDate, "Europe/Lisbon").unix() * 1000
+        const endTs = moment.tz(value.endDate, "Europe/Lisbon").unix() * 1000
+
+        const { anomalyDataByEquipment : anomalyDataByEquipment1 } = this.state
         const anomalyDataByEquipment = Object.keys(anomalyDataByEquipment1).reduce((r, c) => {
             const R = { ...r }
             const data = anomalyDataByEquipment1[c].map(v => v.id === value.id ? { ...v, selected: true } : { ...v, selected: false })
             R[c] = data
             return R
         }, {})
+        const graphShowData = value.additionalGraphs.map(v => ({ selected: true, name: v }))
+        const anomalyInputData = {
+            faultType: value.faultType,
+            severity: value.severity,
+            sensorSignal: value.sensorSignal,
+        }
         this.setState({
             anomalyDataByEquipment,
-            anomalyInputData: {
-                faultType: value.faultType,
-                severity: value.severity,
-                sensorSignal: value.sensorSignal,
-            },
-            graphShowData: value.additionalGraphs.map(v => ({ selected: true, name: v }))
-        }, /*() => {
+            anomalyInputData,
+            graphShowData,
+        }, () => {
+            areaChart.setZoom(startTs, endTs)
             // console.log("click saved")
             // const areaChart = this.singleAreaChartRef.current
             // if(areaChart!==null) {
             //     const startTs = moment.tz(value.startDate, "Europe/Lisbon").unix() * 1000
             //     const endTs = moment.tz(value.endDate, "Europe/Lisbon").unix() * 1000
-            //     areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
+            areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
             //     areaChart.setZoom(startTs, endTs)
             //     // areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
             // }
-        }*/)
-        console.log("click saved")
-        const areaChart = this.singleAreaChartRef.current
-        if(areaChart!==null) {
-            const startTs = moment.tz(value.startDate, "Europe/Lisbon").unix() * 1000
-            const endTs = moment.tz(value.endDate, "Europe/Lisbon").unix() * 1000
-            areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
-            areaChart.setZoom(startTs, endTs)
+        })
+        
+        // if(areaChart!==null) {            
             // areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
-        }
+            // areaChart.setZoom(startTs, endTs)
+            // areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
+        // }
     }
 
     handleFirstTierDateRangeChange = ({ startDate, endDate }) => {
@@ -517,7 +521,7 @@ class Anormalies extends Component {
                                 />
                             </div>
 
-                            <div className="py-2 col-lg-12 col-12 ">
+                            <div className="py-2 col-lg-12 col-12 " style={{ width: window.innerWidth<=1200 ? window.innerWidth : window.innerWidth-350 }}>
                                 {this.state.isTripleSquareState&&(
                                     <Fragment>
                                        <div className='p-1' >

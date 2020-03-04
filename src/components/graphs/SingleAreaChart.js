@@ -71,8 +71,10 @@ class SingleAreaChart extends Component {
 
     addSelectedRange = async ({ leftX, rightX }) => {
         const chart = this.chartRef.current.chart;
-
-        await this.removeSelectedRange()
+        const { leftLine, rightLine } = this.state
+        if(leftLine!==null && rightLine!==null) {
+            await this.removeSelectedRange()
+        }
         this.createSelectedTimeRange({
             chart,
             leftLine: this.state.leftLine,
