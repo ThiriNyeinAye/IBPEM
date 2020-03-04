@@ -59,13 +59,16 @@ class AnormaliesHistory extends Component {
 
   handleDoFilter = () => {
     const HistoryTableData =this.state.HistoryTableDataOrigin.filter(v => {
-      //  this.state.filter.user === null  ? true:  v.labeledBy === this.state.filter.user
-         if(this.state.filter.user !== null ) {
-        return  v.labeledBy === this.state.filter.user
-         }if(this.state.filter.equipmentType !== null){
+    //  return this.state.filter.user === null  ? true:  v.labeledBy === this.state.filter.user 
+    if(this.state.filter.user !== null && this.state.filter.equipmentType !== null){
+      return (v.labeledBy === this.state.filter.user && v.equipmentType === this.state.filter.equipmentType)
+    }
+        else if(this.state.filter.equipmentType !== null){
           return v.equipmentType === this.state.filter.equipmentType
-         }else return v;
-     
+         }else  if(this.state.filter.user !== null ) {
+       return  v.labeledBy === this.state.filter.user
+        }
+         else return v;
         }) ;
   
     this.setState(prev => ({
@@ -157,10 +160,12 @@ class AnormaliesHistory extends Component {
                           </div>
                           <div className=" dropdown-menu w-100 " >
                             <div
-                              onClick={e =>
+                              onClick={(e) =>{                          
+                                    e.preventDefault();
                                 this.setState(prev =>   ({
                                   filter: { ...prev.filter, user: null }
                                 }) )
+                              }
                               }
                               className={`px-2  dropdown-item`}
                             >
@@ -183,7 +188,7 @@ class AnormaliesHistory extends Component {
                                 <div
                                   key={k}
                                   className={`px-2 dropdown-item  `}
-                                  onClick={e =>
+                                  onClick={() =>
                                     this.setState(prev =>({
                                       filter: { ...filter, user: v }
                                     }))

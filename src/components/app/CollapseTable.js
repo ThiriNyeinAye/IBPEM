@@ -42,7 +42,7 @@ const CollapseTable = props => {
         </thead>
         <tbody>
           {HistoryTableData.map((v, k) => {
-            return <Row id={k} expandedId={expandedId} setExpandedId={setExpandedId} data={data} history={v} key={k} />;
+            return <Row id={k+1} expandedId={expandedId} setExpandedId={setExpandedId} data={data} history={v} key={k} />;
           })}
         </tbody>
       </table>
@@ -74,7 +74,7 @@ const Row = props => {
 };
 
 const TableRow = ({  history, setExpandedId,expandedId,id}) => {
-  
+  // console.log(history.label.length)
   return (
     <tr
       style={{
@@ -89,7 +89,7 @@ const TableRow = ({  history, setExpandedId,expandedId,id}) => {
         className="py-3 px-4 "
         style={{ borderTopLeftRadius: 6, borderBottomLeftRadius: 6 }}
       >
-        <div > {history.no}</div>
+        <div > {id}</div>
       </td>
       <td className="py-3">
         <div>{history.building} </div>
