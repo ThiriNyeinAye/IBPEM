@@ -22,7 +22,7 @@ export default class TestComponent extends Component {
             dataState: value.value,
             dataCount: value.count,
         }
-        alert(JSON.stringify(value1, null, 2))
+        // alert(JSON.stringify(value1, null, 2))
         this.props.handleFirstTierDateRangeChange({ startDate: value1.startDate, endDate: value1.endDate })
     }
 

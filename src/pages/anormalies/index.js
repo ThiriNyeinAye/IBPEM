@@ -404,15 +404,26 @@ class Anormalies extends Component {
                 sensorSignal: value.sensorSignal,
             },
             graphShowData: value.additionalGraphs.map(v => ({ selected: true, name: v }))
-        }, () => {
-            const areaChart = this.singleAreaChartRef.current
-            if(areaChart!==null) {
-                const startTs = moment.tz(value.startDate, "Europe/Lisbon").unix() * 1000
-                const endTs = moment.tz(value.endDate, "Europe/Lisbon").unix() * 1000
-                areaChart.setZoom(startTs, endTs)
-                areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
-            }
-        })
+        }, /*() => {
+            // console.log("click saved")
+            // const areaChart = this.singleAreaChartRef.current
+            // if(areaChart!==null) {
+            //     const startTs = moment.tz(value.startDate, "Europe/Lisbon").unix() * 1000
+            //     const endTs = moment.tz(value.endDate, "Europe/Lisbon").unix() * 1000
+            //     areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
+            //     areaChart.setZoom(startTs, endTs)
+            //     // areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
+            // }
+        }*/)
+        console.log("click saved")
+        const areaChart = this.singleAreaChartRef.current
+        if(areaChart!==null) {
+            const startTs = moment.tz(value.startDate, "Europe/Lisbon").unix() * 1000
+            const endTs = moment.tz(value.endDate, "Europe/Lisbon").unix() * 1000
+            areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
+            areaChart.setZoom(startTs, endTs)
+            // areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
+        }
     }
 
     handleFirstTierDateRangeChange = ({ startDate, endDate }) => {
@@ -513,7 +524,7 @@ class Anormalies extends Component {
                                             <div className=" bg-white rounded p-4"> 
                                                 <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
                                                     <div className="p-2 bg-white rounded">
-                                                        <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstfirstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }}TierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
+                                                    <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
                                                     </div>
                                                     {
                                                         // data.length > 0 ?

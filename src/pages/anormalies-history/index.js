@@ -18,7 +18,7 @@ const DataFetcher = callback => {
     .catch(error => callback(error, null));
 };
 const GetHistoryData = callback =>{
-  return fetch(`${HOST.maythu}/history`)
+  return fetch(`${HOST.test}/history`)
   .then(res => res.json())
   .then(data => callback(data.error,data))
   .catch(error => callback(error,null))
