@@ -1,5 +1,6 @@
 import React, { Component, useState, useRef, useEffect, Fragment } from "react"
 import moment from "moment-timezone"
+import Draggable from 'react-draggable'
 
 import SingleAreaChart from "../../components/graphs/SingleAreaChart.js"
 import MultiAreaChart from "../../components/graphs/MultiAreaChart.js"
@@ -12,8 +13,9 @@ import { SampleDropdown } from '../../components/app/DropDown'
 
 import { withLStorage } from "../../components/hoc.js"
 
-import TestComponent from "./TestComponent"
+import TestComponent from "./FirstTierGraph"
 import queryString from  "querystring"
+import Loading from "./Loading.js"
 
 const HOST = {
     local: "http://192.168.100.7:3003",
@@ -70,6 +72,7 @@ class Anormalies extends Component {
         super(props)
         this.state = {
             // data: null,
+            showLoading: false,
             data0: [],
             data1: [],
             data2: [],
@@ -88,9 +91,9 @@ class Anormalies extends Component {
             },
             graphShowData: [],
             dimensions: null,
-            yearlyData: [],
-            firstTierStartDate: "2020-02-13",
-            firstTierEndDate: "2020-02-20"
+            yearlyData: null,
+            firstTierStartDate: "2020-02-10",
+            firstTierEndDate: "2020-02-25"
         }
         this.singleAreaChartRef = React.createRef()
         this.multiAreaChartRef = React.createRef()
@@ -194,7 +197,7 @@ class Anormalies extends Component {
                     R.data2.push([moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
                     return R
                 }, { data0: [], data1: [], data2: [] })
-                this.setState({ /*data: data.payload,*/ data0, data1, data2 /*.filter((v,i)=> i<200)*/ }, () => {
+                this.setState({ showLoading: false, /*data: data.payload,*/ data0, data1, data2 /*.filter((v,i)=> i<200)*/ }, () => {
                     const singlerAreaChart = this.singleAreaChartRef.current
                     if(singlerAreaChart!==null) singlerAreaChart.setLoading(false)
                 })
@@ -431,7 +434,9 @@ class Anormalies extends Component {
     }
 
     handleFirstTierDateRangeChange = ({ startDate, endDate }) => {
+        // alert("Hello")
         this.setState(prev => ({ 
+            showLoading: true,
             firstTierStartDate: startDate!==undefined ? startDate : prev.firstTierStartDate ,
             firstTierEndDate: endDate!==undefined ? endDate : prev.firstTierEndDate
         }), () => {
@@ -462,7 +467,9 @@ class Anormalies extends Component {
     }
 
     render() {
-        const { yearlyData, data, data0, data1, data2, firstTierStartDate, firstTierEndDate,
+        const { 
+            showLoading,
+            yearlyData, data, data0, data1, data2, firstTierStartDate, firstTierEndDate,
             graphShowData, 
             anomalyInputData, 
             anomalyDataByTime, 
@@ -476,6 +483,7 @@ class Anormalies extends Component {
           
         return (
             <div className="" style={{ overflow: 'auto' }}>
+                <Loading show={showLoading} />
                 <div 
                     onClick={e => {
                         const sidebarStyle = document.getElementById("sidebarContainer").style
@@ -528,7 +536,7 @@ class Anormalies extends Component {
                                             <div className=" bg-white rounded p-4"> 
                                                 <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
                                                     <div className="p-2 bg-white rounded">
-                                                    <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
+                                                    {yearlyData!==null && <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />}
                                                     </div>
                                                     {
                                                         // data.length > 0 ?
@@ -558,7 +566,7 @@ class Anormalies extends Component {
                                         <div className=" bg-white rounded p-4" >
                                             <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
                                             <div className="py-2 bg-white rounded">
-                                                <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
+                                                {yearlyData!==null && <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />}
                                             </div>
                                             {
                                                 // data.length > 0 ?
@@ -590,7 +598,7 @@ class Anormalies extends Component {
                                             <div className="col bg-white rounded p-4">
                                                 <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
                                                 <div className="p-2 bg-white rounded">
-                                                    <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
+                                                    {yearlyData!==null && <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />}
                                                 </div>
                                                 {
                                                     // data.length > 0 ?
@@ -621,7 +629,7 @@ class Anormalies extends Component {
                                       <div className="col bg-white rounded p-4" >
                                                 <AnormalyControlPanel handleZoomIn={this.handleMultiZoomIn} handleZoomOut={this.handleMultiZoomOut} />
                                                 <div className="p-2 bg-white rounded">
-                                                    <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />
+                                                    {yearlyData!==null && <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />}
                                                 </div>
                                                 {
                                                     // data.length > 0 ?
@@ -644,24 +652,33 @@ class Anormalies extends Component {
 }
 export default withLStorage(Anormalies)
 
-
 const AnormalyControlPanel = props => {
-    return (
-        <div className='d-flex justify-content-between align-items-center'>
-            <div className=''>
-                <div className="py-0"></div>
-                <div className='dropup'>
-                    <div className='btn dropdown-toggle px-1' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <span className='text-secondary' style={{ fontSize: 20 }}>CH-3</span>
+    const [disabled,setDisabled]=useState(false)
+    const [Open,setOpen]=useState(false)
+        return (
+            <div className='d-flex flex-wrap justify-content-between align-items-center'>
+                <div className='py-0 '>
+                    <div className='py-0' >
+                        <span className='text-secondary' style={{fontSize:20}}  onClick={()=>{setOpen(!Open)}}>
+                            CH-3
+                            <i className='fa fa-sort-down px-1' style={{color:'#23c49e'}}></i>
+                        </span>
                     </div>
-                    <div className='dropdown-menu pt-3 pb-0'>
-                        <div className='px-3 border border-top-0 border-right-0 border-left-0 pb-3 text-left' >
-                            <div>Similar Detections</div>
-                        </div>
-                        <DropdownItem dateTime="29.01.2019 16:00-16:03" percentage="20%" />
-                        <DropdownItem dateTime="29.01.2019 16:00-16:03" percentage="60%" />
-                        <div className='dropdown-item py-2 text-left' style={{ cursor: "pointer" }}>
-                            Suggested Labeling
+                    {Open?
+                    <Draggable disabled={disabled} defaultPosition={{x:-30,y:-80}} bounds={{left:window.innerWidth<=1200?-40:-330,right:window.innerWidth<=1200?window.innerWidth-350 :window.innerWidth-650,top:window.innerWidth<=1200?-130:-130,bottom:window.innerHeight<=1000?  window.innerHeight-70: window.innerHeight-500}}>
+                        <div id="dialog" className="col-md-3 shadow rounded bg-white position-absolute py-3 px-0" style={{zIndex:1000,minWidth:250,maxWidth:270}}>
+                            <div className='d-flex justify-content-between border border-top-0 border-right-0 border-left-0 pb-3 px-1 text-left'>
+                                <div className='px-3'>
+                                    Similar Detections
+                                </div>
+                                <div className='py-1 px-2 rounded' style={{backgroundColor:'#DDF5E9'}} onClick={()=>{setOpen(false);console.log('Open',Open); document.getElementById('dialog').style.display='none'}}>
+                                    <i className='fa fa-times' style={{color:'#23c49e'}}></i>
+                                </div>
+                            </div>
+                            <DropdownItem dateTime="29.01.2019 16:00-16:03" percentage="20%" />
+                            <DropdownItem dateTime="29.01.2019 16:00-16:03" percentage="60%" />
+                            <div className='dropdown-item py-2 text-left' style={{ cursor: "pointer" }}>
+                                Suggested Labeling
                             <div className='d-flex flex-wrap'>
                                 <div className='py-1'>
                                     <div className='d-flex flex-row p-2 ' style={{ backgroundColor: '#E9F8F1', borderColor: '#E9F8F1', borderRadius: 10 }}>
@@ -686,24 +703,87 @@ const AnormalyControlPanel = props => {
                             </div>
                         </div>
                     </div>
+                </Draggable>  
+                :null
+                }
+            </div>
+                <div className=''>
+                    <div className='d-flex align-items-center'>
+                        <span onClick={props.multiChartRef? props.handleMultiZoomIn : props.handleZoomIn}>
+                            <Icon icon="fa fa-plus" />
+                        </span>
+                        <span onClick={props.multiChartRef? props.handleMultiZoomOut : props.handleZoomOut}>
+                            <Icon icon="fa fa-minus" />
+                        </span>
+                        <div className='text-secondary'>Zoom</div>
+                        {/* <SampleDropdown label={"Today"} icon={<Icon icon="fa fa-calendar" />}
+                            additionalValue={["7 days ", "1 month", "6 month", "1 year"]} /> */}
+                    </div>
                 </div>
             </div>
-            <div className=''>
-                <div className='d-flex align-items-center'>
-                    <span onClick={props.multiChartRef? props.handleMultiZoomIn : props.handleZoomIn}>
-                        <Icon icon="fa fa-plus" />
-                    </span>
-                    <span onClick={props.multiChartRef? props.handleMultiZoomOut : props.handleZoomOut}>
-                        <Icon icon="fa fa-minus" />
-                    </span>
-                    <div className='text-secondary'>Zoom</div>
-                    <SampleDropdown label={"Today"} icon={<Icon icon="fa fa-calendar" />}
-                        additionalValue={["7 days ", "1 month", "6 month", "1 year"]} />
-                </div>
-            </div>
-        </div>
-    )
-}
+        )
+    }
+
+
+// const AnormalyControlPanel = props => {
+//     return (
+//         <div className='d-flex justify-content-between align-items-center'>
+//             <div className=''>
+//                 <div className="py-0"></div>
+//                 <div className='dropup'>
+//                     <div className='btn dropdown-toggle px-1' data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+//                         <span className='text-secondary' style={{ fontSize: 20 }}>CH-3</span>
+//                     </div>
+//                     <div className='dropdown-menu pt-3 pb-0'>
+//                         <div className='px-3 border border-top-0 border-right-0 border-left-0 pb-3 text-left' >
+//                             <div>Similar Detections</div>
+//                         </div>
+//                         <DropdownItem dateTime="29.01.2019 16:00-16:03" percentage="20%" />
+//                         <DropdownItem dateTime="29.01.2019 16:00-16:03" percentage="60%" />
+//                         <div className='dropdown-item py-2 text-left' style={{ cursor: "pointer" }}>
+//                             Suggested Labeling
+//                             <div className='d-flex flex-wrap'>
+//                                 <div className='py-1'>
+//                                     <div className='d-flex flex-row p-2 ' style={{ backgroundColor: '#E9F8F1', borderColor: '#E9F8F1', borderRadius: 10 }}>
+//                                         <div className='text-secondary'>
+//                                             SEVERITY
+//                                         </div>
+//                                         <div className='px-2'>
+//                                             Low
+//                                         </div>
+//                                     </div>
+//                                 </div>
+//                                 <div className='py-1'>
+//                                     <div className='d-flex flex-row p-2  rounded-lg' style={{ backgroundColor: '#E9F8F1', borderColor: '#E9F8F1', borderRadius: 10 }}>
+//                                         <div className='text-secondary'>
+//                                             SENSOR SIGNAL
+//                                         </div>
+//                                         <div className='px-2'>
+//                                             Plant EMG
+//                                         </div>
+//                                     </div>
+//                                 </div>
+//                             </div>
+//                         </div>
+//                     </div>
+//                 </div>
+//             </div>
+//             <div className=''>
+//                 <div className='d-flex align-items-center'>
+//                     <span onClick={props.multiChartRef? props.handleMultiZoomIn : props.handleZoomIn}>
+//                         <Icon icon="fa fa-plus" />
+//                     </span>
+//                     <span onClick={props.multiChartRef? props.handleMultiZoomOut : props.handleZoomOut}>
+//                         <Icon icon="fa fa-minus" />
+//                     </span>
+//                     <div className='text-secondary'>Zoom</div>
+//                     <SampleDropdown label={"Today"} icon={<Icon icon="fa fa-calendar" />}
+//                         additionalValue={["7 days ", "1 month", "6 month", "1 year"]} />
+//                 </div>
+//             </div>
+//         </div>
+//     )
+// }
 
 const DropdownItem = ({ dateTime = '', percentage = '' }) => {
     return (

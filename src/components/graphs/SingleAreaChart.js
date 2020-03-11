@@ -182,7 +182,7 @@ class SingleAreaChart extends Component {
         //     ];
         // };
 
-        return (
+        return ( 
             // <div className="" style={{ display: "none" }}>
                 /* <div>{JSON.stringify(this.state.monitorText)} </div> */
                 <HighchartsReact ref={this.chartRef} highcharts={Highcharts} constructorType={"stockChart"} options={this.state.options} containerProps={{ className: "" }} />
@@ -208,14 +208,32 @@ class SingleAreaChart extends Component {
             startDate: moment.tz(v.startDate, "Europe/Lisbon").unix() * 1000, 
             endDate: moment.tz(v.endDate, "Europe/Lisbon").unix() * 1000, 
         }))
-        let navigatorZoneColors = props.data.map((v, i, arr) => {
-            // const flag = i>0 ? anomalyDataByTime.findIndex( v1 => arr[i-1][0]>=v1.startDate-60000 && arr[i-1][0]<=v1.endDate )>-1 : false
-            const flag = anomalyDataByTime.findIndex(v1 => v[0] >= v1.startDate && v[0] <= v1.endDate) > -1
-            return ({
-                value: v[0],
-                color: flag ? "#BF0B2399" : "#B6B6B6"
-            })
-        })
+        // let navigatorZoneColors = props.data.map((v, i, arr) => {
+        //     // const flag = i>0 ? anomalyDataByTime.findIndex( v1 => arr[i-1][0]>=v1.startDate-60000 && arr[i-1][0]<=v1.endDate )>-1 : false
+        //     const flag = anomalyDataByTime.findIndex(v1 => v[0] >= v1.startDate && v[0] <= v1.endDate) > -1
+        //     return ({
+        //         value: v[0],
+        //         color: flag ? "#BF0B2399" : "#B6B6B6"
+        //     })
+        // })
+
+        const sortDate = anomalyDataByTime.reverse()
+        
+        const navigatorZoneColors = sortDate.reduce((r,v, arr) => {
+            const c1 = { value: v.startDate, color: "#B6B6B6" }
+            const c2 = { value: v.endDate, color: "#BF0B2399" }
+            return [...r, c1, c2 ]
+            
+        }, [])
+        navigatorZoneColors.push({ color:"#B6B6B6"})
+
+        const zoneColors = sortDate.reduce((r,v, arr) => {
+            const c1 = { value: v.startDate, color: "#00BF8E" }
+            const c2 = { value: v.endDate, color: "red" }
+    
+            return [...r, c1, c2 ]
+        }, [])
+        zoneColors.push({ color: "#00BF8E" })
         // console.log("navigatorZoneColors: \n", anomalyDataByTime, "\n", navigatorZoneColors)
         // let lineZoneColors = props.data.map((v, i, arr) => {
         //     // const flag = i>0 ? anomalyDataByTime.findIndex( v1 => arr[i-1][0]>=v1.startDate-60000 && arr[i-1][0]<=v1.endDate )>-1 : false
@@ -293,7 +311,7 @@ class SingleAreaChart extends Component {
             },
             plotOptions: {
                 series: {
-                    color: '#00BF8E',
+                    // color: '#00BF8E',
                     fillColor: {
                         linearGradient: [0, 0, 0, 200],
                         stops: [
@@ -326,7 +344,7 @@ class SingleAreaChart extends Component {
                 },
                 top: 10,
                 series: {
-                    color: "#ff7777",
+                    // color: "#ff7777",
                     data: props.data, //TODO:
                     type: 'column',
                     pointRange: undefined,
@@ -334,9 +352,10 @@ class SingleAreaChart extends Component {
                     //     groupPixelWidth: 1
                     // },
                     zoneAxis: 'x',
-                    zones: [
-                        ...navigatorZoneColors, { color: "#B6B6B6" }
-                    ] 
+                    zones: navigatorZoneColors
+                    // zones: [
+                    //     ...navigatorZoneColors, { color: "#B6B6B6" }
+                    // ] 
                 },
                 height: 60,
                 maskFill: "#44aa2210",
@@ -359,7 +378,9 @@ class SingleAreaChart extends Component {
                 },
             },
             series: [{
-                lineColor: '#00BF8E',
+                // lineColor: '#00BF8E',
+
+                type:'area',
                 yAxis: 0,
                 showInNavigator: true,
                 name: 'Temperature',
@@ -369,6 +390,8 @@ class SingleAreaChart extends Component {
                 },
                 turboThreshold: 0,
                 boostThreshold: 1,
+                zoneAxis: 'x',
+                zones: zoneColors
                 // zones: [
                 //     ...lineZoneColors,
                 //     {color: '#00BF8E'}
