@@ -20,8 +20,8 @@ import Loading from "./Loading.js"
 
 const HOST = {
     local: "http://192.168.100.7:3003",
-    // test: "https://ibpem.com/api",
-    test: "http://206.189.80.23:3003",
+    test: "https://ibpem.com/api",
+    // test: "http://206.189.80.23:3003",
     maythu: "http://192.168.100.27:3003"
 }
 
