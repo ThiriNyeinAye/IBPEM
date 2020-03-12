@@ -247,8 +247,8 @@ class Anormalies extends Component {
                     const value = {
                         ...c,
                         selected: false,
-                        date: moment(c.startDate).format("MMM Do YY HH:mm"),
-                        time: `${moment(c.startDate).format("YYYY-MM-DD HH:mm")}-${moment(c.endDate).format("YYYY-MM-DD HH:mm")}`
+                        date: moment(c.startDate).format("Do MMM, YY")+ " ~ " + moment(c.endDate).format("Do MMM, YY"),
+                        time: `${moment(c.startDate).format("HH:mm")} ~ ${moment(c.endDate).format("HH:mm")}`
                     }
                     if (R[c.deviceType] === undefined) R[c.deviceType] = [value]
                     else R[c.deviceType].push(value)

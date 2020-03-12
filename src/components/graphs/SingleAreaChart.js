@@ -289,7 +289,7 @@ class SingleAreaChart extends Component {
                 split: 'true',
                 formatter: function() {
                     return Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x) + '<br />' +
-                        Highcharts.numberFormat(this.y, 3) + ' °C'
+                        Highcharts.numberFormat(this.y, 2)*1 + ' °C'
                 }
             },
             title: {
