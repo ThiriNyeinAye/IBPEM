@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, Component } from 'react'
 import Highcharts, { Axis } from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
+import moment from "moment-timezone"
+import deepEqual from "deep-equal"
 
 const AppConst = {
     CREATE: 2,
@@ -15,7 +17,8 @@ class MultiAreaChart extends Component {
             leftLine: null,
             rightLine: null,
             rangeUpdateCondition: AppConst.DEFAULT,
-            options: {}
+            options: {},
+            monitorText: {}
         }
         this.multiChartRef = React.createRef(null)
     }
@@ -30,8 +33,23 @@ class MultiAreaChart extends Component {
         this.setState({ rangeUpdateCondition })
     }
 
-    addSelectedRange = ({ leftX, rightX }) => {
+    removeSelectedRange = () => {
+        if (this.state.leftLine !== null || this.state.rightLine !== null) {
+            const tmpLines = document.getElementsByClassName("selected-range")
+            Object.values(tmpLines).forEach(e => {
+                e.remove()
+            });
+            this.setLeftLine(null);
+            this.setRightLine(null);
+        }
+    }
+
+    addSelectedRange =  async ({ leftX, rightX }) => {
         const chart = this.multiChartRef.current.chart;
+        const { leftLine, rightLine } = this.state
+        if(leftLine!==null && rightLine!==null) {
+            await this.removeSelectedRange()
+        }
         this.createSelectedTimeRange({
             chart,
             leftLine: this.state.leftLine,
@@ -41,7 +59,29 @@ class MultiAreaChart extends Component {
             offsetXLeft: leftX,
             offsetXRight: rightX,
         })
-        this.setRangeUpdateCondition(AppConst.CREATE)
+        //this.setRangeUpdateCondition(AppConst.CREATE)
+    }
+
+    tsToPixels = ts => {
+        return this.chartRef.current.chart.xAxis[0].toPixels(ts)
+    }
+    pixelToTs = pixel => {
+        return this.chartRef.current.chart.xAxis[0].toValue(pixel)
+    }
+
+    setChartOption = () => {
+        this.setState({ options: this.initChartOption(this.chartRef.chart, this.props) })
+    }
+
+    componentDidUpdate(prevProps, prevState) {   
+        const chart = this.multiChartRef.current.chart; 
+        const empty = this.props.length===0 && this.props.anomalyDataByTime.length===0    
+        if (!empty && !deepEqual(prevProps.data, this.props.data) && this.multiChartRef.current !== null) {
+            this.setState({ options: this.initChartOption(chart, this.props) })
+        }
+        else if(!empty && !deepEqual(prevProps.anomalyDataByTime, this.props.anomalyDataByTime) && this.multiChartRef.current !== null) {
+            this.setState({ options: this.initChartOption(chart, this.props) })
+        } 
     }
 
     componentDidMount() {
@@ -50,17 +90,30 @@ class MultiAreaChart extends Component {
         this.setState({ options: this.initChartOption(chart, this.props) })
 
         chart.container.ondblclick = (e) => {
-            this.addSelectedRange({ leftX: e.offsetX - 6, rightX: e.offsetX + 6 })
+            this.addSelectedRange({ leftX: e.offsetX - 24, rightX: e.offsetX + 24 })
         }
 
         chart.container.children[0].onmousemove = e => {
             chart.pointer.normalize(e)
+            e.preventDefault()
             return this.refreshSelectedTimeRangeOnResize({
                 chart,
                 leftLine: this.state.leftLine,
                 rightLine: this.state.rightLine,
                 chartX: e.chartX,
                 offsetX: e.offsetX,
+            })
+        }
+
+        chart.container.children[0].ontouchmove = e => {
+            chart.pointer.normalize(e)
+            e.preventDefault()
+            this.refreshSelectedTimeRangeOnResize({
+                chart,
+                leftLine: this.state.leftLine,
+                rightLine: this.state.rightLine,
+                chartX: e.chartX,
+                offsetX: e.chartX,
             })
         }
 
@@ -93,7 +146,7 @@ class MultiAreaChart extends Component {
 
         return (
             <div className="">
-                <HighchartsReact ref={this.multiChartRef} highcharts={Highcharts} constructorType={"stockChart"} options={this.state.options} />
+                <HighchartsReact ref={this.multiChartRef} highcharts={Highcharts} constructorType={"stockChart"} options={this.state.options} containerProps={{ className: "" }} />
             </div>
         )
 
@@ -101,6 +154,13 @@ class MultiAreaChart extends Component {
     }
 
     //====================================================================
+    setLoading = (isLoading) => {
+        const chartContainer = this.multiChartRef.current;
+        if(chartContainer!==null) {
+            if(isLoading) chartContainer.chart.showLoading()
+            else chartContainer.chart.hideLoading()
+        }
+    } 
 
     initChartOption = (chart, props) => {
         // const navigatorZoneColors = props.data1.map((v, i, arr) => {
@@ -108,6 +168,12 @@ class MultiAreaChart extends Component {
         //     return ((i>20 && i<26) ? { value: v[0], color: "#BF0B2399", } : { value: v[0], color: "#B6B6B6" })
         //     // return ((arr[i - 1][0] >= 1581639130000 && arr[i - 1][0] <= 1581639190000) ? { value: v[0], color: "#BF0B2399", } : { value: v[0], color: "#B6B6B6" })
         // })
+        const anomalyDataByTimeProps = props.anomalyDataByTime === undefined ? [] : props.anomalyDataByTime /*@lucy */
+        const anomalyDataByTime = anomalyDataByTimeProps.map(v => ({ 
+            startDate: moment.tz(v.startDate, "Europe/Lisbon").unix() * 1000, 
+            endDate: moment.tz(v.endDate, "Europe/Lisbon").unix() * 1000, 
+        }))
+        
         const navigatorZoneColors = props.data1.map(
             (v,i)=> (i===100 || i===130 || i===140 || i===165 || i===177 || i===180)? {value: v[0], color:"#BF0B2399"} : {value:v[0], color:"#B6B6B6"}
         );

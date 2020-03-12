@@ -23,7 +23,6 @@ const HOST = {
     maythu: "http://192.168.100.27:3003"
 }
 
-
 // const DataFetcher = (callback) => {
 //     return fetch(`${HOST.test}/dummy-data?startDate=2020-01-10&endDate=2020-01-11`)
 
@@ -248,8 +247,8 @@ class Anormalies extends Component {
                     const value = {
                         ...c,
                         selected: false,
-                        date: moment(c.startDate).format("MMM Do YY"),
-                        time: `${moment(c.startDate).format("HH:mm:ss")}-${moment(c.endDate).format("HH:mm:ss")}`
+                        date: moment(c.startDate).format("MMM Do YY HH:mm"),
+                        time: `${moment(c.startDate).format("YYYY-MM-DD HH:mm")}-${moment(c.endDate).format("YYYY-MM-DD HH:mm")}`
                     }
                     if (R[c.deviceType] === undefined) R[c.deviceType] = [value]
                     else R[c.deviceType].push(value)

@@ -181,6 +181,24 @@ class SingleAreaChart extends Component {
         //         'Z'
         //     ];
         // };
+        const { props } = this
+        Highcharts.SVGRenderer.prototype.symbols.leftarrow = (x, y, w, h) => {
+            return [
+                'M', x + w / 2, y,
+                'L', x + w / 2, y + h,
+                x, y + h / 2,
+                'Z'
+            ];
+        };
+        Highcharts.SVGRenderer.prototype.symbols.rightarrow = (x, y, w, h) => {
+            return [
+                'M', x + w / 2, y,
+                'L', x + w / 2, y + h,
+                x + w, y + h / 2,
+                'Z'
+            ];
+        };
+
 
         return ( 
             // <div className="" style={{ display: "none" }}>
@@ -268,7 +286,11 @@ class SingleAreaChart extends Component {
                 }
             },
             tooltip: {
-                split: 'true'
+                split: 'true',
+                formatter: function() {
+                    return Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x) + '<br />' +
+                        Highcharts.numberFormat(this.y, 3) + ' °C'
+                }
             },
             title: {
                 style: {
