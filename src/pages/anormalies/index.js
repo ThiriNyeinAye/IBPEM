@@ -19,7 +19,8 @@ import Loading from "./Loading.js"
 
 const HOST = {
     local: "http://192.168.100.7:3003",
-    test: "https://ibpem.com/api",
+    // test: "https://ibpem.com/api",
+    test: "http://206.189.80.23:3003",
     maythu: "http://192.168.100.27:3003"
 }
 
@@ -198,7 +199,9 @@ class Anormalies extends Component {
                 }, { data0: [], data1: [], data2: [] })
                 this.setState({ showLoading: false, /*data: data.payload,*/ data0, data1, data2 /*.filter((v,i)=> i<200)*/ }, () => {
                     const singlerAreaChart = this.singleAreaChartRef.current
-                    if(singlerAreaChart!==null) singlerAreaChart.setLoading(false)
+                    if(singlerAreaChart!==null) {
+                        singlerAreaChart.setLoading(false)
+                    }
                 })
             }
         }, { startDate: this.state.firstTierStartDate, endDate: this.state.firstTierEndDate })

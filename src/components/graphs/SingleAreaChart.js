@@ -341,6 +341,8 @@ class SingleAreaChart extends Component {
                             [1, "#00BF8E00"]
                         ]
                     },
+                    zoneAxis: 'x', 
+                    zones: zoneColors,
                     events: {
                         afterAnimate: function () {
                             // TODO: laters
@@ -412,8 +414,8 @@ class SingleAreaChart extends Component {
                 },
                 turboThreshold: 0,
                 boostThreshold: 1,
-                zoneAxis: 'x',
-                zones: zoneColors
+                // zoneAxis: 'x', 
+                // zones: zoneColors
                 // zones: [
                 //     ...lineZoneColors,
                 //     {color: '#00BF8E'}

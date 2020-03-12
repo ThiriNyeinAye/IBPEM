@@ -4,6 +4,7 @@ import * as d3 from "d3"
 import deepEqual from "deep-equal"
 import moment from "moment"
 import cliTruncate from 'cli-truncate';
+import "../../App.css"
 
 export default class DragTest extends Component {
 
@@ -61,7 +62,7 @@ export default class DragTest extends Component {
                         <svg viewBox={`0 0 ${1} ${height}`} className="" id="yearSvgId" style={{ height: "100%", /*backgroundColor: "#aaafaa20"*/ }} >
                             {
                                 yearlyData.map((v, k) => (
-                                    <text x={0.5} y={k*2+1} fill="#637587" fontSize={0.4} dominantBaseline="middle" textAnchor="middle" >{v.year}</text>
+                                    <text key={k} x={0.5} y={k*2+1} fill="#637587" fontSize={0.4} dominantBaseline="middle" textAnchor="middle" >{v.year}</text>
                                 ))
                             }
                             {/* <text x={0.5} y={0*2+1} fill="#637587" fontSize={0.4} dominantBaseline="middle" textAnchor="middle" >{"2019"}</text>
@@ -240,9 +241,11 @@ class Background extends Component {
                 const dataState = v2.dataState[1]
                 if(v2.count>0) {
                     return (
-                        <g key={`${v1.year}${k2}`} >
+                        <g key={`${v1.year}${k2}`} 
+                            id="rec8day"
+                            onClick={e => this.props.handleClickOn8DaysData(v2.startDate, v2.endDate, e)} 
+                            style={{ cursor: "default" }}>
                             <rect 
-                                onClick={e => this.props.handleClickOn8DaysData(v2.startDate, v2.endDate, e)}
                                 sd={v2.startDate}
                                 ed={v2.endDate}
                                 stroke={"#e5e5e5"}
@@ -254,6 +257,10 @@ class Background extends Component {
                                 y={k1*2+1} dominantBaseline="middle" textAnchor="middle" >
                                 { cliTruncate((dataState.dataCount>0 ? `${dataState.dataCount}` : ""), 4) }
                             </text>
+                            <g className="tooltip" transform={`translate(${k2},${k1})`} opacity="0.8" >
+                                <rect rx="0.02" width="1" height="1.4" ></rect>
+                                <text x="0.5" y="1" dominantBaseline="middle" textAnchor="middle" fontSize={0.3} fill="blue">Hello</text>
+                            </g>
                         </g>
                     )
                 } else {
