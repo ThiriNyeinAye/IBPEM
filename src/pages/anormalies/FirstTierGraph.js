@@ -245,6 +245,7 @@ class Background extends Component {
                             id="rec8day"
                             onClick={e => this.props.handleClickOn8DaysData(v2.startDate, v2.endDate, e)} 
                             style={{ cursor: "default" }}>
+                            <title>{v2.startDate} ~ {v2.endDate}</title>
                             <rect 
                                 sd={v2.startDate}
                                 ed={v2.endDate}
@@ -257,10 +258,10 @@ class Background extends Component {
                                 y={k1*2+1} dominantBaseline="middle" textAnchor="middle" >
                                 { cliTruncate((dataState.dataCount>0 ? `${dataState.dataCount}` : ""), 4) }
                             </text>
-                            <g className="tooltip" transform={`translate(${k2},${k1})`} opacity="0.8" >
+                            {/* <g className="tooltip" transform={`translate(${k2},${k1})`} opacity="0.8" >
                                 <rect rx="0.02" width="1" height="1.4" ></rect>
                                 <text x="0.5" y="1" dominantBaseline="middle" textAnchor="middle" fontSize={0.3} fill="blue">Hello</text>
-                            </g>
+                            </g> */}
                         </g>
                     )
                 } else {

@@ -1,6 +1,7 @@
 import React, { Component, useState, useRef, useEffect, Fragment } from "react"
 import moment from "moment-timezone"
 import Draggable from 'react-draggable'
+import * as d3 from "d3"
 
 import SingleAreaChart from "../../components/graphs/SingleAreaChart.js"
 import MultiAreaChart from "../../components/graphs/MultiAreaChart.js"
@@ -72,7 +73,6 @@ class Anormalies extends Component {
         super(props)
         this.state = {
             // data: null,
-            showLoading: false,
             data0: [],
             data1: [],
             data2: [],
@@ -92,7 +92,7 @@ class Anormalies extends Component {
             graphShowData: [],
             dimensions: null,
             yearlyData: null,
-            firstTierStartDate: "2020-02-10",
+            firstTierStartDate: "2020-02-18",
             firstTierEndDate: "2020-02-25"
         }
         this.singleAreaChartRef = React.createRef()
@@ -197,7 +197,8 @@ class Anormalies extends Component {
                     R.data2.push([moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
                     return R
                 }, { data0: [], data1: [], data2: [] })
-                this.setState({ showLoading: false, /*data: data.payload,*/ data0, data1, data2 /*.filter((v,i)=> i<200)*/ }, () => {
+                this.setState({ /*data: data.payload,*/ data0, data1, data2 /*.filter((v,i)=> i<200)*/ }, () => {
+                    this.showLoading(false)
                     const singlerAreaChart = this.singleAreaChartRef.current
                     if(singlerAreaChart!==null) {
                         singlerAreaChart.setLoading(false)
@@ -206,6 +207,12 @@ class Anormalies extends Component {
             }
         }, { startDate: this.state.firstTierStartDate, endDate: this.state.firstTierEndDate })
         
+    }
+
+    showLoading = show => {
+        // console.log("show: ", show, document.getElementById("loadingDivId"))
+        document.getElementById("loadingDivId").style.display = show ? "block" : "none"
+        // d3.select("#loadingDivId").attr("display", show ? "block" : "none")
     }
 
     responsiveHandler = (window) => {
@@ -411,18 +418,23 @@ class Anormalies extends Component {
             severity: value.severity,
             sensorSignal: value.sensorSignal,
         }
+        areaChart.setZoom(startTs, endTs)
+        areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
+
         this.setState({
             anomalyDataByEquipment,
             anomalyInputData,
             graphShowData,
         }, () => {
-            areaChart.setZoom(startTs, endTs)
+            
+            // areaChart.setZoom(startTs, endTs)
+            // areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
             // console.log("click saved")
             // const areaChart = this.singleAreaChartRef.current
             // if(areaChart!==null) {
             //     const startTs = moment.tz(value.startDate, "Europe/Lisbon").unix() * 1000
             //     const endTs = moment.tz(value.endDate, "Europe/Lisbon").unix() * 1000
-            areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
+            // areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
             //     areaChart.setZoom(startTs, endTs)
             //     // areaChart.addSelectedRange({ leftX: areaChart.tsToPixels(startTs), rightX: areaChart.tsToPixels(endTs) })
             // }
@@ -436,9 +448,8 @@ class Anormalies extends Component {
     }
 
     handleFirstTierDateRangeChange = ({ startDate, endDate }) => {
-        // alert("Hello")
+        this.showLoading(true)
         this.setState(prev => ({ 
-            showLoading: true,
             firstTierStartDate: startDate!==undefined ? startDate : prev.firstTierStartDate ,
             firstTierEndDate: endDate!==undefined ? endDate : prev.firstTierEndDate
         }), () => {
@@ -448,9 +459,10 @@ class Anormalies extends Component {
             //     // areaChart.chartRef.current.chart.destroy()
             //     console.log("const areaChart = this.singleAreaChartRef.current", this.singleAreaChartRef.current.chartRef.current.chart)
             // }
+            this.readDataFromApi()
             const singlerAreaChart = this.singleAreaChartRef.current
             if(singlerAreaChart!==null) singlerAreaChart.setLoading(true)
-            this.readDataFromApi()
+            
         //     DataFetcher((error, data) => {
         //         if (error) console.log("Error:DataFetcher: ", error)
         //         else {
@@ -470,7 +482,6 @@ class Anormalies extends Component {
 
     render() {
         const { 
-            showLoading,
             yearlyData, data, data0, data1, data2, firstTierStartDate, firstTierEndDate,
             graphShowData, 
             anomalyInputData, 
@@ -485,7 +496,6 @@ class Anormalies extends Component {
           
         return (
             <div className="" style={{ overflow: 'auto' }}>
-                <Loading show={showLoading} />
                 <div 
                     onClick={e => {
                         const sidebarStyle = document.getElementById("sidebarContainer").style
