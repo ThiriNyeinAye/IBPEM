@@ -21,6 +21,11 @@ export default class DragTest extends Component {
         
     }
     
+    handleClickOn8DaysData = (startDate, endDate) => {
+        // alert("click on rect "+ startDate +" - "+ endDate)
+        this.props.handleFirstTierDateRangeChange({ startDate, endDate })
+    }
+
     handleChangeRangeAndFetchData = () => {
         const leftSlider = d3.select("#slide-left")
         const rightSlider = d3.select("#slide-right")
@@ -54,19 +59,24 @@ export default class DragTest extends Component {
                 <div className="p-1 d-flex flex-row">
                     <div style={{position: "relative", paddingTop: window.innerWidth>1200 ? 30 : 20, }} >
                         <svg viewBox={`0 0 ${1} ${height}`} className="" id="yearSvgId" style={{ height: "100%", /*backgroundColor: "#aaafaa20"*/ }} >
-                            <text x={0.5} y={0*2+1} fill="#637587" fontSize={0.4} dominantBaseline="middle" textAnchor="middle" >{"2019"}</text>
-                            <text x={0.5} y={1*2+1} fill="#637587" fontSize={0.4} dominantBaseline="middle" textAnchor="middle" >{"2020"}</text>
+                            {
+                                yearlyData.map((v, k) => (
+                                    <text x={0.5} y={k*2+1} fill="#637587" fontSize={0.4} dominantBaseline="middle" textAnchor="middle" >{v.year}</text>
+                                ))
+                            }
+                            {/* <text x={0.5} y={0*2+1} fill="#637587" fontSize={0.4} dominantBaseline="middle" textAnchor="middle" >{"2019"}</text>
+                            <text x={0.5} y={1*2+1} fill="#637587" fontSize={0.4} dominantBaseline="middle" textAnchor="middle" >{"2020"}</text> */}
                         </svg>
                     </div>
                     <div className="flex-grow-1" style={{ paddingLeft: yearSvgWidth }}>
-                        <div style={{ height: window.innerWidth>1200 ? 30 : 20 }}>
+                        <div style={{ /*height: window.innerWidth>1200 ? 30 : 20*/ }}>
                             <svg viewBox={`0 0 ${width} ${1}`} className=""  style={{ /*backgroundColor: "#aaafaa20"*/ }}>
                                 <GraphTip />
                             </svg>
                         </div>
                         <div>
                             <svg viewBox={`0 0 ${width} ${height}`} className="" id="eight-day-slider-svg" style={{ backgroundColor: "#fefefe", borderRadius: 2 }}>
-                                <Background ref={this.ref1TierGraph} firstTierDate={firstTierDate} width={width} height={height} yearlyData={yearlyData} />
+                                <Background ref={this.ref1TierGraph} handleClickOn8DaysData={this.handleClickOn8DaysData} firstTierDate={firstTierDate} width={width} height={height} yearlyData={yearlyData} />
                             </svg>
                         </div>
                     </div>
@@ -230,8 +240,9 @@ class Background extends Component {
                 const dataState = v2.dataState[1]
                 if(v2.count>0) {
                     return (
-                        <g key={`${v1.year}${k2}`}>
+                        <g key={`${v1.year}${k2}`} >
                             <rect 
+                                onClick={e => this.props.handleClickOn8DaysData(v2.startDate, v2.endDate, e)}
                                 sd={v2.startDate}
                                 ed={v2.endDate}
                                 stroke={"#e5e5e5"}
