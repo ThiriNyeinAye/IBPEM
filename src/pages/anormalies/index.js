@@ -93,76 +93,24 @@ class Anormalies extends Component {
             dimensions: null,
             yearlyData: null,
             firstTierStartDate: "2020-02-18",
-            firstTierEndDate: "2020-02-25"
+            firstTierEndDate: "2020-02-25",
+            changeView:3,
+            selected:3
         }
         this.singleAreaChartRef = React.createRef()
         this.multiAreaChartRef = React.createRef()
         this.sidebarRef = React.createRef()
     }
-    
-    changeContentView = () => {
-        if (this.state.isEmptystate === true || this.state.isContentState === false) {
+    toggle = view =>{
+        if(this.state.changeView!== view){
             this.setState({
                 ...this.state,
-                height: 210,
-                isEmptystate: false,
-                isTripleSquareClicked:false,
-                isTripleSquareState:false,
-                isContentState: true,
-                isSquareState: false,
-                isContentClicked: true,
-                isClicked: false,
-                isSquareClicked: false
+                changeView:view,
+                selected: view
             })
         }
     }
-    changeTripleSquareView=()=>{
-        if(this.state.isEmptystate === true || this.state.isTripleSquareState === false){
-          this.setState({
-              ...this.state,
-              height:210,
-              isEmptystate:false,
-              isTripleSquareState:true,
-              isTripleSquareClicked:true,
-              isClicked:false,
-              isContentClicked:false,
-              isSquareClicked:false,
-              isContentState:false,
-              isSquareState:false
-          })
-        }
-    }
-    changeSquareView = () => {
-        if (this.state.isEmptystate === true || this.state.isSquareState === false) {
-            this.setState({
-                ...this.state,
-                isEmptystate: false,
-                isSquareState: true,
-                isTripleSquareClicked:false,
-                isContentState: false,
-                isTripleSquareState:false,
-                isSquareClicked: true,
-                isContentClicked: false,
-                isClicked: false
-            })
-        }
-    }
-    changeBurgerView = () => {
-        if (this.state.isEmptystate === false) {
-            this.setState({
-                ...this.state,
-                isEmptystate: true,
-                isSquareState: false,
-                isContentState: false,
-                isTripleSquareClicked:false,
-                isTripleSquareState:false,
-                isClicked: true,
-                // height:200,
-                isSquareClicked: false,
-                isContentClicked: false
-            })
-        }
-    }
+
     componentDidMount() {
         window.onresize = (e) => {
             this.responsiveHandler(e.target)
@@ -525,134 +473,87 @@ class Anormalies extends Component {
                                 <Navbar.ItemNavbar />
                             </div> */}
                             <div className="py-2 col-lg-12 col-12">
-                                <DropdownContainerAnormaly
+                            <DropdownContainerAnormaly
                                     handleGraphDataChart={this.handleGraphDataChart}
                                     anomalyInputData={anomalyInputData}
                                     onAnormalyInputChanged={this.onAnormalyInputChanged}
-                                    changeBurgerView={this.changeBurgerView}
-                                    changeContentView={this.changeContentView}
-                                    changeSquareView={this.changeSquareView}
-                                    changeTripleSquareView={this.changeTripleSquareView}
-                                    isClicked={this.state.isClicked}
-                                    isContentClicked={this.state.isContentClicked}
-                                    isSquareClicked={this.state.isSquareClicked}
-                                    isTripleSquareClicked={this.state.isTripleSquareClicked}
-                                    
+                                    toggle={this.toggle}
+                                    changeView={this.state.changeView}
+                                    selected={this.state.selected}
                                 />
                             </div>
 
-                            <div className="py-2 col-lg-12 col-12 " style={{ width: window.innerWidth<=1200 ? window.innerWidth : window.innerWidth-350 }}>
-                                {this.state.isTripleSquareState&&(
-                                    <Fragment>
-                                       <div className='p-1' >
-                                            <div className=" bg-white rounded p-4"> 
-                                                <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
-                                                    <div className="p-2 bg-white rounded">
-                                                    {yearlyData!==null && <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />}
-                                                    </div>
-                                                    {
-                                                        // data.length > 0 ?
-                                                            <SingleAreaChart  anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
-                                                            // <MultiAreaChart data1={data0} data2={data2} />
-                                                            // : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
-                                                    }
-                                            </div>
-                                       </div>
-                                        <div className='d-flex flex-wrap'>
-                                            {
-                                            graphShowData.map((v, i) =>
-                                                <div key={i} className="col-lg-6 p-1">
-                                                    {v.selected &&
-                                                        <div className="p-4 bg-white rounded">
-                                                            <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} height={this.state.height}/>
-                                                        </div>
-                                                    }
-                                                </div>
-                                            )
-                                        }
+                            <div className="py-2 col-lg-12 col-12 " changeView={this.state.changeView} style={{ width: window.innerWidth<=1200 ? window.innerWidth : window.innerWidth-350 }}>
+                                <div className='p-1'>
+                                    <div className='bg-white rounded p-4'>
+                                        <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
+                                        <div className='p-2 bg-white rounded'>
+                                            {yearlyData!==null && <TestComponent  firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />}
                                         </div>
-                                    </Fragment>
-                                )}
-                                {this.state.isEmptystate && (
-                                    <Fragment>
-                                        <div className=" bg-white rounded p-4" >
-                                            <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
-                                            <div className="py-2 bg-white rounded">
-                                                {yearlyData!==null && <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />}
-                                            </div>
+                                        {this.state.changeView===1&& (
+                                        <Fragment>
                                             {
-                                                // data.length > 0 ?
-                                                    <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
-                                                    // <MultiAreaChart data1={data0} data2={data2} />
-                                                    // : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
+                                            // data.length > 0 ?
+                                                <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
+                                                // <MultiAreaChart data1={data0} data2={data2} />
+                                                // : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
                                             }
-                                        </div>
-                                        {
-                                            graphShowData.map((v, i) =>
-                                                <div key={i} className="pt-2 ">
-                                                    {v.selected &&
-                                                        <div className="p-4 bg-white rounded" >
-                                                            <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} />
-                                                        </div>
-                                                    }
-                                                </div>
-                                            )
-                                        }
-                                    </Fragment>
-
-                                )}
-                               
-                                {this.state.isContentState && (
-                                    <Fragment>
-
-                                        <div className='d-flex flex-row justify-content-between '>
-
-                                            <div className="col bg-white rounded p-4">
-                                                <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />
-                                                <div className="p-2 bg-white rounded">
-                                                    {yearlyData!==null && <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />}
-                                                </div>
-                                                {
-                                                    // data.length > 0 ?
-                                                        <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
-                                                        //  <MultiAreaChart data1={data0} data2={data2} /> 
-                                                        // : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
-                                                }
-                                            </div>
-                                            <div className='col pl-2'>
-                                                {
-                                                    graphShowData.map((v, i) =>
-                                                        <div key={i} className="pb-2 col-lg-12 col-12 justify-content-center pl-2 p-0">
-                                                            {v.selected &&
-                                                                <div className="bg-white rounded p-5" >
-                                                                    <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} height={this.state.height} />
-                                                                </div>
-                                                            }
-                                                        </div>
-                                                    )
-                                                }
-                                            </div>
-                                        </div>
-                                    </Fragment>
-                                )}
-                                
-                                {this.state.isSquareState&&(
-                                    <Fragment>
-                                      <div className="col bg-white rounded p-4" >
-                                                <AnormalyControlPanel handleZoomIn={this.handleMultiZoomIn} handleZoomOut={this.handleMultiZoomOut} />
-                                                <div className="p-2 bg-white rounded">
-                                                    {yearlyData!==null && <TestComponent firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />}
-                                                </div>
-                                                {
-                                                    // data.length > 0 ?
-                                                        // <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
-                                                        <MultiAreaChart ref={this.multiAreaChartRef} data1={data0} data2={data2} /> 
-                                                        // : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
-                                                }
-                                            </div>
-                                    </Fragment>
-                                )}
-
+                                        </Fragment>
+                                       )}
+                                       {this.state.changeView===3&& (
+                                        <Fragment>
+                                            {
+                                            // data.length > 0 ?
+                                                <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
+                                                // <MultiAreaChart data1={data0} data2={data2} />
+                                                // : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
+                                            }
+                                        </Fragment>
+                                       )}
+                                       {this.state.changeView===2&&(
+                                           <Fragment>
+                                               {
+                                            // data.length > 0 ?
+                                                // <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
+                                                <MultiAreaChart ref={this.multiAreaChartRef} data1={data0} data2={data2} /> 
+                                                // : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
+                                            }
+                                           </Fragment>
+                                       )}
+                                    </div>
+                                </div>       
+                                 {this.state.changeView===1&&(
+                                  <Fragment>
+                                      <div className='d-flex flex-wrap' >
+                                          {
+                                          graphShowData.map((v, i) =>
+                                              <div key={i} className="col-lg-6 p-1">
+                                                  {v.selected &&
+                                                      <div className="p-4 bg-white rounded">
+                                                          <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} height={this.state.height}/>
+                                                      </div>
+                                                  }
+                                              </div>
+                                          )
+                                          }
+                                      </div>
+                                  </Fragment>
+                                 )}
+                                  {this.state.changeView===3&&(
+                                      <Fragment>
+                                  {
+                                      graphShowData.map((v, i) =>
+                                          <div key={i} className="pt-2 ">
+                                              {v.selected &&
+                                                  <div className="p-4 bg-white rounded" >
+                                                      <SimpleSingleAreaChart title={v.name} data={minorChartData[i]} />
+                                                  </div>
+                                              }
+                                          </div>
+                                      )
+                                  }
+                                  </Fragment>
+                                  )}  
                             </div>
                         </div>
 

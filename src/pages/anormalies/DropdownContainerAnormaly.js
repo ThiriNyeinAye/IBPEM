@@ -11,7 +11,7 @@ const HOST = {
 }
 
 const DropdownContainerAnormaly = props => {
-    const { isClicked, isSquareClicked, isContentClicked, isTripleSquareClicked } = props
+    const {selected} = props
     const { handleGraphDataChart } = props
     const [showEditAllDropdown, setShowEditAllDropdown] = useState(false)
     const [graphs, setGraphs] = useState([{ name: "Input Temperature", selected: false }, { name: "Output Temperature", selected: false }])
@@ -114,34 +114,25 @@ const DropdownContainerAnormaly = props => {
                     />
                     <div className='p-1 justify-content-center' >
                         <div className='d-flex justify-content-around align-items-center '>
-                            <div className=''>
-                                <div className="btn btn-sm" value='text' onClick={props.changeTripleSquareView}>
-                                    {isTripleSquareClicked ?
+                        <div className=''>
+                                <div className='btn btn-sm' value='text' onClick={(e)=>{props.toggle(1)}}>
+                                    {selected===1 ?
                                         <i className="fas fa-columns" style={{ color: '#23c49e', fontSize: 26 }} /> :
                                         <i className="fas fa-columns" style={{ color: '#d0d0d0', fontSize: 26 }} />
                                     }
-
                                 </div>
                             </div>
-                            {/* <div className=''>
-                                <div className="btn btn-sm" value='text' onClick={props.changeContentView}>
-                                    {isContentClicked? 
-                                        <i className="fa fa-th-large" style={{ color: '#23c49e', fontSize: 26 }} />: 
-                                        <i className="fa fa-th-large" style={{ color: '#d0d0d0', fontSize: 26 }} />
-                                    }   
-                                </div>
-                            </div> */}
-                            <div className=''>
-                                <div className="btn btn-sm" value='text' onClick={props.changeSquareView}>
-                                    {isSquareClicked ?
+                            <div className="">
+                                <div className="btn btn-sm" value='text' onClick={(e)=>props.toggle(2)}>
+                                    {selected===2 ?
                                         <i className="fa fa-square" style={{ color: '#23c49e', fontSize: 26 }} /> :
                                         <i className="fa fa-square" style={{ color: '#d0d0d0', fontSize: 26 }} />
                                     }
                                 </div>
                             </div>
-                            <div className=''>
-                                <div className="btn btn-sm" value='text' onClick={props.changeBurgerView}>
-                                    {isClicked ?
+                            <div className="">
+                                <div className="btn btn-sm" value='text' onClick={(e)=>props.toggle(3)}>
+                                    {selected===3 ?
                                         <i className="fa fa-bars" style={{ color: '#23c49e', fontSize: 26 }} /> :
                                         <i className="fa fa-bars" style={{ color: '#d0d0d0', fontSize: 26 }} />
                                     }
