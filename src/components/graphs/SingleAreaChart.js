@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect, useRef } from 'react'
+import React, { Component, PureComponent, useState, useEffect, useRef } from 'react'
 import { createPortal } from "react-dom"
 import Highcharts, { Axis } from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
@@ -35,7 +35,7 @@ const AppConst = {
     DEFAULT: 0,
 }
 
-class SingleAreaChart extends Component {
+class SingleAreaChart extends PureComponent {
     constructor(props) {
         super(props)
         this.state = {
@@ -113,14 +113,32 @@ class SingleAreaChart extends Component {
     //     //     return false
     // }
 
+    // shouldComponentUpdate(nextProps, nextState) {
+    //     // const chart = this.chartRef.current.chart; 
+    //     // const empty = nextProps.data.length===0 || nextProps.anomalyDataByTime.length===0    
+    //     // if (nextProps.data.length>0 && !deepEqual(nextProps.data, this.props.data) && this.chartRef.current !== null) {
+    //     //     console.log("==========\n====> ", nextProps, "\n-====>", this.props)
+    //     //     return true
+    //     // } else {
+    //     //     console.log("--------\n-----> ", nextProps, "\n----->", this.props)
+    //     //     console.log(!empty, !deepEqual(nextProps.data, this.props.data), this.chartRef.current !== null)
+    //     //     return false
+    //     // }
+    //     if(nextProps.data.length>0 && nextProps.data!==this.props.length) {
+    //         return true
+    //     } else {
+    //         return false
+    //     }
+    // }
+
     componentDidUpdate(prevProps, prevState) {   
         const chart = this.chartRef.current.chart; 
-        const empty = this.props.length===0 && this.props.anomalyDataByTime.length===0    
+        const empty = this.props.data.length===0 && this.props.anomalyDataByTime.length===0    
         if (!empty && !deepEqual(prevProps.data, this.props.data) && this.chartRef.current !== null) {
             this.setState({ options: this.initChartOption(chart, this.props) })
         }
         else if(!empty && !deepEqual(prevProps.anomalyDataByTime, this.props.anomalyDataByTime) && this.chartRef.current !== null) {
-            this.setState({ options: this.initChartOption(chart, this.props) })
+            // this.setState({ options: this.initChartOption(chart, this.props) })
         } 
     }
 
@@ -234,7 +252,7 @@ class SingleAreaChart extends Component {
         //         color: flag ? "#BF0B2399" : "#B6B6B6"
         //     })
         // })
-        console.log('anomalyDataByTime: ', anomalyDataByTime.map(v => [moment(v.startDate).format('YYYY-MM-DD HH:MM'), moment(v.endDate).format('YYYY-MM-DD HH:MM')]))
+        // console.log('anomalyDataByTime: ', anomalyDataByTime.map(v => [moment(v.startDate).format('YYYY-MM-DD HH:MM'), moment(v.endDate).format('YYYY-MM-DD HH:MM')]))
         const sortDate = anomalyDataByTime.reverse()
         
         const navigatorZoneColors = sortDate.reduce((r,v, arr) => {
@@ -328,6 +346,12 @@ class SingleAreaChart extends Component {
                             leftLine: this.state.leftLine,
                             rightLine: this.state.rightLine
                         })
+                        const startTs = e.min
+                        const endTs = e.max
+                        // console.log("e: ", e)
+                        if(startTs && endTs && e.trigger==="navigator") {
+                            props.handleFilterAnomalyData(startTs, endTs)
+                        }
                     }
                 },
             },

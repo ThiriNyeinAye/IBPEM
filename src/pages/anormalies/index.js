@@ -78,6 +78,7 @@ class Anormalies extends Component {
             data1: [],
             data2: [],
             anomalyDataByTime: [],
+            anomalyDataByEquipmentOriginal: {},
             anomalyDataByEquipment: {},
             height: 200,
             temp: 0,
@@ -209,7 +210,9 @@ class Anormalies extends Component {
                         ...c,
                         selected: false,
                         date: moment(c.startDate).format("Do MMM, YY")+ " ~ " + moment(c.endDate).format("Do MMM, YY"),
-                        time: `${moment(c.startDate).format("HH:mm")} ~ ${moment(c.endDate).format("HH:mm")}`
+                        time: `${moment(c.startDate).format("HH:mm")} ~ ${moment(c.endDate).format("HH:mm")}`,
+                        startTs: moment.tz(c.startDate, "Europe/Lisbon").unix() * 1000,
+                        endTs: moment.tz(c.endDate, "Europe/Lisbon").unix() * 1000
                     }
                     if (R[c.deviceType] === undefined) R[c.deviceType] = [value]
                     else R[c.deviceType].push(value)
@@ -218,7 +221,8 @@ class Anormalies extends Component {
                 // console.log("anomalyDateByTime: ", data.payload)
                 this.setState({
                     anomalyDataByTime: data.payload,
-                    anomalyDataByEquipment
+                    anomalyDataByEquipment,
+                    anomalyDataByEquipmentOriginal: {...anomalyDataByEquipment},
                 }, () => {
                     const areaChart = this.singleAreaChartRef.current
                     const multiChart = this.multiAreaChartRef.current
@@ -418,7 +422,7 @@ class Anormalies extends Component {
             anomalyInputData,
             graphShowData,
         }, () => {
-     areaChart.setZoom(startTs, endTs)
+        areaChart.setZoom(startTs, endTs)
             //multiChart.setZoom(startTs, endTs)
 
             
@@ -526,6 +530,21 @@ class Anormalies extends Component {
         })
 
     }
+    
+    handleFilterAnomalyData = (startDate, endDate) =>{
+
+        // new Added by @nayhtet
+        const anomalyDataByEquipmentFiltered = Object.keys(this.state.anomalyDataByEquipmentOriginal).reduce((r, device) => {
+            const R = {...r}
+            const filteredData = this.state.anomalyDataByEquipmentOriginal[device].filter(v => v.startTs>=startDate && v.endTs<=endDate)
+            R[device] = filteredData
+            return R
+        }, {})
+        this.setState({anomalyDataByEquipment: anomalyDataByEquipmentFiltered}, () => {
+            // const singlerAreaChart = this.singleAreaChartRef.current
+            // if(singlerAreaChart!==null) singlerAreaChart.setChartOption()
+        })
+    }
 
     render() {
         const { 
@@ -591,11 +610,11 @@ class Anormalies extends Component {
                                         <div className='p-2 bg-white rounded'>
                                             {yearlyData!==null && <TestComponent  firstTierDate={{ startDate: firstTierStartDate, endDate: firstTierEndDate }} handleFirstTierDateRangeChange={this.handleFirstTierDateRangeChange} yearlyData={yearlyData}  />}
                                         </div>
-                                        {this.state.changeView===1&& (
+                                        {this.state.changeView===1 && (
                                         <Fragment>
                                             {
                                             // data.length > 0 ?
-                                                <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
+                                                <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} handleFilterAnomalyData={this.handleFilterAnomalyData} />
                                                 // <MultiAreaChart data1={data0} data2={data2} />
                                                 // : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
                                             }
@@ -605,7 +624,7 @@ class Anormalies extends Component {
                                         <Fragment>
                                             {
                                             // data.length > 0 ?
-                                                <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} />
+                                                <SingleAreaChart anomalyDataByTime={anomalyDataByTime} ref={this.singleAreaChartRef} data={data0} handleFilterAnomalyData={this.handleFilterAnomalyData} />
                                                 // <MultiAreaChart data1={data0} data2={data2} />
                                                 // : <div className="p-4 text-secondary text-center">Please select a date range from the top graph.</div>
                                             }
