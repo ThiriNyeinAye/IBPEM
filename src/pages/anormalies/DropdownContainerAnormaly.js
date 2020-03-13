@@ -117,7 +117,7 @@ const DropdownContainerAnormaly = props => {
                         <div className=''>
                                 <div className='btn btn-sm' value='text' onClick={(e)=>{props.toggle(1)}}>
                                     {selected===1 ?
-                                        <i className="fas fa-columns" style={{ color: '#23c49e', fontSize: 26 }} /> :
+                                        <i className="fas fa-columns" style={{ color: '#23c49e', fontSize: 30 }} /> :
                                         <i className="fas fa-columns" style={{ color: '#d0d0d0', fontSize: 26 }} />
                                     }
                                 </div>
@@ -125,7 +125,7 @@ const DropdownContainerAnormaly = props => {
                             <div className="">
                                 <div className="btn btn-sm" value='text' onClick={(e)=>props.toggle(2)}>
                                     {selected===2 ?
-                                        <i className="fa fa-square" style={{ color: '#23c49e', fontSize: 26 }} /> :
+                                        <i className="fa fa-square" style={{ color: '#23c49e', fontSize: 30 }} /> :
                                         <i className="fa fa-square" style={{ color: '#d0d0d0', fontSize: 26 }} />
                                     }
                                 </div>
@@ -133,7 +133,7 @@ const DropdownContainerAnormaly = props => {
                             <div className="">
                                 <div className="btn btn-sm" value='text' onClick={(e)=>props.toggle(3)}>
                                     {selected===3 ?
-                                        <i className="fa fa-bars" style={{ color: '#23c49e', fontSize: 26 }} /> :
+                                        <i className="fa fa-bars" style={{ color: '#23c49e', fontSize: 30 }} /> :
                                         <i className="fa fa-bars" style={{ color: '#d0d0d0', fontSize: 26 }} />
                                     }
                                 </div>
