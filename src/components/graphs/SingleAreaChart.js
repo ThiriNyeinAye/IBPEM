@@ -234,7 +234,7 @@ class SingleAreaChart extends Component {
         //         color: flag ? "#BF0B2399" : "#B6B6B6"
         //     })
         // })
-
+        console.log('anomalyDataByTime: ', anomalyDataByTime.map(v => [moment(v.startDate).format('YYYY-MM-DD HH:MM'), moment(v.endDate).format('YYYY-MM-DD HH:MM')]))
         const sortDate = anomalyDataByTime.reverse()
         
         const navigatorZoneColors = sortDate.reduce((r,v, arr) => {
