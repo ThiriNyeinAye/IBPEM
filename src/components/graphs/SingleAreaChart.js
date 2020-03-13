@@ -289,7 +289,7 @@ class SingleAreaChart extends Component {
                 split: 'true',
                 formatter: function() {
                     return Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x) + '<br />' +
-                        Highcharts.numberFormat(this.y*1) + ' °C'
+                        Highcharts.numberFormat(this.y, 2)*1 + ' °C'
                 }
             },
             title: {
@@ -341,6 +341,8 @@ class SingleAreaChart extends Component {
                             [1, "#00BF8E00"]
                         ]
                     },
+                    zoneAxis: 'x', 
+                    zones: zoneColors,
                     events: {
                         afterAnimate: function () {
                             // TODO: laters
@@ -412,8 +414,8 @@ class SingleAreaChart extends Component {
                 },
                 turboThreshold: 0,
                 boostThreshold: 1,
-                zoneAxis: 'x',
-                zones: zoneColors
+                // zoneAxis: 'x', 
+                // zones: zoneColors
                 // zones: [
                 //     ...lineZoneColors,
                 //     {color: '#00BF8E'}

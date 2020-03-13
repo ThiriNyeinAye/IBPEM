@@ -7,5 +7,15 @@
 
 /* .rect-22:hover {
     opacity: 1 !important;
-    stroke: black !important
+    stroke: black !important    
 } */
+
+/*@nayhtet*/
+#rec8day .tooltip {
+    visibility: visible !important;
+    fill: #a5a5e5 !important;
+}
+  
+#rec8day:hover .tooltip {
+    visibility: visible !important;
+}
