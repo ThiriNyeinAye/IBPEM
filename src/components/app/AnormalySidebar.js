@@ -83,7 +83,7 @@ const AnormalySidebar = props => {
 
                 <div className='px-3 d-flex py-3 pt-4 justify-content-between'>
                     <div className=''>New Detection</div>
-                    <div className="px-1 rounded" value='text'>
+                    <div className="px-1 rounded" value='text' style={{cursor:'pointer'}}>
                         <i className="fa fa-plus-square" style={{ color: '#23c49e', fontSize: 16 }}></i>
                     </div>
                 </div>

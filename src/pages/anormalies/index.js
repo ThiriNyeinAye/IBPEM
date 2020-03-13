@@ -671,7 +671,7 @@ const AnormalyControlPanel = props => {
     const [Open,setOpen]=useState(false)
         return (
             <div className='d-flex flex-wrap justify-content-between align-items-center'>
-                <div className='py-0 '>
+                <div className='py-0 ' style={{cursor:'pointer'}}>
                     <div className='py-0' >
                         <span className='text-secondary' style={{fontSize:20}}  onClick={()=>{setOpen(!Open)}}>
                             CH-3
