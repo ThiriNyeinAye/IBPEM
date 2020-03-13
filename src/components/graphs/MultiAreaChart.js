@@ -63,14 +63,14 @@ class MultiAreaChart extends Component {
     }
 
     tsToPixels = ts => {
-        return this.chartRef.current.chart.xAxis[0].toPixels(ts)
+        return this.multiChartRef.current.chart.xAxis[0].toPixels(ts)
     }
     pixelToTs = pixel => {
-        return this.chartRef.current.chart.xAxis[0].toValue(pixel)
+        return this.multiChartRef.current.chart.xAxis[0].toValue(pixel)
     }
 
     setChartOption = () => {
-        this.setState({ options: this.initChartOption(this.chartRef.chart, this.props) })
+        this.setState({ options: this.initChartOption(this.multiChartRef.chart, this.props) })
     }
 
     componentDidUpdate(prevProps, prevState) {   
@@ -96,7 +96,7 @@ class MultiAreaChart extends Component {
         chart.container.children[0].onmousemove = e => {
             chart.pointer.normalize(e)
             e.preventDefault()
-            return this.refreshSelectedTimeRangeOnResize({
+            this.refreshSelectedTimeRangeOnResize({
                 chart,
                 leftLine: this.state.leftLine,
                 rightLine: this.state.rightLine,
@@ -163,21 +163,48 @@ class MultiAreaChart extends Component {
     } 
 
     initChartOption = (chart, props) => {
-        // const navigatorZoneColors = props.data1.map((v, i, arr) => {
-        //     if (i === 0) return { value: v[0], color: "#B6B6B6" }
-        //     return ((i>20 && i<26) ? { value: v[0], color: "#BF0B2399", } : { value: v[0], color: "#B6B6B6" })
-        //     // return ((arr[i - 1][0] >= 1581639130000 && arr[i - 1][0] <= 1581639190000) ? { value: v[0], color: "#BF0B2399", } : { value: v[0], color: "#B6B6B6" })
-        // })
+        console.log('data1: ', props.data1+ '\ndata2: '+ props.data2)
         const anomalyDataByTimeProps = props.anomalyDataByTime === undefined ? [] : props.anomalyDataByTime /*@lucy */
         const anomalyDataByTime = anomalyDataByTimeProps.map(v => ({ 
             startDate: moment.tz(v.startDate, "Europe/Lisbon").unix() * 1000, 
             endDate: moment.tz(v.endDate, "Europe/Lisbon").unix() * 1000, 
         }))
+        console.log('anomalyDataByTimeProps: ', anomalyDataByTimeProps)
+
+        //console.log('anomalyDataByTime: ', anomalyDataByTime.map(v => [moment(v.startDate).format('YYYY-MM-DD HH:MM'), moment(v.endDate).format('YYYY-MM-DD HH:MM')]))
+        const sortDate = anomalyDataByTime.reverse()
         
-        const navigatorZoneColors = props.data1.map(
-            (v,i)=> (i===100 || i===130 || i===140 || i===165 || i===177 || i===180)? {value: v[0], color:"#BF0B2399"} : {value:v[0], color:"#B6B6B6"}
-        );
+        const navigatorZoneColors = sortDate.reduce((r,v, arr) => {
+            const c1 = { value: v.startDate, color: "#B6B6B6" }
+            const c2 = { value: v.endDate, color: "#BF0B2399" }
+            return [...r, c1, c2 ]
+            
+        }, [])
+        navigatorZoneColors.push({ color:"#B6B6B6"})
+
+        const zoneColors = sortDate.reduce((r,v, arr) => {
+            const c1 = { value: v.startDate, color: "#00BF8E" }
+            const c2 = { value: v.endDate, color: "red" }
+    
+            return [...r, c1, c2 ]
+        }, [])
+        zoneColors.push({ color: "#00BF8E" })
+        console.log('zoneColors: ', zoneColors.map(v => moment(v.value).format('YYYY-MM-DD')))
+
+        const zoneColors2 = sortDate.reduce((r,v, arr) => {
+            const c1 = { value: v.startDate, color: "#2196f3" }
+            const c2 = { value: v.endDate, color: "red" }
+    
+            return [...r, c1, c2 ]
+        }, [])
+        zoneColors2.push({ color: "#2196f3" })
+        // const navigatorZoneColors = props.data1.map(
+        //     (v,i)=> (i===100 || i===130 || i===140 || i===165 || i===177 || i===180)? {value: v[0], color:"#BF0B2399"} : {value:v[0], color:"#B6B6B6"}
+        // );
         return {
+            boost: {
+                useGPUTranslations: true
+            },
             credits: {
                 enabled: false
             },
@@ -192,12 +219,12 @@ class MultiAreaChart extends Component {
                 enabled: false
             },
             chart: {
-                style: {
-                    marginBottom: 10,
-                    color: '#00BF8E'
-                },
+                // style: {
+                //     marginBottom: 10,
+                //     color: '#00BF8E'
+                // },
                 lineColor: '#00BF8E',
-                spacing: [0, 0, 30, 0],
+                spacing: [120, 0, -80, 0],
                 zoomType: '', // removed by @nayhtet
                 type: 'area',
                 events: {
@@ -208,10 +235,13 @@ class MultiAreaChart extends Component {
                 }
             },
             tooltip: {
-                split: 'true'
+                split: 'true',
+                // formatter: function() {
+                //     return Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x) + '<br />' +
+                //         Highcharts.numberFormat(this.y)*1 + ' °C'
+                // }
             },
             title: {
-                text: "My chart",
                 style: {
                     color: '#fff',
                     font: ' 16px "Trebuchet MS", Verdana, sans-serif',
@@ -219,6 +249,8 @@ class MultiAreaChart extends Component {
             },
             yAxis: [
                 {
+                    min: this.props.data2.map(v => v[1]).reduce((r, c) => c < r ? c : r, 0),
+                    max: this.props.data2.map(v => v[1]).reduce((r, c) => c > r ? c : r, 0),
                     labels: {
                         align: 'right',
                         x: 4
@@ -264,9 +296,9 @@ class MultiAreaChart extends Component {
             },
             plotOptions: {
                 series: {
-                    color: '#00BF8E',
+                    //color: '#00BF8E',
                     fillColor: {
-                        linearGradient: [0, 0, 0, 200],
+                        linearGradient: [0, 0, 0, 50],
                         stops: [
                             [0, "#00BF8E77"],
                             [1, "#00BF8E00"]
@@ -291,18 +323,23 @@ class MultiAreaChart extends Component {
                 }
             },
             navigator: {
+                enabled: true,
+                style: {
+                    backgroundColor: "red"
+                },
+                top: 10,
                 series: {
-                    // data: props.data,
+                    data: props.data1,
                     type: 'column',
                     pointRange: undefined,
                     // dataGrouping: {
                     //     groupPixelWidth: 1
                     // },
                     zoneAxis: 'x',
-                    zones: [...navigatorZoneColors, { color: "#B6B6B6" }],
+                    zones: navigatorZoneColors
                 },
                 height: 60,
-                maskFill: "#00000015",
+                maskFill: "#44aa2210",
                 xAxis: {
                     labels: {
                         enabled: true,
@@ -315,37 +352,53 @@ class MultiAreaChart extends Component {
                     backgroundColor: "#2196f399",
                     borderColor: "#2196f399",
                     enabled: true,
-                    height: 20,
-                    lineWidth: 1,
-                    symbols: ['leftarrow', 'rightarrow'],
-                    width: 10
+                    height: 30,
+                    // lineWidth: 1,
+                    // symbols: ['leftarrow', 'rightarrow'],
+                    width: 14
                 },
             },
             series: [
                 {
+                    type:'area',
                     yAxis: 0,
                     showInNavigator: true,
-                    name: 'Dollar',
-                    data: props.data1,
-                    zones: [
-                        {
-                            color: '#1A237E'
-                        }
-                    ],
-                    tooltip: {
-                        valueSuffix: '$'
-                    }
-                },
-                {
-                    // yAxis: 1,
-                    showInNavigator: false,
                     name: 'Temperature',
-                    data: props.data2,
-                    zones: [{
-                        color: '#0693E3'
-                    }],
+                    data: props.data1,//.filter((v,i) => i>30), //TODO:
                     tooltip: {
                         valueSuffix: '°C'
+                    },
+                    turboThreshold: 0,
+                    boostThreshold: 1,
+                    zoneAxis: 'x',
+                    zones: [
+                        ...zoneColors
+                    ]
+                    // type:'area',
+                    // yAxis: 0,
+                    // showInNavigator: true,
+                    // name: 'Temperature',
+                    // data: props.data1,
+                    // turboThreshold: 0,
+                    // boostThreshold: 1,
+                    // zoomAxis: 'x',
+                    // zones: zoneColors,
+                    // tooltip: {
+                    //     valueSuffix: '°C'
+                    // }
+                },
+                {
+                    //yAxis: 1,
+                    type: 'area',
+                    showInNavigator: false,
+                    name: 'Dollar',
+                    data: props.data2,
+                    turboThreshold: 0,
+                    boostThreshold: 1,
+                    zoneAxis: 'x',
+                    zones: zoneColors2,
+                    tooltip: {
+                        valueSuffix: '$'
                     }
                 },
             ]
@@ -353,17 +406,17 @@ class MultiAreaChart extends Component {
     } // end chart Options
 
     refreshSelectedTimeRange = ({ chart, leftLine, rightLine }) => {
-        if (leftLine !== null && leftLine.element !== null) {
+        if (chart && leftLine !== null && leftLine.element !== null) {
             leftLine.element.attr({
                 transform: `translate(${chart.xAxis[0].toPixels(leftLine.xValue)},${0})`
             })
         }
-        if (rightLine !== null && rightLine.element !== null) {
+        if (chart && rightLine !== null && rightLine.element !== null) {
             rightLine.element.attr({
                 transform: `translate(${chart.xAxis[0].toPixels(rightLine.xValue)},${0})`
             })
         }
-        if (leftLine !== null !== null && rightLine !== null) {
+        if (chart && leftLine !== null !== null && rightLine !== null) {
             if (document.getElementById("redRoof") !== null)
                 document.getElementById("redRoof").attributes.d.value = `M ${chart.xAxis[0].toPixels(leftLine.xValue)} ${chart.plotTop} L ${chart.xAxis[0].toPixels(rightLine.xValue)} ${chart.plotTop}`
         }
@@ -393,143 +446,154 @@ class MultiAreaChart extends Component {
         }
     }
 
+    
     createSelectedTimeRange = ({ chart, offsetXLeft, offsetXRight, leftLine, rightLine, setLeftLine, setRightLine }) => {
         const lineWidth = 2
         const handleWidth = 24;
         const handleHeight = 24;
 
-        if (leftLine !== null || rightLine !== null) {
-            const tmpLines = document.getElementsByClassName("selected-range")
-            Object.values(tmpLines).forEach(e => {
-                e.remove()
-            });
-            setLeftLine(null);
-            setRightLine(null);
-        } else {
-            const renderer = chart.renderer
+        const renderer = chart.renderer
 
-            const groupLeft = renderer.g()
-                .attr({
-                    class: "selected-range",
-                    id: Date.now(),
-                    fill: '#00BF8E99',
-                    zIndex: 100,
-                    transform: `translate(${offsetXLeft},${0})`
-                })
-                .add()
-            chart.renderer.rect(-lineWidth / 2, chart.plotTop, lineWidth, chart.plotHeight)
-                .attr({
-                    fill: '#00BF8E99',
-                    zIndex: 100,
-                })
-                .add(groupLeft);
-            const yH = chart.plotTop + chart.plotHeight / 2
-            chart.renderer.path()
-                .attr({
-                    zIndex: 102,
-                    d: `M -4 ${yH - 6} L -9 ${yH}, -4 ${yH + 6} M 4 ${yH - 6} L 9 ${yH}, 4 ${yH + 6} M -9 ${yH} L 9 ${yH}`,
-                    style: "stroke: #00BF8E; stroke-width: 1px; cursor: col-resize",
-                })
-                .add(groupLeft)
-            const draggablePlotHandleLeft = chart.renderer.rect(-handleWidth / 2, chart.plotTop + chart.plotHeight / 2 - handleHeight / 2, handleWidth, handleHeight) //offsetXLeft-handleWidth/2+lineWidth/2, chart.plotTop+chart.plotHeight/2-handleHeight/2
-                .attr({
-                    fill: '#f5f5f5',
-                    style: "stroke: #00BF8E99; cursor: col-resize; stroke-width: 2px",
-                    zIndex: 101,
-                    rx: 4
-                })
-                .add(groupLeft);
-            draggablePlotHandleLeft.element.onmousedown = (e) => {
-                groupLeft.drag = true
-                e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
-            }
-            draggablePlotHandleLeft.element.ontouchstart = (e) => {
-                groupLeft.drag = true
-                e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
-            }
-            draggablePlotHandleLeft.element.onmouseup = (e) => {
-                groupLeft.drag = false
-                e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
-            }
-            draggablePlotHandleLeft.element.ontouchend = (e) => {
-                groupLeft.drag = false
-                e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
-            }
-            draggablePlotHandleLeft.element.onmouseenter = (e) => {
-                e.target.attributes.style.value = e.target.attributes.style.value+"; fill: #daeeda;"
-            }
-            draggablePlotHandleLeft.element.onmouseleave = (e) => {
-                e.target.attributes.style.value = e.target.attributes.style.value.replace("; fill: #daeeda;", "")
-            }
-
-            // Right
-            const groupRight = renderer.g()
-                .attr({
-                    class: "selected-range",
-                    id: Date.now(),
-                    fill: '#00BF8E99',
-                    zIndex: 100,
-                    transform: `translate(${offsetXRight},${0})`
-                })
-                .add()
-            chart.renderer.rect(-lineWidth / 2, chart.plotTop, lineWidth, chart.plotHeight)
-                .attr({
-                    fill: '#00BF8E99',
-                    zIndex: 100,
-                })
-                .add(groupRight);
-            chart.renderer.path()
-                .attr({
-                    zIndex: 102,
-                    d: `M -4 ${yH - 6} L -9 ${yH}, -4 ${yH + 6} M 4 ${yH - 6} L 9 ${yH}, 4 ${yH + 6} M -9 ${yH} L 9 ${yH}`,
-                    style: "stroke: #00BF8E; stroke-width: 1px; cursor: col-resize",
-                })
-                .add(groupRight)
-            const draggablePlotHandleRight = chart.renderer.rect(-handleWidth / 2, chart.plotTop + chart.plotHeight / 2 - handleHeight / 2, handleWidth, handleHeight) //offsetX-handleWidth/2+lineWidth/2, chart.plotTop+chart.plotHeight/2-handleHeight/2
-                .attr({
-                    fill: '#f5f5f5',
-                    style: "stroke: #00BF8E99; cursor: col-resize; stroke-width: 2px",
-                    zIndex: 101,
-                    rx: 4
-                })
-                .add(groupRight);
-            draggablePlotHandleRight.element.onmousedown = (e) => {
-                groupRight.drag = true
-                e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
-            }
-            draggablePlotHandleRight.element.ontouchstart = (e) => {
-                groupRight.drag = true
-                e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
-            }
-            draggablePlotHandleRight.element.onmouseup = (e) => {
-                groupRight.drag = false
-                e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
-            }
-            draggablePlotHandleRight.element.ontouchend = (e) => {
-                groupRight.drag = false
-                e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
-            }
-            draggablePlotHandleRight.element.onmouseenter = (e) => {
-                e.target.attributes.style.value = e.target.attributes.style.value+"; fill: #daeeda;"
-            }
-            draggablePlotHandleRight.element.onmouseleave = (e) => {
-                e.target.attributes.style.value = e.target.attributes.style.value.replace("; fill: #daeeda;", "")
-            }
-
-            chart.renderer.path()
-                .attr({
-                    class: "selected-range",
-                    id: "redRoof",
-                    d: `M ${offsetXLeft} ${chart.plotTop} L ${offsetXRight} ${chart.plotTop}`,
-                    zIndex: 103,
-                    style: "stroke: #ff333399; stroke-width: 4px"
-                })
-                .add();
-
-            setLeftLine({ xValue: chart.xAxis[0].toValue(offsetXLeft), element: groupLeft })
-            setRightLine({ xValue: chart.xAxis[0].toValue(offsetXRight), element: groupRight })
-            // }     
+        const groupLeft = renderer.g()
+            .attr({
+                class: "selected-range",
+                id: Date.now(),
+                fill: '#00BF8E99',
+                zIndex: 100,
+                transform: `translate(${offsetXLeft},${0})`
+            })
+            .add()
+        chart.renderer.rect(-lineWidth / 2, chart.plotTop, lineWidth, chart.plotHeight)
+            .attr({
+                fill: '#00BF8E99',
+                zIndex: 100,
+            })
+            .add(groupLeft);
+        const yH = chart.plotTop + chart.plotHeight / 2
+        chart.renderer.path()
+            .attr({
+                zIndex: 102,
+                d: `M -4 ${yH - 6} L -9 ${yH}, -4 ${yH + 6} M 4 ${yH - 6} L 9 ${yH}, 4 ${yH + 6} M -9 ${yH} L 9 ${yH}`,
+                style: "stroke: #00BF8E; stroke-width: 1px; cursor: col-resize",
+            })
+            .add(groupLeft)
+        const draggablePlotHandleLeft = chart.renderer.rect(-handleWidth / 2, chart.plotTop + chart.plotHeight / 2 - handleHeight / 2, handleWidth, handleHeight) //offsetXLeft-handleWidth/2+lineWidth/2, chart.plotTop+chart.plotHeight/2-handleHeight/2
+            .attr({
+                fill: '#f5f5f5',
+                style: "stroke: #00BF8E99; cursor: col-resize; stroke-width: 2px",
+                zIndex: 101,
+                rx: 4
+            })
+            .add(groupLeft);
+        draggablePlotHandleLeft.element.onmousedown = (e) => {
+            this.setState({
+                monitorText: {
+                    ...this.state.monitorText,
+                    mouse: "down"
+                }
+            })
+            groupLeft.drag = true
+            e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
         }
+        draggablePlotHandleLeft.element.ontouchstart = (e) => {
+            groupLeft.drag = true
+            e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
+        }
+        draggablePlotHandleLeft.element.onmouseup = (e) => {
+            this.setState({
+                monitorText: {
+                    ...this.state.monitorText,
+                    mouse: "down"
+                }
+            })
+            groupLeft.drag = false
+            e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
+        }
+        draggablePlotHandleLeft.element.ontouchend = (e) => {
+            groupLeft.drag = false
+            e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
+        }
+        draggablePlotHandleLeft.element.onmouseenter = (e) => {
+            e.target.attributes.style.value = e.target.attributes.style.value + "; fill: #daeeda;"
+        }
+        draggablePlotHandleLeft.element.onmouseleave = (e) => {
+            e.target.attributes.style.value = e.target.attributes.style.value.replace("; fill: #daeeda;", "")
+        }
+
+        // Right
+        const groupRight = renderer.g()
+            .attr({
+                class: "selected-range",
+                id: Date.now(),
+                fill: '#00BF8E99',
+                zIndex: 100,
+                transform: `translate(${offsetXRight},${0})`
+            })
+            .add()
+        chart.renderer.rect(-lineWidth / 2, chart.plotTop, lineWidth, chart.plotHeight)
+            .attr({
+                fill: '#00BF8E99',
+                zIndex: 100,
+            })
+            .add(groupRight);
+        chart.renderer.path()
+            .attr({
+                zIndex: 102,
+                d: `M -4 ${yH - 6} L -9 ${yH}, -4 ${yH + 6} M 4 ${yH - 6} L 9 ${yH}, 4 ${yH + 6} M -9 ${yH} L 9 ${yH}`,
+                style: "stroke: #00BF8E; stroke-width: 1px; cursor: col-resize",
+            })
+            .add(groupRight)
+        const draggablePlotHandleRight = chart.renderer.rect(-handleWidth / 2, chart.plotTop + chart.plotHeight / 2 - handleHeight / 2, handleWidth, handleHeight) //offsetX-handleWidth/2+lineWidth/2, chart.plotTop+chart.plotHeight/2-handleHeight/2
+            .attr({
+                fill: '#f5f5f5',
+                style: "stroke: #00BF8E99; cursor: col-resize; stroke-width: 2px",
+                zIndex: 101,
+                rx: 4
+            })
+            .add(groupRight);
+        draggablePlotHandleRight.element.onmousedown = (e) => {
+            groupRight.drag = true
+            e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
+        }
+        draggablePlotHandleRight.element.ontouchstart = (e) => {
+            groupRight.drag = true
+            e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
+        }
+        draggablePlotHandleRight.element.onmouseup = (e) => {
+            groupRight.drag = false
+            e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
+        }
+
+        draggablePlotHandleRight.element.ontouchend = (e) => {
+            groupRight.drag = false
+            e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
+        }
+        draggablePlotHandleRight.element.onmouseenter = (e) => {
+            e.target.attributes.style.value = e.target.attributes.style.value + "; fill: #daeeda;"
+        }
+        draggablePlotHandleRight.element.onmouseleave = (e) => {
+            e.target.attributes.style.value = e.target.attributes.style.value.replace("; fill: #daeeda;", "")
+        }
+
+        chart.renderer.path()
+            .attr({
+                class: "selected-range",
+                id: "redRoof",
+                d: `M ${offsetXLeft} ${chart.plotTop} L ${offsetXRight} ${chart.plotTop}`,
+                zIndex: 103,
+                style: "stroke: #ff333399; stroke-width: 4px"
+            })
+            .add();
+
+        setLeftLine({ xValue: chart.xAxis[0].toValue(offsetXLeft), element: groupLeft })
+        setRightLine({ xValue: chart.xAxis[0].toValue(offsetXRight), element: groupRight })
+        // }     
+    }
+
+    setZoom = (startTime, endTime) => {
+        const chart = this.multiChartRef.current.chart
+        const diff = endTime-startTime
+        chart.xAxis[0].setExtremes(startTime-diff*4, endTime+diff*4);
     }
 
     setMultiZoomIn = (chart) => {
@@ -627,7 +691,7 @@ export default MultiAreaChart;
 //                     x: 20
 //                 },
 //                 title: {
-//                     text: 'Temperature (°C)',
+//                     text: 'Temperature (Â°C)',
 //                     style: {
 //                         color: '#000'
 //                     },
@@ -687,7 +751,7 @@ export default MultiAreaChart;
 //                     color: '#0693E3'
 //                 }],
 //                 tooltip: {
-//                     valueSuffix: 'Â°C'
+//                     valueSuffix: 'Ã‚Â°C'
 //                 }
 //             },
 

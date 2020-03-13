@@ -234,7 +234,7 @@ class SingleAreaChart extends Component {
         //         color: flag ? "#BF0B2399" : "#B6B6B6"
         //     })
         // })
-
+        console.log('anomalyDataByTime: ', anomalyDataByTime.map(v => [moment(v.startDate).format('YYYY-MM-DD HH:MM'), moment(v.endDate).format('YYYY-MM-DD HH:MM')]))
         const sortDate = anomalyDataByTime.reverse()
         
         const navigatorZoneColors = sortDate.reduce((r,v, arr) => {
@@ -289,7 +289,7 @@ class SingleAreaChart extends Component {
                 split: 'true',
                 formatter: function() {
                     return Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x) + '<br />' +
-                        Highcharts.numberFormat(this.y, 3) + ' °C'
+                        Highcharts.numberFormat(this.y*1) + ' °C'
                 }
             },
             title: {
