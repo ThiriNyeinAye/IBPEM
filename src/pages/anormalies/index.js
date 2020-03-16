@@ -532,18 +532,29 @@ class Anormalies extends Component {
     }
     
     handleFilterAnomalyData = (startDate, endDate) =>{
-
+        const selectedAnomaly = Object.keys(this.state.anomalyDataByEquipment).reduce((r, d) => {
+            if(r!==null) return r
+            else {
+                const i = this.state.anomalyDataByEquipment[d].findIndex(v => v.selected)
+                if(i!==-1) return this.state.anomalyDataByEquipment[d][i]
+                else return r
+            }
+        }, null)
         // new Added by @nayhtet
         const anomalyDataByEquipmentFiltered = Object.keys(this.state.anomalyDataByEquipmentOriginal).reduce((r, device) => {
             const R = {...r}
-            const filteredData = this.state.anomalyDataByEquipmentOriginal[device].filter(v => v.startTs>=startDate && v.endTs<=endDate)
+            const filteredData = this.state.anomalyDataByEquipmentOriginal[device]
+                .filter(v => v.startTs>=startDate && v.endTs<=endDate)
+                .map(v => (selectedAnomaly!==null && v.id===selectedAnomaly.id) ? ({ ...v, selected: true }) : v)
+            
             R[device] = filteredData
             return R
         }, {})
-        this.setState({anomalyDataByEquipment: anomalyDataByEquipmentFiltered}, () => {
-            // const singlerAreaChart = this.singleAreaChartRef.current
-            // if(singlerAreaChart!==null) singlerAreaChart.setChartOption()
-        })
+        if(selectedAnomaly===null) {
+            const singlerAreaChart = this.singleAreaChartRef.current
+            if(singlerAreaChart!==null) singlerAreaChart.removeSelectedRange()
+        }
+        this.setState({anomalyDataByEquipment: anomalyDataByEquipmentFiltered})
     }
 
     render() {
@@ -603,7 +614,7 @@ class Anormalies extends Component {
                                 />
                             </div>
 
-                            <div className="py-2 col-lg-12 col-12 " changeView={this.state.changeView} style={{ width: window.innerWidth<=1200 ? window.innerWidth : window.innerWidth-350 }}>
+                            <div className="py-2 col-lg-12 col-12 " style={{ width: window.innerWidth<=1200 ? window.innerWidth : window.innerWidth-350 }}>
                                 <div className='p-1'>
                                     <div className='bg-white rounded p-4'>
                                         <AnormalyControlPanel handleZoomIn={this.handleZoomIn} handleZoomOut={this.handleZoomOut} />

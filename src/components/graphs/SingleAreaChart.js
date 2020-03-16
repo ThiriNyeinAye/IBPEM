@@ -4,6 +4,7 @@ import Highcharts, { Axis } from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
 import moment from "moment-timezone"
 import deepEqual from "deep-equal"
+import * as d3 from "d3"
 // import moment from 'moment'
 
 // const PlotBands = props => {
@@ -46,7 +47,94 @@ class SingleAreaChart extends PureComponent {
             monitorText: {}
         }
         this.chartRef = React.createRef(null)
+        this.leftLine = null
+        this.rightLine = null
     }
+
+    //=========================================================================================
+
+    createSelecedArea = () => {
+        const rect = d3.select(".highcharts-plot-border")
+        if(d3.select("#selectedSvg").node()!==null) d3.select("#selectedSvg").node().remove()
+        // console.log(rect.node())
+        const svg = d3.select(".highcharts-root")
+            .append("svg")
+            .attr("id", "selectedSvg")
+        const g = svg.append("g")
+            .attr("id", "rect")
+            .attr("x", 0)
+            .attr("y", rect.attr("y"))
+            .attr("width", 80)
+            .attr("height", rect.attr("height"))
+            .attr("z-index", 100)
+            .attr("fill", "#28a74522")
+            .attr("cursor", "pointer")
+            .attr("opacity", 0.8)
+            .attr("stroke", "#28a745")
+            .attr("stroke-width", 0)
+            .attr("transform", `translate (0 ${rect.attr("y")})`)
+            
+        g.append("rect")
+            .attr("id", "rect-body")
+            .attr("x", g.attr("x"))
+            .attr("y", 0)
+            .attr("width", g.attr("width"))
+            .attr("height", g.attr("height"))
+
+        g.append("rect")
+            .attr("id", "slider-left-bar")
+            .attr("x", g.attr("x"))
+            .attr("y", 0)
+            .attr("width", 2)
+            .attr("height", g.attr("height"))
+            .attr("fill", "#28a745")
+        g.append("rect")
+            .attr("id", "slider-right-bar")
+            .attr("x", Number(g.attr("x"))+Number(g.attr("width")))
+            .attr("y", 0)
+            .attr("width", 2)
+            .attr("height", g.attr("height"))
+            .attr("fill", "#28a745")
+
+        g.append("rect")
+            .attr("id", "represented-bar")
+            .attr("x", Number(g.attr("x")))
+            .attr("y", 0)
+            .attr("width", Number(g.attr("width"))+2)
+            .attr("height", 3)
+            .attr("fill", "#dc3545")
+                    
+        const handleDragAndMove = d3.drag()
+            .subject(function () {
+                const me = d3.select(this);
+                return { x: me.attr('x'), y: me.attr('y') }
+            })
+            .on("start", function() {
+                console.log("id", d3.event.sourceEvent.target.id)
+                const me = d3.select(this)
+                me.raise()
+                    .attr("opacity", 1)
+                    // .attr("stroke-width", 1)
+            })
+            .on('drag', function () {  
+                const e = d3.event
+                const me = d3.select(this)
+                if(e.x>=Number(rect.attr("x")) && e.x<=Number(rect.attr("width"))-Number(me.attr("width"))) {
+                    me.raise().attr("x", e.x)                
+                    me.raise().attr("transform", `translate (${e.x} ${Math.floor(Number(me.attr("y")))})`)
+                }
+            })
+            .on("end", function() {
+                const me = d3.select(this)
+                me.raise()
+                    .attr("opacity", 0.8)
+                    // .attr("stroke-width", 0)
+            })
+        handleDragAndMove(d3.select("#selectedSvg > #rect"))    
+    }
+
+    //=========================================================================================
+
 
     setLeftLine = leftLine => {
         this.setState({ leftLine })
@@ -136,10 +224,12 @@ class SingleAreaChart extends PureComponent {
         const empty = this.props.data.length===0 && this.props.anomalyDataByTime.length===0    
         if (!empty && !deepEqual(prevProps.data, this.props.data) && this.chartRef.current !== null) {
             this.setState({ options: this.initChartOption(chart, this.props) })
+            
         }
         else if(!empty && !deepEqual(prevProps.anomalyDataByTime, this.props.anomalyDataByTime) && this.chartRef.current !== null) {
             // this.setState({ options: this.initChartOption(chart, this.props) })
         } 
+        
     }
 
     componentDidMount() {
@@ -179,6 +269,9 @@ class SingleAreaChart extends PureComponent {
             // chart.showLoading("....Loading....")
             // console.log("Click: ", `${e.offsetX } : ${chart.xAxis[0].toValue(e.offsetX)} : ${moment.unix(chart.xAxis[0].toValue(e.offsetX)/1000).format("YYYY-DD-MM HH:mm:ss")}`)
         }
+
+        
+
     } // end Did mount
 
     render() {
@@ -219,10 +312,10 @@ class SingleAreaChart extends PureComponent {
 
 
         return ( 
-            // <div className="" style={{ display: "none" }}>
-                /* <div>{JSON.stringify(this.state.monitorText)} </div> */
+            <div className="" >
+                <div><button onClick={this.createSelecedArea}>TEST</button></div>
                 <HighchartsReact ref={this.chartRef} highcharts={Highcharts} constructorType={"stockChart"} options={this.state.options} containerProps={{ className: "" }} />
-            // </div>
+            </div>
         )
 
 
