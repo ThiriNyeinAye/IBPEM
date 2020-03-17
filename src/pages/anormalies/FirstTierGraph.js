@@ -3,6 +3,7 @@ import ReactDOM from "react-dom"
 import * as d3 from "d3"
 import deepEqual from "deep-equal"
 import moment from "moment"
+import { format, parse, isEqual, isBefore, startOfYear, endOfYear, addDays } from "date-fns"
 import cliTruncate from 'cli-truncate';
 import "../../App.css"
 
@@ -100,14 +101,14 @@ class GraphTip extends Component {
         }
     }
     componentDidMount() {
-        let startDate = moment().startOf('year')
-        let endDate = moment().endOf('year')
+        let startDate = startOfYear(new Date())
+        let endDate = endOfYear(new Date())
         const months = []
-        while(startDate.isBefore(endDate)) {
-            const mname = startDate.format("MMM")
+        while(isBefore( new Date(startDate), new Date(endDate) )) {
+            const mname =format(new Date(startDate), "MMM")
             if(months.findIndex(v => v===mname)===-1) months.push(mname)
             else months.push(null)
-            startDate = startDate.add(8, 'days')
+            startDate = addDays(new Date(startDate), 8)
         }
         this.setState({ months: months })
     }
@@ -144,14 +145,14 @@ class Background extends Component {
     }
 
     componentDidMount() {        
-        let startDate = moment().startOf('year')
-        let endDate = moment().endOf('year')
+        let startDate = startOfYear(new Date())
+        let endDate = endOfYear(new Date())
         const months = []
-        while(startDate.isBefore(endDate)) {
-            const mname = startDate.format("MMM")
+        while(isBefore( new Date(startDate), new Date(endDate) )) {
+            const mname = format(new Date(startDate),"MMM")
             if(months.findIndex(v => v===mname)===-1) months.push(mname)
             else months.push(null)
-            startDate = startDate.add(8, 'days')
+            startDate = addDays(new Date(startDate), 8)
         }
         this.setState({ months: months })
         this.calculateStartAndEnd()
@@ -164,19 +165,20 @@ class Background extends Component {
     }
 
     calculateStartAndEnd = () => {
-        const startYear = moment(this.props.firstTierDate.startDate).format("YYYY")
-        const endYear = moment(this.props.firstTierDate.endDate).format("YYYY")
+        const startYear = format(new Date(this.props.firstTierDate.startDate), "yyyy")
+        const endYear = format(new Date(this.props.firstTierDate.endDate), "yyyy")
         
-        const startDate = moment(this.props.firstTierDate.startDate)
-        const endDate = moment(this.props.firstTierDate.endDate)
+        const startDate = new Date(this.props.firstTierDate.startDate)
+        const endDate = new Date(this.props.firstTierDate.endDate)
 
         const vectorsSelected = []
         this.state.yearlyData.map((yd, k1) => {
             if(startYear===yd.year || endYear===yd.year) {
                 yd.data.map((d, k2) => {
-                    if(startDate.isSameOrBefore(moment(d.startDate)) && moment(d.endDate).isSameOrBefore(endDate)) {
-                        vectorsSelected.push([k1, k2])
-                    } 
+                    if((isEqual(new Date(startDate), new Date(d.startDate)) && isEqual(new Date(endDate), new Date(d.endDate))) ||
+                        isBefore(new Date(startDate), new Date(d.startDate)) && isBefore(new Date(endDate), new Date(d.endDate)) ) {
+                            vectorsSelected.push([k1, k2])
+                        } 
                 })
             }
         } )

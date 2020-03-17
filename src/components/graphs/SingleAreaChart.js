@@ -3,6 +3,8 @@ import { createPortal } from "react-dom"
 import Highcharts, { Axis } from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
 import moment, { defaultFormatUtc } from "moment-timezone"
+import { format, getUnixTime } from 'date-fns'
+import { zonedTimeToUtc } from "date-fns-tz"
 import deepEqual from "deep-equal"
 import * as d3 from "d3"
 // import moment from 'moment'
@@ -390,37 +392,21 @@ class SingleAreaChart extends PureComponent {
     //     }
     // }
 
-    // shouldComponentUpdate(nextProps, nextState) {
-    //     console.log("should upated.") 
-    //     const chart = this.chartRef.current.chart; 
-    //     const empty = this.props.datum.length===0 && this.props.data.length===0 && this.props.anomalyDataByTime.length===0    
-        
-    //     // if(!deepEqual(this.props.data, nextProps.data)) {
-    //     //     return true
-    //     // } else if(!deepEqual(this.props.datum, nextProps.datum)) {
-    //     //     return true
-    //     // } else if(!deepEqual(this.props.anomalyDataByTime, nextProps.anomalyDataByTime)) {
-    //     //     return true
-    //     // } else {
-    //     //     return false
-    //     // }
-    //     if(deepEqual(this.props.anomalyDataByTime, nextProps.anomalyDataByTime)) {
-    //         return false
-    //     } else return true
-    // }
+    shouldComponentUpdate(nextProps, nextState) {
+        if(!deepEqual(this.props.data, nextProps.data)) {
+            return true
+        } else if(!deepEqual(this.props.datum, nextProps.datum)) {
+            return true
+        } else {
+            return false
+        }
+    }
 
     componentDidUpdate(prevProps, prevState) {  
-        console.log("didupdated.") 
-        // const chart = this.chartRef.current.chart; 
         const empty = this.props.data.length===0 && this.props.anomalyDataByTime.length===0    
         if (!empty && (!deepEqual(prevProps.data, this.props.data) || !deepEqual(prevProps.datum, this.props.datum)) && this.chartRef.current !== null) {
-            console.log("changed data props. :: ", !empty, (!deepEqual(prevProps.data, this.props.data)), this.chartRef.current !== null)
             this.setChartOption()
-            // this.setState({ options: this.initChartOption(chart, this.props) })
-        }
-        // else if(!empty && !deepEqual(prevProps.anomalyDataByTime, this.props.anomalyDataByTime) && this.chartRef.current !== null) {
-        //     // this.setState({ options: this.initChartOption(chart, this.props) })
-        // }         
+        }     
     }
 
     componentDidMount() {
@@ -502,7 +488,6 @@ class SingleAreaChart extends PureComponent {
             ];
         };
 
-        console.log("render")
         return ( 
             // <div className="" >
                 <HighchartsReact 
@@ -510,6 +495,7 @@ class SingleAreaChart extends PureComponent {
                     highcharts={Highcharts} 
                     constructorType={"stockChart"} 
                     options={this.options} 
+                    oneToOne={true}
                     containerProps={{ className: "" }} />
             // </div>
         )
@@ -528,11 +514,10 @@ class SingleAreaChart extends PureComponent {
     }
 
     initChartOption = (chart, props) => {
-        console.log("initOption: ")
         const anomalyDataByTimeProps = props.anomalyDataByTime === undefined ? [] : props.anomalyDataByTime /*@lucy */
         const anomalyDataByTime = anomalyDataByTimeProps.map(v => ({ 
-            startDate: moment.tz(v.startDate, "Europe/Lisbon").unix() * 1000, 
-            endDate: moment.tz(v.endDate, "Europe/Lisbon").unix() * 1000, 
+            startDate: getUnixTime(zonedTimeToUtc(v.startDate, "Europe/Lisbon")) * 1000,
+            endDate: getUnixTime(zonedTimeToUtc(v.endDate, "Europe/Lisbon")) *1000
         }))
         // let navigatorZoneColors = props.data.map((v, i, arr) => {
         //     // const flag = i>0 ? anomalyDataByTime.findIndex( v1 => arr[i-1][0]>=v1.startDate-60000 && arr[i-1][0]<=v1.endDate )>-1 : false

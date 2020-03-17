@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react'
 import Highcharts, { color } from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
 import moment from "moment-timezone"
+import { format, getUnixTime } from 'date-fns'
+import { zonedTimeToUtc } from "date-fns-tz"
 
 const SimpleSingleAreaChart = (props) => {
     const { title, height } = props
 
     const anomalyDataByTimeProps = props.anomalyDataByTime === undefined ? [] : props.anomalyDataByTime
     const anomalyDataByTime = anomalyDataByTimeProps.map(v => ({
-        startDate: moment.tz(v.startDate, "Europe/Lisbon").unix() * 1000, 
-        endDate: moment.tz(v.endDate, "Europe/Lisbon").unix() * 1000, 
+        startDate: getUnixTime(zonedTimeToUtc(v.startDate, "Europe/Lisbon")) * 1000,
+        endDate: getUnixTime(zonedTimeToUtc(v.endDate, "Europe/Lisbon")) *1000
     }))
     const sortDate = anomalyDataByTime.reverse()
     const zoneColors = sortDate.reduce((r,v, arr) => {

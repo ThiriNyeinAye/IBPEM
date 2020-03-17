@@ -6,6 +6,9 @@ import { ItemNavbar } from './Navbar.js';
 import OutsideClickHandler from "react-outside-click-handler";
 import { Scrollbars} from 'react-custom-scrollbars';
 
+import classes from "./app.module.css";
+
+
 const AnormalySidebar = props => {
     const { 
         anomalyDataByEquipment,
@@ -31,6 +34,18 @@ const AnormalySidebar = props => {
     ))
 
     const AnormalyView = anormalyBy === 2 ? anormalyByEquipmentList : AnormalyByTimeFrameList
+    const [show, setShow] = useState(false);
+    const [view, setView] = useState(false);
+    const handleScrollFrame = values => {
+        const scrollTop = values.scrollTop;
+        if (scrollTop === 0) {
+        setView(false);
+        setShow(true);
+        } else {
+        setView(true);
+        setShow(false);
+        }
+    };
     
     return (
         <div className='bg-white shadow-lg py-3 rounded h-100 d-flex flex-column justify-content-between' >
@@ -79,16 +94,23 @@ const AnormalySidebar = props => {
                         </div>
                     </div> 
                 </div> */}
-                <Scrollbars style={{height:448}} >
-                     {/* height 448 for 8 */}
-                        { AnormalyView }
-                        {/* <div className={classes.scrolldown}>
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div> */}
-                   
+                {view ? (
+                <div className={classes.scrollup}>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                ) : null}
+                <Scrollbars style={{ height: 440 }} onScrollFrame={handleScrollFrame}>
+                {AnormalyView}
                 </Scrollbars>
+                {show ? (
+                <div className={classes.scrolldown}>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                ) : null}
 
                 <div className='px-3 d-flex py-3 pt-4 justify-content-between'>
                     <div className=''>New Detection</div>

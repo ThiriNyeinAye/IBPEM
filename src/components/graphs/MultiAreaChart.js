@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef, Component } from 'react'
 import Highcharts, { Axis } from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
 import moment from "moment-timezone"
+import { format, getUnixTime } from 'date-fns'
+import { zonedTimeToUtc } from "date-fns-tz"
 import deepEqual from "deep-equal"
 
 const AppConst = {
@@ -166,8 +168,8 @@ class MultiAreaChart extends Component {
         console.log('data1: ', props.data1+ '\ndata2: '+ props.data2)
         const anomalyDataByTimeProps = props.anomalyDataByTime === undefined ? [] : props.anomalyDataByTime /*@lucy */
         const anomalyDataByTime = anomalyDataByTimeProps.map(v => ({ 
-            startDate: moment.tz(v.startDate, "Europe/Lisbon").unix() * 1000, 
-            endDate: moment.tz(v.endDate, "Europe/Lisbon").unix() * 1000, 
+            startDate: getUnixTime(zonedTimeToUtc(v.startDate, "Europe/Lisbon")) * 1000,
+            endDate: getUnixTime(zonedTimeToUtc(v.endDate, "Europe/Lisbon")) *1000
         }))
         console.log('anomalyDataByTimeProps: ', anomalyDataByTimeProps)
 
@@ -189,7 +191,7 @@ class MultiAreaChart extends Component {
             return [...r, c1, c2 ]
         }, [])
         zoneColors.push({ color: "#00BF8E" })
-        console.log('zoneColors: ', zoneColors.map(v => moment(v.value).format('YYYY-MM-DD')))
+        console.log('zoneColors: ', zoneColors.map(v => format(new Date(v.value), 'YYYY-MM-DD')))
 
         const zoneColors2 = sortDate.reduce((r,v, arr) => {
             const c1 = { value: v.startDate, color: "#2196f3" }

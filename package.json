@@ -9,6 +9,8 @@
     "@testing-library/user-event": "^7.2.1",
     "cli-truncate": "^2.1.0",
     "d3": "^5.15.0",
+    "date-fns": "^2.11.0",
+    "date-fns-tz": "^1.0.10",
     "deep-equal": "^2.0.1",
     "express": "^4.17.1",
     "highcharts": "^8.0.0",

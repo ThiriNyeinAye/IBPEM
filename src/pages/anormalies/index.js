@@ -1,5 +1,7 @@
 import React, { Component, useState, useRef, useEffect, Fragment } from "react"
 import moment from "moment-timezone"
+import { format, getUnixTime,fromUnixTime } from 'date-fns'
+import { zonedTimeToUtc } from "date-fns-tz"
 import Draggable from 'react-draggable'
 import * as d3 from "d3"
 
@@ -155,9 +157,9 @@ class Anormalies extends Component {
             else {
                 const { data0, data1, data2 } = data.payload.reduce((r, v) => {
                     const R = {...r}
-                    R.data0.push([moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.efficiency])
-                    R.data1.push([moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaInput])
-                    R.data2.push([moment.tz(v.ts, "Europe/Lisbon").unix() * 1000, v.evaOutput])
+                    R.data0.push([getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000, v.efficiency])
+                    R.data1.push([getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000, v.evaInput])
+                    R.data2.push([getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000, v.evaOutput])
                     return R
                 }, { data0: [], data1: [], data2: [] })
                 this.setState({ /*data: data.payload,*/ data0, data1, data2 /*.filter((v,i)=> i<200)*/ }, () => {
@@ -220,10 +222,10 @@ class Anormalies extends Component {
                     const value = {
                         ...c,
                         selected: false,
-                        date: moment(c.startDate).format("Do MMM, YY")+ " ~ " + moment(c.endDate).format("Do MMM, YY"),
-                        time: `${moment(c.startDate).format("HH:mm")} ~ ${moment(c.endDate).format("HH:mm")}`,
-                        startTs: moment.tz(c.startDate, "Europe/Lisbon").unix() * 1000,
-                        endTs: moment.tz(c.endDate, "Europe/Lisbon").unix() * 1000
+                        date: `${format(new Date(c.startDate), 'do MMM, yy')} ~ ${format(new Date(c.endDate), 'do MMM, yy')}`,
+                        time: `${format(new Date(c.startDate), 'HH:mm')} ~ ${format(new Date(c.endDate), 'HH:mm')}`,
+                        startTs: getUnixTime(zonedTimeToUtc(c.startDate, "Europe/Lisbon")) * 1000,
+                        endTs: getUnixTime(zonedTimeToUtc(c.endDate, "Europe/Lisbon")) * 1000
                     }
                     if (R[c.deviceType] === undefined) R[c.deviceType] = [value]
                     else R[c.deviceType].push(value)
@@ -336,6 +338,8 @@ class Anormalies extends Component {
         // const multiChart = this.multiAreaChartRef.current
         // const multiLeftLine = multiChart.state.leftLine
         // const multiRightLine = multiChart.state.rightLine
+        const leftLine = areaChart.state.leftLine
+        const rightLine = areaChart.state.rightLine
         const offsetLeftRight = areaChart.readSelectedAreaValues()
 
         if (areaChart !== null && offsetLeftRight !== null) {
@@ -347,8 +351,8 @@ class Anormalies extends Component {
                 faultType: anomalyInputData.faultType,
                 severity: anomalyInputData.severity,
                 sensorSignal: anomalyInputData.sensorSignal,
-                startDate: moment.unix(offsetLeftRight.startTs / 1000).tz("Europe/Lisbon").format("YYYY-MM-DD HH:mm:ss"),
-                endDate: moment.unix(offsetLeftRight.endTs / 1000).tz("Europe/Lisbon").format("YYYY-MM-DD HH:mm:ss"),
+                startDate :  format(fromUnixTime(leftLine.xValue/1000), "YYYY-MM-DD HH:mm:ss",  'Europe/Berlin' ),
+                endDate :  format(fromUnixTime(rightLine.xValue/1000), "YYYY-MM-DD HH:mm:ss",  'Europe/Berlin' ),
                 additionalGraphs: graphShowData.filter(v => v.selected).map(v => v.name),
                 remark: message,
             }
@@ -409,8 +413,8 @@ class Anormalies extends Component {
     handleAnomalyTimeClicked = value => {
         const areaChart = this.singleAreaChartRef.current
         //const multiChart = this.multiAreaChartRef.current
-        const startTs = moment.tz(value.startDate, "Europe/Lisbon").unix() * 1000
-        const endTs = moment.tz(value.endDate, "Europe/Lisbon").unix() * 1000
+        const startTs = getUnixTime(zonedTimeToUtc(value.startDate, "Europe/Lisbon")) * 1000
+        const endTs = getUnixTime(zonedTimeToUtc(value.endDate, "Europe/Lisbon")) * 1000
 
         const { anomalyDataByEquipment : anomalyDataByEquipment1 } = this.state
         const anomalyDataByEquipment = Object.keys(anomalyDataByEquipment1).reduce((r, c) => {
@@ -464,8 +468,8 @@ class Anormalies extends Component {
 
     handleAnomalyTimeClickedMulti = value => {
         const multiChart = this.multiAreaChartRef.current
-        const startTs = moment.tz(value.startDate, "Europe/Lisbon").unix() * 1000
-        const endTs = moment.tz(value.endDate, "Europe/Lisbon").unix() * 1000
+        const startTs = getUnixTime(zonedTimeToUtc(value.startDate, "Europe/Lisbon")) * 1000
+        const endTs = getUnixTime(zonedTimeToUtc(value.endDate, "Europe/Lisbon")) * 1000
 
         const { anomalyDataByEquipment : anomalyDataByEquipment1 } = this.state
         const anomalyDataByEquipment = Object.keys(anomalyDataByEquipment1).reduce((r, c) => {

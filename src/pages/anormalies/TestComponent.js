@@ -6,6 +6,7 @@ import cliTruncate from 'cli-truncate';
 import deepEqual from "deep-equal"
 
 import * as d3 from "d3";
+import { format, isBefore, startOfYear, endOfYear, addDays } from "date-fns"
 
 export default class TestComponent extends Component {
     constructor(props) {
@@ -53,14 +54,16 @@ export default class TestComponent extends Component {
     render() {
         const { yearlyData, firstTierDate } = this.props
         // calcuate months
-        let startDate = moment().startOf('year')
-        let endDate = moment().endOf('year')
+        let startDate = startOfYear(new Date())
+        let endDate = endOfYear(new Date())
+
         const months = []
-        while(startDate.isBefore(endDate)) {
-            const mname = startDate.format("MMM")
+        while(isBefore( new Date(startDate), new Date(endDate) )) {
+            const mname = format(new Date(startDate), "MMM")
             if(months.findIndex(v => v===mname)===-1) months.push(mname)
             else months.push(null)
-            startDate = startDate.add(8, 'days')
+            startDate = addDays(new Date(startDate), 8)
+
         }
         
         const rows = yearlyData.map((v1,k1) => {

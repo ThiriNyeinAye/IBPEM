@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import CollapseHistoryTable from "../../components/app/CollapseTable.js";
 import moment from "moment-timezone";
 import * as Navbar from "../../components/app/Navbar.js";
+import { format, getUnixTime,fromUnixTime } from 'date-fns'
+import { zonedTimeToUtc } from "date-fns-tz"
 
 import { withLStorage } from "../../components/hoc.js";
 
@@ -82,15 +84,15 @@ class AnormaliesHistory extends Component {
   //  console.log(HistoryTableData)
   
     const data0 = data.map(v => [
-      moment.tz(v.ts, "Europe/Lisbon").unix() * 1000,
+      getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000,
       v.efficiency
     ]);
     const data1 = data.map(v => [
-      moment.tz(v.ts, "Europe/Lisbon").unix() * 1000,
+      getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000,
       v.evaInput
     ]);
     const data2 = data.map(v => [
-      moment.tz(v.ts, "Europe/Lisbon").unix() * 1000,
+      getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000,
       v.evaOutput
     ]);
 
