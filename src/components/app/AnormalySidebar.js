@@ -4,6 +4,7 @@ import {Link} from 'react-router-dom'
 import { Progress } from 'reactstrap';
 import { ItemNavbar } from './Navbar.js';
 import OutsideClickHandler from "react-outside-click-handler";
+import { Scrollbars} from 'react-custom-scrollbars';
 
 const AnormalySidebar = props => {
     const { 
@@ -78,8 +79,16 @@ const AnormalySidebar = props => {
                         </div>
                     </div> 
                 </div> */}
-
-                { AnormalyView }
+                <Scrollbars style={{height:448}} >
+                     {/* height 448 for 8 */}
+                        { AnormalyView }
+                        {/* <div className={classes.scrolldown}>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div> */}
+                   
+                </Scrollbars>
 
                 <div className='px-3 d-flex py-3 pt-4 justify-content-between'>
                     <div className=''>New Detection</div>
