@@ -74,7 +74,7 @@ export default class DragTest extends Component {
                             </svg>
                         </div>
                         <div>
-                            <svg viewBox={`0 0 ${width} ${height}`} className="" id="eight-day-slider-svg" style={{ backgroundColor: "#fefefe", borderRadius: 2 }}>
+                            <svg viewBox={`0 0 ${width} ${height}`} className="" id="eight-day-slider-svg" className="border" style={{ /*backgroundColor: "#fefefe",*/ borderRadius: 2 }}>
                                 <Background ref={this.ref1TierGraph} handleClickOn8DaysData={this.handleClickOn8DaysData} firstTierDate={firstTierDate} width={width} height={height} yearlyData={yearlyData} />
                             </svg>
                         </div>
@@ -248,7 +248,7 @@ class Background extends Component {
                     )
                 } else {
                     return (
-                        <line key={`${v1.year}${k2}`} x1={k2} y1={k1*2+1} x2={k2+1} y2={k1*2+1} style={{ strokeWidth: 0.05, stroke: "#23232333", /*strokeDasharray: "0.2 0.2"*/ }} />
+                        <line key={`${v1.year}${k2}`} x1={k2} y1={k1*2+1} x2={k2+1} y2={k1*2+1} style={{ strokeWidth: 0.05, stroke: "#23232333", strokeDasharray: "0.3 0.2" }} />
                     )
                 }
             })

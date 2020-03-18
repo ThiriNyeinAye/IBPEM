@@ -25,3 +25,22 @@
     stroke: #ffffffbb;
     opacity: 0.9;
 }
+
+tr.historyRow td {
+    border-top: 1px solid #e1e1e1;
+    border-bottom: 1px solid #e1e1e1;
+} 
+tr.historyRow td:nth-of-type(1) {
+    border-left: 1px solid #e1e1e1;
+}
+tr.historyRow td:nth-last-of-type(1) {
+    border-right: 1px solid #e1e1e1;
+}
+
+tr.historyRow:hover {
+    box-shadow: 1px 1px 4px #d5d5d5;
+}
+
+tr.historyRow:hover .lastColumn div {
+    box-shadow: 1px 1px 2px #e5e5e5;
+}

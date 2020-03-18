@@ -1,11 +1,11 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom"
 import CollapseHistoryTable from "../../components/app/CollapseTable.js";
-import moment from "moment-timezone";
 import * as Navbar from "../../components/app/Navbar.js";
 import { format, getUnixTime,fromUnixTime } from 'date-fns'
-import { zonedTimeToUtc } from "date-fns-tz"
-
+import { zonedTimeToUtc, utcToZonedTime } from "date-fns-tz"
 import { withLStorage } from "../../components/hoc.js";
+import SingleAreaChart from "../../components/graphs/SingleAreaChart.js"
 
 const HOST = {
   local: "http://192.168.100.7:3003",
@@ -13,12 +13,13 @@ const HOST = {
   maythu: "http://192.168.100.27:3003"
 };
 
-const DataFetcher = callback => {
-  return fetch(`${HOST.test}/dummy-data?startDate=2020-01-10&endDate=2020-01-11`)
+const DataFetcher = (params, callback) => {
+  const res =  fetch(`${HOST.test}/dummy-data?startDate=${params.startDate}&endDate=${params.endDate}`)
     .then(res => res.json())
     .then(data => callback(data.error, data))
-    .catch(error => callback(error, null));
-};
+    .catch(error => callback(error, null))
+  return res
+}
 const GetHistoryData = callback =>{
   return fetch(`${HOST.test}/history`)
   .then(res => res.json())
@@ -39,16 +40,16 @@ class AnormaliesHistory extends Component {
       },
       // HistoryTableData: [...HistoryTableDataOrignal]
       HistoryTableData:[],
-      HistoryTableDataOrigin:[],
+      HistoryTableDataOrigin: null,
   
     }; 
   }
 
   componentDidMount() {
-    DataFetcher((error, data) => {
-      if (error) console.log("Error: ", error);
-      else this.setState({ data: data.payload });
-    });
+    // DataFetcher((error, data) => {
+    //   if (error) console.log("Error: ", error);
+    //   else this.setState({ data: data.payload });
+    // });
     GetHistoryData((error,data)=>{
       if(error)console.log("Error :",error)
       else{
@@ -79,27 +80,58 @@ class AnormaliesHistory extends Component {
     }));
   };
 
+  loadChartData = (historyData) => {
+    let startTs = getUnixTime(zonedTimeToUtc(historyData.startDate, "Europe/Lisbon"));
+    let endTs = getUnixTime(zonedTimeToUtc(historyData.endDate, "Europe/Lisbon"));
+    const diff = endTs - startTs
+
+    const startDate = format(fromUnixTime(startTs - (diff*6)), "yyyy-MM-dd",  'Europe/Lisbon')
+    const endDate = format(fromUnixTime(endTs + (diff*6)), "yyyy-MM-dd",  'Europe/Lisbon')
+
+    return DataFetcher({ startDate, endDate }, (error, data) => {
+      if (error) console.log("Error: ", error);
+      else {
+        const rawData = data.payload.map( v=> {
+            return [getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000, v.efficiency]
+          })
+        this.setState({ data: rawData })
+        // const ChartElement = props => (
+        //   <div>
+        //       <div className="p-1">
+        //         Data: 
+        //         <pre>{ JSON.stringify(historyData, null, 2) }</pre>
+        //       </div>
+        //       <SingleAreaChart data={rawData} datum={[]} anomalyDataByTime={[]} navigatorDisabled />
+        //   </div>
+        // )
+        // ReactDOM.render(
+        //   <ChartElement />
+        //   , document.getElementById("history-chart-container")
+        // )
+      }
+    })
+    
+  }
+
   render() {
-    const { data, FilteronChangeValue, filter, HistoryTableData ,HistoryTableDataOrigin,selectedFilter} = this.state;
+    const { data, FilteronChangeValue, filter, HistoryTableData ,HistoryTableDataOrigin, selectedFilter} = this.state;
   //  console.log(HistoryTableData)
   
-    const data0 = data.map(v => [
-      getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000,
-      v.efficiency
-    ]);
-    const data1 = data.map(v => [
-      getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000,
-      v.evaInput
-    ]);
-    const data2 = data.map(v => [
-      getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000,
-      v.evaOutput
-    ]);
+    // const data0 = data.map(v => [
+    //   getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000,
+    //   v.efficiency
+    // ]);
+    // const data1 = data.map(v => [
+    //   getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000,
+    //   v.evaInput
+    // ]);
+    // const data2 = data.map(v => [
+    //   getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000,
+    //   v.evaOutput
+    // ]);
 
-    if (data.length === 0  )
+    if ( HistoryTableDataOrigin===null )
       return <div className="text-center p-4">Loading...</div>;
-   
-    // console.log(HistoryTableDataOrigin.length)
 
     return (
       <div className="container-fluid">
@@ -273,7 +305,8 @@ class AnormaliesHistory extends Component {
               </div>
             </div>
             <CollapseHistoryTable
-              data={data0}
+              loadChartData={this.loadChartData}
+              data={data}
               FilteronChangeValue={FilteronChangeValue}
               HistoryTableData={HistoryTableData}
             />

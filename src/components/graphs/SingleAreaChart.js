@@ -1,36 +1,10 @@
 import React, { Component, PureComponent, useState, useEffect, useRef } from 'react'
-import { createPortal } from "react-dom"
 import Highcharts, { Axis } from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
-import moment, { defaultFormatUtc } from "moment-timezone"
 import { format, getUnixTime } from 'date-fns'
 import { zonedTimeToUtc } from "date-fns-tz"
 import deepEqual from "deep-equal"
 import * as d3 from "d3"
-// import moment from 'moment'
-
-// const PlotBands = props => {
-//     const d = props.d.split(" ").filter(v => v !== "M" && v !== "L" && v !== "z")
-//     const x1 = d[0]
-//     const y1 = d[1]
-//     const x2 = d[2]
-//     const y2 = d[3]
-//     const x3 = d[4]
-//     const y3 = d[5]
-//     const x4 = d[6]
-//     const y4 = d[7]
-//     return (
-//         <g className={props.gClass}>
-//             {/* <path fill="#00bf8e22" strokeWidth={0} d={props.d} ></path> */}
-//             {/* Left */}
-//             <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="#00bf8e" strokeWidth={props.strokeWidth} />
-//             {/* Right */}
-//             <line x1={x4} y1={y4} x2={x3} y2={y3} stroke="#00bf8e" strokeWidth={props.strokeWidth} />
-//             {/* Top */}
-//             <line x1={x1} y1={y1} x2={x4} y2={y4} stroke="#BF0B2399" strokeWidth={props.strokeWidth} />
-//         </g>
-//     )
-// }
 
 const AppConst = {
     CREATE: 2,
@@ -38,7 +12,7 @@ const AppConst = {
     DEFAULT: 0,
 }
 
-class SingleAreaChart extends PureComponent {
+class SingleAreaChart extends Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -52,7 +26,7 @@ class SingleAreaChart extends PureComponent {
 
     //=========================================================================================
 
-    createSelecedArea = ({ startTs, endTs }) => {
+    createSelecedArea = ({ startTs, endTs, navigatorDisabled=false }) => {
         const rect = d3.select(".highcharts-plot-border")
         if(d3.select("#selectedSvg").node()!==null) d3.select("#selectedSvg").node().remove()
    
@@ -101,9 +75,10 @@ class SingleAreaChart extends PureComponent {
             .attr("width", 2)
             .attr("height", g.attr("height"))
             .attr("fill", "#28a745")
-        
+            
         g.append("path")
             .attr("id", "slider-left-handle")
+            .attr("visibility", navigatorDisabled ? "hidden": "visible")
             .attr("d", `
                 M-8 ${Number(g.attr("height"))/3-16}
                 L8 ${Number(g.attr("height"))/3-16}
@@ -130,6 +105,7 @@ class SingleAreaChart extends PureComponent {
             .attr("id", "slider-right-handle")
             .attr("x", Number(g.attr("x")))
             .attr("y", 0)
+            .attr("visibility", navigatorDisabled ? "hidden": "visible")
             .attr("d", `
                 M${Number(g.attr("width"))-8} ${Number(g.attr("height"))/3-16}
                 L${Number(g.attr("width"))+8} ${Number(g.attr("height"))/3-16}
@@ -183,6 +159,7 @@ class SingleAreaChart extends PureComponent {
                 const e = d3.event
                 const me = d3.select(this)
                 const targetId = me.attr("pressed-id")
+                if(navigatorDisabled)return;
                 if(targetId!==null && (targetId==="slider-left-handle" || targetId==="slider-right-handle") && Number(me.attr("width"))+e.dx>=16) {
                     if(targetId==="slider-left-handle") {
                         me.raise().attr("x", e.x)                
@@ -306,46 +283,9 @@ class SingleAreaChart extends PureComponent {
 
     //=========================================================================================
 
-    // setLeftLine = leftLine => {
-    //     this.setState({ leftLine })
-    // }
-    // setRightLine = rightLine => {
-    //     this.setState({ rightLine })
-    // }
-
     setRangeUpdateCondition = rangeUpdateCondition => {
         this.setState({ rangeUpdateCondition })
     }
-
-    // removeSelectedRange = () => {
-    //     if (this.state.leftLine !== null || this.state.rightLine !== null) {
-    //         const tmpLines = document.getElementsByClassName("selected-range")
-    //         Object.values(tmpLines).forEach(e => {
-    //             e.remove()
-    //         });
-    //         this.setLeftLine(null);
-    //         this.setRightLine(null);
-    //     }
-    // }
-
-    // addSelectedRange = async ({ leftX, rightX }) => {
-    //     const chart = this.chartRef.current.chart;
-    //     const { leftLine, rightLine } = this.state
-    //     if(leftLine!==null && rightLine!==null) {
-    //         await this.removeSelectedRange()
-    //     }
-    //     this.createSelectedTimeRange({
-    //         chart,
-    //         leftLine: this.state.leftLine,
-    //         rightLine: this.state.rightLine,
-    //         setLeftLine: this.setLeftLine,
-    //         setRightLine: this.setRightLine,
-    //         offsetXLeft: leftX,
-    //         offsetXRight: rightX,
-    //     })
-    //     // this.setRangeUpdateCondition(AppConst.CREATE)
-    //     // }
-    // }
 
     tsToPixels = ts => {
         return this.chartRef.current.chart.xAxis[0].toPixels(ts)
@@ -373,7 +313,7 @@ class SingleAreaChart extends PureComponent {
         const empty = this.props.data.length===0 && this.props.anomalyDataByTime.length===0    
         if (!empty && (!deepEqual(prevProps.data, this.props.data) || !deepEqual(prevProps.datum, this.props.datum)) && this.chartRef.current !== null) {
             this.setChartOption()
-        }     
+        }    
     }
 
     componentDidMount() {
@@ -396,7 +336,11 @@ class SingleAreaChart extends PureComponent {
            
         }
 
-        
+        if(this.props.selectedStartTs && this.props.selectedEndTs) {
+            setTimeout(() => {
+                this.createSelecedArea({ startTs: this.props.selectedStartTs, endTs: this.props.selectedEndTs, navigatorDisabled: true })
+            }, 1000)
+        }        
 
     } // end Did mount
 
@@ -425,10 +369,8 @@ class SingleAreaChart extends PureComponent {
                 constructorType={"stockChart"} 
                 options={this.options} 
                 oneToOne={true}
-                containerProps={{ className: "" }} />
+                containerProps={{ className: "w-100" }} />
         )
-
-
     }
 
     //====================================================================
@@ -483,14 +425,17 @@ class SingleAreaChart extends PureComponent {
             },
             chart: {
                 lineColor: '#00BF8E',
-                spacing: [120, 0, -80, 0],
+                spacing: [
+                    !props.navigatorDisabled ? 120 : 0, 0, 
+                    !props.navigatorDisabled ? -80 : -10, 0],
                 zoomType: '', // removed by @nayhtet
                 type: 'area',
                 events: {
-                    click: function (event) {
-                        alert('x : ' + event.xAxis[0].value + '\ny : ' + event.yAxis[0].value)
-                    }
+                    // click: function (event) {
+                    //     alert('x : ' + event.xAxis[0].value + '\ny : ' + event.yAxis[0].value)
+                    // },
                 }
+
             },
             tooltip: {
                 split: 'true',
@@ -555,7 +500,7 @@ class SingleAreaChart extends PureComponent {
                 }
             },
             navigator: {
-                enabled: true,
+                enabled: props.navigatorDisabled ? false : true,
                 style: {
                     backgroundColor: "red"
                 },
@@ -619,191 +564,6 @@ class SingleAreaChart extends PureComponent {
                 }],
         };
     } // end chart Options
-
-    // refreshSelectedTimeRange = ({ chart, leftLine, rightLine }) => {
-    //     if (chart && leftLine !== null && leftLine.element !== null) {
-    //         leftLine.element.attr({
-    //             transform: `translate(${chart.xAxis[0].toPixels(leftLine.xValue)},${0})`
-    //         })
-    //     }
-    //     if (chart && rightLine !== null && rightLine.element !== null) {
-    //         rightLine.element.attr({
-    //             transform: `translate(${chart.xAxis[0].toPixels(rightLine.xValue)},${0})`
-    //         })
-    //     }
-    //     if (chart && leftLine !== null !== null && rightLine !== null) {
-    //         if (document.getElementById("redRoof") !== null)
-    //             document.getElementById("redRoof").attributes.d.value = `M ${chart.xAxis[0].toPixels(leftLine.xValue)} ${chart.plotTop} L ${chart.xAxis[0].toPixels(rightLine.xValue)} ${chart.plotTop}`
-    //     }
-    // }
-
-    // refreshSelectedTimeRangeOnResize = ({ chart, leftLine, rightLine, chartX, offsetX }) => {
-    //     let extremes = {
-    //         left: chart.plotLeft,
-    //         right: chart.plotLeft + chart.plotWidth
-    //     };
-    //     if (chartX >= extremes.left && chartX <= extremes.right) {
-
-    //         if (rightLine !== null && rightLine.element !== null && rightLine.element.drag) {
-    //             rightLine.element.attr({
-    //                 transform: `translate(${offsetX},${0})`
-    //             })
-    //             rightLine.xValue = chart.xAxis[0].toValue(offsetX)
-    //         } if (leftLine !== null && leftLine.element !== null && leftLine.element.drag) {
-    //             leftLine.element.attr({
-    //                 transform: `translate(${offsetX},${0})`
-    //             })
-    //             leftLine.xValue = chart.xAxis[0].toValue(offsetX)
-    //         }
-    //         if (leftLine !== null && rightLine !== null) {
-    //             if (document.getElementById("redRoof") !== null)
-    //                 document.getElementById("redRoof").attributes.d.value = `M ${chart.xAxis[0].toPixels(leftLine.xValue)} ${chart.plotTop} L ${chart.xAxis[0].toPixels(rightLine.xValue)} ${chart.plotTop}`
-    //         }
-    //     }
-    // }
-
-    // createSelectedTimeRange = ({ chart, offsetXLeft, offsetXRight, leftLine, rightLine, setLeftLine, setRightLine }) => {
-    //     const lineWidth = 2
-    //     const handleWidth = 24;
-    //     const handleHeight = 24;
-
-    //     const renderer = chart.renderer
-
-    //     const groupLeft = renderer.g()
-    //         .attr({
-    //             class: "selected-range",
-    //             id: Date.now(),
-    //             fill: '#00BF8E99',
-    //             zIndex: 100,
-    //             transform: `translate(${offsetXLeft},${0})`
-    //         })
-    //         .add()
-    //     chart.renderer.rect(-lineWidth / 2, chart.plotTop, lineWidth, chart.plotHeight)
-    //         .attr({
-    //             fill: '#00BF8E99',
-    //             zIndex: 100,
-    //         })
-    //         .add(groupLeft);
-    //     const yH = chart.plotTop + chart.plotHeight / 2
-    //     chart.renderer.path()
-    //         .attr({
-    //             zIndex: 102,
-    //             d: `M -4 ${yH - 6} L -9 ${yH}, -4 ${yH + 6} M 4 ${yH - 6} L 9 ${yH}, 4 ${yH + 6} M -9 ${yH} L 9 ${yH}`,
-    //             style: "stroke: #00BF8E; stroke-width: 1px; cursor: col-resize",
-    //         })
-    //         .add(groupLeft)
-    //     const draggablePlotHandleLeft = chart.renderer.rect(-handleWidth / 2, chart.plotTop + chart.plotHeight / 2 - handleHeight / 2, handleWidth, handleHeight) //offsetXLeft-handleWidth/2+lineWidth/2, chart.plotTop+chart.plotHeight/2-handleHeight/2
-    //         .attr({
-    //             fill: '#f5f5f5',
-    //             style: "stroke: #00BF8E99; cursor: col-resize; stroke-width: 2px",
-    //             zIndex: 101,
-    //             rx: 4
-    //         })
-    //         .add(groupLeft);
-    //     draggablePlotHandleLeft.element.onmousedown = (e) => {
-    //         this.setState({
-    //             monitorText: {
-    //                 ...this.state.monitorText,
-    //                 mouse: "down"
-    //             }
-    //         })
-    //         groupLeft.drag = true
-    //         e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
-    //     }
-    //     draggablePlotHandleLeft.element.ontouchstart = (e) => {
-    //         groupLeft.drag = true
-    //         e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
-    //     }
-    //     draggablePlotHandleLeft.element.onmouseup = (e) => {
-    //         this.setState({
-    //             monitorText: {
-    //                 ...this.state.monitorText,
-    //                 mouse: "down"
-    //             }
-    //         })
-    //         groupLeft.drag = false
-    //         e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
-    //     }
-    //     draggablePlotHandleLeft.element.ontouchend = (e) => {
-    //         groupLeft.drag = false
-    //         e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
-    //     }
-    //     draggablePlotHandleLeft.element.onmouseenter = (e) => {
-    //         e.target.attributes.style.value = e.target.attributes.style.value + "; fill: #daeeda;"
-    //     }
-    //     draggablePlotHandleLeft.element.onmouseleave = (e) => {
-    //         e.target.attributes.style.value = e.target.attributes.style.value.replace("; fill: #daeeda;", "")
-    //     }
-
-    //     // Right
-    //     const groupRight = renderer.g()
-    //         .attr({
-    //             class: "selected-range",
-    //             id: Date.now(),
-    //             fill: '#00BF8E99',
-    //             zIndex: 100,
-    //             transform: `translate(${offsetXRight},${0})`
-    //         })
-    //         .add()
-    //     chart.renderer.rect(-lineWidth / 2, chart.plotTop, lineWidth, chart.plotHeight)
-    //         .attr({
-    //             fill: '#00BF8E99',
-    //             zIndex: 100,
-    //         })
-    //         .add(groupRight);
-    //     chart.renderer.path()
-    //         .attr({
-    //             zIndex: 102,
-    //             d: `M -4 ${yH - 6} L -9 ${yH}, -4 ${yH + 6} M 4 ${yH - 6} L 9 ${yH}, 4 ${yH + 6} M -9 ${yH} L 9 ${yH}`,
-    //             style: "stroke: #00BF8E; stroke-width: 1px; cursor: col-resize",
-    //         })
-    //         .add(groupRight)
-    //     const draggablePlotHandleRight = chart.renderer.rect(-handleWidth / 2, chart.plotTop + chart.plotHeight / 2 - handleHeight / 2, handleWidth, handleHeight) //offsetX-handleWidth/2+lineWidth/2, chart.plotTop+chart.plotHeight/2-handleHeight/2
-    //         .attr({
-    //             fill: '#f5f5f5',
-    //             style: "stroke: #00BF8E99; cursor: col-resize; stroke-width: 2px",
-    //             zIndex: 101,
-    //             rx: 4
-    //         })
-    //         .add(groupRight);
-    //     draggablePlotHandleRight.element.onmousedown = (e) => {
-    //         groupRight.drag = true
-    //         e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
-    //     }
-    //     draggablePlotHandleRight.element.ontouchstart = (e) => {
-    //         groupRight.drag = true
-    //         e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 2px", "stroke-width: 4px")
-    //     }
-    //     draggablePlotHandleRight.element.onmouseup = (e) => {
-    //         groupRight.drag = false
-    //         e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
-    //     }
-
-    //     draggablePlotHandleRight.element.ontouchend = (e) => {
-    //         groupRight.drag = false
-    //         e.target.attributes.style.value = e.target.attributes.style.value.replace("stroke-width: 4px", "stroke-width: 2px")
-    //     }
-    //     draggablePlotHandleRight.element.onmouseenter = (e) => {
-    //         e.target.attributes.style.value = e.target.attributes.style.value + "; fill: #daeeda;"
-    //     }
-    //     draggablePlotHandleRight.element.onmouseleave = (e) => {
-    //         e.target.attributes.style.value = e.target.attributes.style.value.replace("; fill: #daeeda;", "")
-    //     }
-
-    //     chart.renderer.path()
-    //         .attr({
-    //             class: "selected-range",
-    //             id: "redRoof",
-    //             d: `M ${offsetXLeft} ${chart.plotTop} L ${offsetXRight} ${chart.plotTop}`,
-    //             zIndex: 103,
-    //             style: "stroke: #ff333399; stroke-width: 4px"
-    //         })
-    //         .add();
-
-    //     setLeftLine({ xValue: chart.xAxis[0].toValue(offsetXLeft), element: groupLeft })
-    //     setRightLine({ xValue: chart.xAxis[0].toValue(offsetXRight), element: groupRight })
-    //     // }     
-    // }
 
     setZoom = (startTime, endTime) => {
         const chart = this.chartRef.current.chart

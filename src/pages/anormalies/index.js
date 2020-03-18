@@ -148,6 +148,7 @@ class Anormalies extends Component {
                     R.data2.push([getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000, v.evaOutput])
                     return R
                 }, { data0: [], data1: [], data2: [] })
+            
                 this.setState({ data0, data1, data2 }, () => {
                     this.showLoading(false)
                     const singlerAreaChart = this.singleAreaChartRef.current

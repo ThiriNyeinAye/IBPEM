@@ -1,8 +1,11 @@
 import React, { useState, Fragment, useEffect } from "react";
-import SingleAreaChart from "../../components/graphs/SingleAreaChart.js";
+import SingleAreaChart from "../graphs/SingleAreaChart"
+import { format, getUnixTime,fromUnixTime } from 'date-fns'
+import { zonedTimeToUtc, utcToZonedTime } from "date-fns-tz"
+import "../../App.css"
 
 const CollapseTable = props => {
-  const { data = [], FilteronChangeValue, HistoryTableData=[] } = props;
+  const { data = [], FilteronChangeValue, HistoryTableData = [], loadChartData } = props;
   const [expandedId, setExpandedId] = useState(-1);
 
   return (
@@ -11,8 +14,9 @@ const CollapseTable = props => {
         className="w-100 "
         style={{
           borderSpacing: "0 6px",
-          borderCollapse: "separate",
-          minWidth: 1200
+          borderCollapse: "unset",
+          minWidth: 1200,
+
         }}
       >
         <thead>
@@ -42,7 +46,7 @@ const CollapseTable = props => {
         </thead>
         <tbody>
           {HistoryTableData.map((v, k) => {
-            return <Row id={k+1} expandedId={expandedId} setExpandedId={setExpandedId} data={data} history={v} key={k} />;
+            return <Row id={k + 1} expandedId={expandedId} setExpandedId={setExpandedId} data={data} history={v} key={k} loadChartData={loadChartData} />;
           })}
         </tbody>
       </table>
@@ -52,15 +56,22 @@ const CollapseTable = props => {
 
 const Row = props => {
   const [expand, setExpand] = useState(false);
-  const { data, history, id, expandedId, setExpandedId } = props;
+  const { data, history, id, expandedId, setExpandedId, loadChartData } = props;
 
   return (
     <Fragment>
       <TableRow
-         expand={expand}
-         setExpand={setExpand}
+        expand={expand}
+        setExpand={setExpand}
         history={history}
-        setExpandedId={()=>{expandedId!==id ? setExpandedId(id) : setExpandedId(-1);setExpand(!expand)} }
+        setExpandedId={() => { 
+            if(expandedId !== id) {
+              setExpandedId(id) 
+              loadChartData(history)
+            }
+            else setExpandedId(-1); 
+          } 
+        }
         expandedId={expandedId}
         id={id}
       />
@@ -73,15 +84,16 @@ const Row = props => {
   );
 };
 
-const TableRow = ({  history, setExpandedId,expandedId,id}) => {
+const TableRow = ({ history, setExpandedId, expandedId, id }) => {
   // console.log(history.label.length)
   return (
     <tr
+      className="historyRow"
       style={{
         background: "#f5f5f5",
-        borderBottom: "1px solid red",
         cursor: "pointer",
-        padding: 0
+        padding: 0,
+        borderRadius: 6
       }}
       onClick={setExpandedId}
     >
@@ -102,29 +114,29 @@ const TableRow = ({  history, setExpandedId,expandedId,id}) => {
       </td>
       <td>
         <div className="d-flex flex-wrap">
-          <div className="p-1 m-1 rounded" style={{ background: "#00BF8E11" }}>
-    <small>{history.label[0]}</small>
+          <div className="p-1 m-1 rounded" style={{ background: "#00BF8E11", boxShadow: "1px 1px 4px #d0d0d0" }}>
+            <small>{history.label[0]}</small>
           </div>
-          <div className="p-1 m-1 rounded" style={{ background: "#00BF8E11" }}>
+          <div className="p-1 m-1 rounded" style={{ background: "#00BF8E11", boxShadow: "1px 1px 4px #d0d0d0" }}>
             <small>
               <span className="text-secondary pr-2">SEVERITY</span>{history.label[1]}
             </small>
           </div>
-          <div className="p-1 m-1 rounded" style={{ background: "#00BF8E11" }}>
+          <div className="p-1 m-1 rounded" style={{ background: "#00BF8E11", boxShadow: "1px 1px 4px #d0d0d0" }}>
             <small>
               <span className="text-secondary pr-2">Sensor Signal</span>{history.label[2]}
             </small>
           </div>
         </div>
       </td>
-      <td style={{ borderTopRightRadius: 6, borderBottomRightRadius: 6 }}>
+      <td style={{ }}>
         <div className="text-sm">
           <span className="px-3">{history.labeledBy}</span>
         </div>
       </td>
-      <td style={{ borderTopRightRadius: 6, borderBottomRightRadius: 6 }}>
+      <td className="lastColumn" style={{ borderTopRightRadius: 6, borderBottomRightRadius: 6 }}>
         <div
-          className="text-center d-flex flex-column justify-content-center"
+          className="text-center d-flex flex-column justify-content-center border"
           style={{
             color: "#0184CC",
             fontSize: 15,
@@ -137,7 +149,7 @@ const TableRow = ({  history, setExpandedId,expandedId,id}) => {
           }}
         >
           <span className="">
-            <i className={`fas fa-chevron-${expandedId !== id ? 'down': 'up'}`} />
+            <i className={`fas fa-chevron-${expandedId !== id ? 'down' : 'up'}`} />
           </span>
         </div>
       </td>
@@ -146,13 +158,24 @@ const TableRow = ({  history, setExpandedId,expandedId,id}) => {
 };
 
 const ExpandedRow = ({ expand, data, history }) => {
+  const startTs = getUnixTime(zonedTimeToUtc(history.startDate, "Europe/Lisbon"))*1000;
+  const endTs = getUnixTime(zonedTimeToUtc(history.endDate, "Europe/Lisbon"))*1000;
   return (
     <tr>
       <td colSpan={7}>
-        <div
-          className={`p-3 collapse ${expand &&  `show`} border my-1 bg-white rounded `}
-        >
-          <SingleAreaChart data={data} />
+        <div className={`p-3 collapse ${expand && `show`} border my-1 bg-white rounded `}>
+          { expand && /*<SingleAreaChart data={data} datum={[]} anomalyDataByTime={[]} navigatorDisabled />*/ 
+            <SingleAreaChart 
+              removeSelectedAnomaly={() => null} 
+              anomalyDataByTime={[]} 
+              data={data} 
+              datum={[]} 
+              handleFilterAnomalyData={() => null}
+              selectedStartTs={startTs}
+              selectedEndTs={endTs}
+              navigatorDisabled
+            />
+          }
           <div className="d-flex justify-content-between align-items-center">
             <div>
               <span>{history.labeledBy}</span>
@@ -161,7 +184,7 @@ const ExpandedRow = ({ expand, data, history }) => {
               </span>
             </div>
             <div className="d-flex align-items-center">
-              <div className="pr-3" className="btn" onClick={()=>alert(JSON.stringify('Show Similarity'),null,2)}>Show Similar</div>
+              <div className="pr-3" className="btn" onClick={() => alert(JSON.stringify('Show Similarity'), null, 2)}>Show Similar</div>
               <div className="pl-3 ">
                 <button
                   type="button"
