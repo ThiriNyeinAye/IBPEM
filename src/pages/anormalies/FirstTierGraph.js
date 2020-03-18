@@ -2,7 +2,6 @@ import React, { Component, Fragment } from "react"
 import ReactDOM from "react-dom"
 import * as d3 from "d3"
 import deepEqual from "deep-equal"
-import moment from "moment"
 import { format, parse, isEqual, isBefore, startOfYear, endOfYear, addDays } from "date-fns"
 import cliTruncate from 'cli-truncate';
 import "../../App.css"
@@ -35,10 +34,9 @@ export default class DragTest extends Component {
         const y1 = Math.abs( Math.round(Number(leftSlider.attr("y"))) )/2
         const x2 = Math.abs( Math.round(Number(rightSlider.attr("x"))) )
         const y2 = Math.abs( Math.round(Number(rightSlider.attr("y"))) )/2
-        // alert(JSON.stringify({ x1, y1, x2, y2}, null, 2))
+
         if(this.ref1TierGraph.current!==null) {
             this.ref1TierGraph.current.calculateStartAndEndWithPoint({ x1, y1, x2, y2}, (startDate, endDate) => {
-                // console.log("SE: ", startDate, endDate)
                 this.props.handleFirstTierDateRangeChange({ startDate, endDate })
             })
         }
@@ -61,19 +59,17 @@ export default class DragTest extends Component {
             <div className="d-flex flex-column border rounded" style={{ backgroundColor: "#aaafaa20" }}>
                 <div className="p-1 d-flex flex-row">
                     <div style={{position: "relative", paddingTop: window.innerWidth>1200 ? 30 : 20, }} >
-                        <svg viewBox={`0 0 ${1} ${height}`} className="" id="yearSvgId" style={{ height: "100%", /*backgroundColor: "#aaafaa20"*/ }} >
+                        <svg viewBox={`0 0 ${1} ${height}`} className="" id="yearSvgId" style={{ height: "100%", }} >
                             {
                                 yearlyData.map((v, k) => (
                                     <text key={k} x={0.5} y={k*2+1} fill="#637587" fontSize={0.4} dominantBaseline="middle" textAnchor="middle" >{v.year}</text>
                                 ))
                             }
-                            {/* <text x={0.5} y={0*2+1} fill="#637587" fontSize={0.4} dominantBaseline="middle" textAnchor="middle" >{"2019"}</text>
-                            <text x={0.5} y={1*2+1} fill="#637587" fontSize={0.4} dominantBaseline="middle" textAnchor="middle" >{"2020"}</text> */}
                         </svg>
                     </div>
                     <div className="flex-grow-1" style={{ paddingLeft: yearSvgWidth }}>
-                        <div style={{ /*height: window.innerWidth>1200 ? 30 : 20*/ }}>
-                            <svg viewBox={`0 0 ${width} ${1}`} className=""  style={{ /*backgroundColor: "#aaafaa20"*/ }}>
+                        <div>
+                            <svg viewBox={`0 0 ${width} ${1}`} className=""  >
                                 <GraphTip />
                             </svg>
                         </div>
@@ -203,32 +199,7 @@ class Background extends Component {
         let endDate = this.state.yearlyData[y2].data[x2-1].endDate
         callback(startDate, endDate)
     }
-/*
-    calculateStartAndEnd = () => {
-        let startDate = moment().startOf('year')
-        let endDate = moment().endOf('year')
-        const months = []
-        const startDateIndex = -1
-        while(startDate.isBefore(endDate)) {
-            const mname = startDate.format("MMM")
-            if(months.findIndex(v => v===mname)===-1) months.push(mname)
-            else months.push(null)
-            startDate = startDate.add(8, 'days')
-        }
-        console.log(this.props.firstTierDate)
-        const years = yearlyData.map(v => (v.year))
-        const startYear = Number(moment(this.props.firstTierDate.startDate).format("YYYY"))
-        const endYear = Number(moment(this.props.firstTierDate.endDate).format("YYYY"))
-        const vectorSelected = months.reduce((r,c) => {
-            const R = {...r}
-            if(!R.start) {
-                
-            } else {
 
-            }
-        }, {start: false, data: []})
-    }
-*/
     render() {
         if(this.state.vectorsSelected===null || this.state.vectorsSelected.length===0) return null;
         const rects = this.state.months.map((v, k, a) => {
@@ -559,159 +530,6 @@ class Slider extends Component {
                     opacity={0.8}
                 />
             </g>
-        )
-    }
-}
-
-class Shape1 extends Component {
-    componentDidMount() {
-        const props = this.props
-        const handleDrag = d3.drag()
-        .subject(function () {
-            const me = d3.select(this);
-            return { x: me.attr('x'), y: me.attr('y') }
-        })
-        .on("start", function() {
-            const e = d3.event
-
-        })
-        .on('drag', function () {
-            const me = d3.select(this);
-            const e = d3.event
-            
-           
-        })
-        // .on("end", function() { })
-        const node = ReactDOM.findDOMNode(this);
-        handleDrag(d3.select(node));
-    }
-
-    render() {
-        const height=2
-        const d =""// `M ${x} ${y} L ${x+width} ${y} L ${x+width} ${y+height} L ${x} ${y+height}`
-        
-        return null
-        // return(
-        //     <path d = {d} fill={color} x={x} y={y} />
-        // )
-    }
-}
-
-function getViewBox(svg) {
-    const ele = d3.select(svg)
-    return ele.attr("viewBox").split(" ").map(v => Number(v))
-}
-
-class Shape3 extends Component {
-    componentDidMount() {
-        const props = this.props
-        const handleDrag = d3.drag()
-        .subject(function () {
-            const me = d3.select(this);
-            return { x: me.attr('x'), y: me.attr('y') }
-        })
-        .on("start", function() {
-            const e = d3.event
-
-        })
-        .on('drag', function () {
-            const me = d3.select(this);
-            const e = d3.event
-            e.sourceEvent.preventDefault()
-            e.sourceEvent.stopPropagation()
-            // console.log("x: ", e.x, e.y)
-            // if(e.x<=46)
-                props.onChange({ x: e.x, y: e.y })
-        })
-        // .on("end", function() { })
-        const node = ReactDOM.findDOMNode(this);
-        handleDrag(d3.select(node));
-    }
-    render() {
-        const { 
-            x, y, 
-            width, height, 
-            color, 
-            sx=0, sy=0, ex=46, ey=20,
-        } = this.props
-        // console.log({ x, y, width })
-        let d = ''
-        if(x+width>ex) {
-            const w1 = ex-x
-            const w2 = width-w1
-            const y1 = y+height
-            const x2 = 0
-
-            // console.log("w1:w2:y1:x2:: ", w1, w2, y1, x2)
-    
-            const d1 = `M ${x} ${y} L${x+w1} ${y} L ${x+w1} ${y+height} L ${x} ${y+height} `
-            const d2 = `M ${x2} ${y1} L ${x2+w2} ${y1} L ${x2+w2} ${y1+height} L ${x2} ${y1+height}`
-            d = `${d1} ${d2}`
-        } else {
-            d = `M ${x} ${y} L ${x+width} ${y} L ${x+width} ${y+height} L ${x} ${y+height}`
-        }
-        // console.log("d: ", d)
-        // const d = `M ${x} ${y} L${x+width} ${y} L ${x+width} ${y+height} L ${x} ${y+height}`
-        // const d1 = `M ${x} ${y} L${x+width/2} ${y} L ${x+width/2} ${y+height} L ${x} ${y+height} `
-        // const d2 = `M ${0} ${y+height} L ${width/2} ${y+height} L ${width/2} ${y+height*2} L ${0} ${y+height*2}`
-        // const d = `${d1} ${d2}`
-        // M 0 4 L 4 4 L 4 4 L 0 4
-        return(
-            <path d = {d} fill={color} x={x} y={y} />
-        )
-    }
-}
-class Shape2 extends Component {
-    componentDidMount() {
-        const handleDrag = d3.drag()
-            .subject(function () {
-                const me = d3.select(this);
-                return { x: me.attr('x'), y: me.attr('y') }
-            })
-            .on("start", function() {
-                const me = d3.select(this);
-                me.attr("opacity", 1)
-            })
-            .on('drag', function () {
-                const me = d3.select(this);
-                const w = Number(me.attr("width"))
-                const h = Number(me.attr("height"))
-                const p = { x: d3.event.x, y: d3.event.y }
-                const [sx, sy, ex, ey] = getViewBox("#eight-day-slider-svg")
-            
-                if(p.x>=sx && p.x<=ex-w) {
-                    me.raise().attr("x", Math.round(p.x))
-                } else if(p.x<0 && Math.round(Number(me.attr("x"))===sx)) {
-                    if(Math.round(Number(me.attr("y"))===sx)) {
-                        me.raise().attr("x", Math.round(sx))
-                    } else {
-                        me.raise().attr("x", ex-w)
-                        me.raise().attr("y", Math.round(Number(me.attr("y"))-h))
-                    }
-                } else if(p.x>ex-w && Math.round(Number(me.attr("x"))+w===ex)) {
-                    me.raise().attr("x", sx)
-                    me.raise().attr("y", Math.round(Number(me.attr("y"))+h))
-                } 
-
-                // if(p.y>=sy && p.y<=ey-h) {
-                //     me.raise().attr("y", p.y)
-                // } else if(p.y<sy) {
-                //     me.raise().attr("y", sy)
-                // } else if(p.y>ey-h) {
-                //     me.raise().attr("y", ey-h)
-                // }
-            })
-            .on("end", function() {
-                // console.log("e: ", d3)
-                const me = d3.select(this);
-                me.attr("opacity", 0.8)
-            })
-        const node = ReactDOM.findDOMNode(this);
-        handleDrag(d3.select(node));
-    }
-    render() {
-        return(
-            <rect {...this.props.point} /*width={4}*/ /*height={4}*/ stroke={"#777777"} opacity={0.8} strokeWidth={0.02} rx={0.004} ry={0.2} style={{ cursor: "grab" }} />
         )
     }
 }
