@@ -282,8 +282,8 @@ class Anormalies extends Component {
                 faultType: anomalyInputData.faultType,
                 severity: anomalyInputData.severity,
                 sensorSignal: anomalyInputData.sensorSignal,
-                startDate :  format(fromUnixTime(offsetLeftRight.startTs / 1000), "YYYY-MM-DD HH:mm:ss",  'Europe/Berlin' ),
-                endDate :  format(fromUnixTime(offsetLeftRight.endTs / 1000), "YYYY-MM-DD HH:mm:ss",  'Europe/Berlin' ),
+                startDate :  format(fromUnixTime(offsetLeftRight.startTs / 1000), "yyyy-MM-dd HH:mm:ss",  'Europe/Berlin' ),
+                endDate :  format(fromUnixTime(offsetLeftRight.endTs / 1000), "yyyy-MM-dd HH:mm:ss",  'Europe/Berlin' ),
                 additionalGraphs: graphShowData.filter(v => v.selected).map(v => v.name),
                 remark: message,
             }
@@ -317,7 +317,7 @@ class Anormalies extends Component {
         const areaChart = this.singleAreaChartRef.current
         const startTs = getUnixTime(zonedTimeToUtc(value.startDate, "Europe/Lisbon")) * 1000
         const endTs = getUnixTime(zonedTimeToUtc(value.endDate, "Europe/Lisbon")) * 1000
-        
+
         areaChart.setZoom(startTs, endTs)
         areaChart.createSelecedArea({ startTs, endTs })
 
