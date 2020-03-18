@@ -34,16 +34,20 @@ const AnormalySidebar = props => {
     ))
 
     const AnormalyView = anormalyBy === 2 ? anormalyByEquipmentList : AnormalyByTimeFrameList
-    const [show, setShow] = useState(false);
-    const [view, setView] = useState(false);
-    const handleScrollFrame = values => {
+    const [scrollDown, setScrollDown] = useState(false);
+    const [scrollUp, setScrollUp] = useState(false);
+
+    const handleScrollFrame = (values, anoLength) => {
         const scrollTop = values.scrollTop;
-        if (scrollTop === 0) {
-        setView(false);
-        setShow(true);
+        if (scrollTop === 0 && anoLength>=8) {
+            setScrollUp(false);
+            setScrollDown(true);
+        } else if(anoLength>=8) {
+            setScrollUp(true);
+            setScrollDown(false);
         } else {
-        setView(true);
-        setShow(false);
+            setScrollUp(false);
+            setScrollDown(false);
         }
     };
     
@@ -65,52 +69,27 @@ const AnormalySidebar = props => {
 
                 <AnormalyViewSelector selectedAnormalyView={anormalyBy} onSelectChanged={setAnormalyBy} />
 
-                {/* <div className="pb-3" data-toggle="collapse" href="#SortBy" role="button" aria-expanded="false" aria-controls="SortBy">
-                    Sort By Equipment
-                    <i className="fa fa-sort-down px-1"></i>
-                </div>
-                <div className="d-flex flex-row pb-4 ">
-                    <div className="col" style={{backgroundColor:'#EDEFEE'}}>
-                        <div className="collapse multi-collapse border border-right-0 border-left-0 py-3 w-100" id="SortBy">
-                            TimeFrame
+                {
+                    scrollUp && (
+                        <div className={classes.scrollup}>
+                            <span></span>
+                            <span></span>
+                            <span></span>
                         </div>
-                        <div className="collapse multi-collapse border border-top-0 border-right-0 border-left-0 py-3 w-100" id="SortBy">
-                            Equipment
-                        </div>
-                        <div className="collapse multi-collapse border border-top-0 border-right-0 border-left-0 py-3" id="SortBy">
-                            Severity
-                        </div>
-                    </div>
-                </div> */}
-
-                {/*  To Add Later */}
-                {/* <div className="p-3">
-                    <div className='p-2 d-flex flex-column shadow-lg rounded' style={{ backgroundColor: '#23c49e', lineHeight: 0 }}>
-                        <div className='px-2 py-3 text-white font-weight-bold' >
-                            34 of 123 <span style={{ color: "#e0e5e0", fontWeight: 'normal' }}>Detections</span>
-                        </div>
-                        <div className='px-2 py-2'>
-                            <Progress color='success' value='34' style={{ height: 8 }} />
-                        </div>
-                    </div> 
-                </div> */}
-                {view ? (
-                <div className={classes.scrollup}>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                ) : null}
-                <Scrollbars style={{ height: 440 }} onScrollFrame={handleScrollFrame}>
-                {AnormalyView}
+                        )
+                }
+                <Scrollbars style={{ height: 440 }} onScrollFrame={value => handleScrollFrame(value, AnormalyByTimeFrameList.length)}>
+                { AnormalyView }
                 </Scrollbars>
-                {show ? (
-                <div className={classes.scrolldown}>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-                ) : null}
+                {
+                    scrollDown && (
+                        <div className={classes.scrolldown}>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        )
+                }
 
                 <div className='px-3 d-flex py-3 pt-4 justify-content-between'>
                     <div className=''>New Detection</div>
