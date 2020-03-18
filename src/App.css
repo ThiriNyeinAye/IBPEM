@@ -11,11 +11,17 @@
 } */
 
 /*@nayhtet*/
-#rec8day .tooltip {
+/* #rec8day .tooltip {
     visibility: visible !important;
     fill: #a5a5e5 !important;
 }
   
 #rec8day:hover .tooltip {
     visibility: visible !important;
+} */
+.rec8day:hover rect {
+    stroke-width: 0.06;
+    stroke-linejoin: round;
+    stroke: #ffffffbb;
+    opacity: 0.9;
 }

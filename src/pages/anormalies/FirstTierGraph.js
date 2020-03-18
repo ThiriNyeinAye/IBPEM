@@ -56,6 +56,7 @@ export default class DragTest extends Component {
         let yearSvgWidth = window.innerWidth>1200 ? 40 : 20
         if(document.getElementById("yearSvgId")!==null)
             yearSvgWidth = document.getElementById("yearSvgId").clientWidth
+        
         return(
             <div className="d-flex flex-column border rounded" style={{ backgroundColor: "#aaafaa20" }}>
                 <div className="p-1 d-flex flex-row">
@@ -83,9 +84,16 @@ export default class DragTest extends Component {
                         </div>
                     </div>
                 </div>
-                <div className="p-1 d-flex justify-content-end" style={{}}>
-                    <div className="px-1"><button className="btn btn-sm btn-danger" onClick={this.handleRestChangeRangeAndFetchData}>Cancel</button></div>
-                    <div className="px-1"><button className="btn btn-sm btn-success" onClick={this.handleChangeRangeAndFetchData}>Apply</button></div>
+                <div className="p-1 d-flex flex-row justify-content-between align-items-center flex-wrap" style={{}}>
+                    <div className="pl-2">
+                        <span className="text-primary"><small>{firstTierDate.startDate}</small></span>
+                        <span className="px-1 text-secondary">~</span>
+                        <span className="text-primary"><small>{firstTierDate.endDate}</small></span>
+                    </div>
+                    <div className="d-flex">
+                        <div className="px-1"><button className="btn btn-sm btn-danger" onClick={this.handleRestChangeRangeAndFetchData}>Cancel</button></div>
+                        <div className="px-1"><button className="btn btn-sm btn-success" onClick={this.handleChangeRangeAndFetchData}>Apply</button></div>
+                    </div>
                 </div>
             </div>
         )
@@ -174,9 +182,9 @@ class Background extends Component {
         const vectorsSelected = []
         this.state.yearlyData.map((yd, k1) => {
             if(startYear===yd.year || endYear===yd.year) {
-                yd.data.map((d, k2) => {
-                    if((isEqual(new Date(startDate), new Date(d.startDate)) && isEqual(new Date(endDate), new Date(d.endDate))) ||
-                        isBefore(new Date(startDate), new Date(d.startDate)) && isBefore(new Date(endDate), new Date(d.endDate)) ) {
+                yd.data.forEach((d, k2) => {
+                    if((isEqual(startDate, new Date(d.startDate)) || isBefore(startDate, new Date(d.startDate)) ) &&
+                        (isEqual(new Date(d.endDate), endDate) || isBefore(new Date(d.endDate), endDate)) ) {
                             vectorsSelected.push([k1, k2])
                         } 
                 })
@@ -245,6 +253,7 @@ class Background extends Component {
                     return (
                         <g key={`${v1.year}${k2}`} 
                             id="rec8day"
+                            className="rec8day"
                             onClick={e => this.props.handleClickOn8DaysData(v2.startDate, v2.endDate, e)} 
                             style={{ cursor: "default" }}>
                             <title>{v2.startDate} ~ {v2.endDate}</title>
@@ -418,7 +427,7 @@ class Rect extends Component {
                 stroke={this.props.stroke}
                 strokeWidth={this.props.strokeWidth}
                 strokeDasharray={this.props.strokeDashArray}
-                fill={this.props.fill}    
+                fill={this.props.fill}   
             />
         )
     }
