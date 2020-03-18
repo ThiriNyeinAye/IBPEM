@@ -300,10 +300,7 @@ class Anormalies extends Component {
     }
 
     handleAnomalyTimeClicked = value => {
-        const areaChart = this.singleAreaChartRef.current
-        const startTs = getUnixTime(zonedTimeToUtc(value.startDate, "Europe/Lisbon")) * 1000
-        const endTs = getUnixTime(zonedTimeToUtc(value.endDate, "Europe/Lisbon")) * 1000
-
+        
         const { anomalyDataByEquipment : anomalyDataByEquipment1 } = this.state
         const anomalyDataByEquipment = Object.keys(anomalyDataByEquipment1).reduce((r, c) => {
             const R = { ...r }
@@ -317,16 +314,17 @@ class Anormalies extends Component {
             severity: value.severity,
             sensorSignal: value.sensorSignal,
         }
+        const areaChart = this.singleAreaChartRef.current
+        const startTs = getUnixTime(zonedTimeToUtc(value.startDate, "Europe/Lisbon")) * 1000
+        const endTs = getUnixTime(zonedTimeToUtc(value.endDate, "Europe/Lisbon")) * 1000
+        
         areaChart.setZoom(startTs, endTs)
         areaChart.createSelecedArea({ startTs, endTs })
 
-        this.setState({
+        return this.setState({
             anomalyDataByEquipment,
             anomalyInputData,
             graphShowData,
-        }, () => {
-        areaChart.setZoom(startTs, endTs)
-           areaChart.createSelecedArea({ startTs, endTs })
         })
     }
 
