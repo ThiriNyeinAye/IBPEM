@@ -576,10 +576,14 @@ class SingleAreaChart extends Component {
         var max = chart.xAxis[0].getExtremes().max;
 
         const diffTime = (max - min) / (1000 * 60 * 60)
-        const zoomHours = diffTime < 24 ? (1000 * 60 * 60) : diffTime < 24 * 7 ? (1000 * 60 * 60 * 24) : (1000 * 60 * 60)
+        //console.log('min: ', moment(min).format('DD-MM hh:mm') , '\nmax: ', moment(max).format('DD-MM hh:mm'))
+       
+        const zoomHours = 1000* 60 * 60 * 3
+        //const zoomHours = diffTime < 24 ? (1000 * 60 * 60) : diffTime < 24 * 7 ? (1000 * 60 * 60 * 24) : (1000 * 60 * 60)
 
-        // console.log("currentXC", min, max, (max - min) / (1000 * 60 * 60), diffTime, zoomHours)
-        chart.xAxis[0].setExtremes((min + zoomHours), (max - zoomHours));
+        diffTime < 6 ?  chart.xAxis[0].setExtremes((min + 0), (max - 0)) : chart.xAxis[0].setExtremes((min + zoomHours), (max - zoomHours))
+        
+        
     }
 
     setZoomOut = (chart) => {
@@ -587,7 +591,8 @@ class SingleAreaChart extends Component {
         var max = chart.xAxis[0].getExtremes().max;
 
         const diffTime = (max - min) / (1000 * 60 * 60)
-        const zoomHours = diffTime < 24 ? (1000 * 60 * 60) : diffTime < 24 * 7 ? (1000 * 60 * 60 * 24) : (1000 * 60 * 60)
+        const zoomHours = 1000 * 60 * 60 * 3
+        //const zoomHours = diffTime < 24 ? (1000 * 60 * 60) : diffTime < 24 * 7 ? (1000 * 60 * 60 * 24) : (1000 * 60 * 60)
 
         chart.xAxis[0].setExtremes((min - zoomHours), (max + zoomHours));
     }
