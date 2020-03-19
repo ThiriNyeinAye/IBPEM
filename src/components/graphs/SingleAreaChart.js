@@ -350,7 +350,7 @@ class SingleAreaChart extends Component {
             setTimeout(() => {
                 this.createSelecedArea({ startTs: this.props.selectedStartTs, history: this.props.history, endTs: this.props.selectedEndTs, navigatorDisabled: true })
             },1400)
-        }        
+        }   
 
     } // end Did mount
 
@@ -591,20 +591,19 @@ class SingleAreaChart extends Component {
         const zoomHours = 1000* 60 * 60 * 3
         //const zoomHours = diffTime < 24 ? (1000 * 60 * 60) : diffTime < 24 * 7 ? (1000 * 60 * 60 * 24) : (1000 * 60 * 60)
 
-        diffTime < 6 ?  chart.xAxis[0].setExtremes((min + 0), (max - 0)) : chart.xAxis[0].setExtremes((min + zoomHours), (max - zoomHours))
-        
-        
+        diffTime < 6 ?  chart.xAxis[0].setExtremes((min + 0), (max - 0)) : chart.xAxis[0].setExtremes((min + zoomHours), (max - zoomHours))        
     }
 
     setZoomOut = (chart) => {
-        var min = chart.xAxis[0].getExtremes().min;
-        var max = chart.xAxis[0].getExtremes().max;
+        chart.zoomOut()
+        // var min = chart.xAxis[0].getExtremes().min;
+        // var max = chart.xAxis[0].getExtremes().max;
 
-        const diffTime = (max - min) / (1000 * 60 * 60)
-        const zoomHours = 1000 * 60 * 60 * 3
-        //const zoomHours = diffTime < 24 ? (1000 * 60 * 60) : diffTime < 24 * 7 ? (1000 * 60 * 60 * 24) : (1000 * 60 * 60)
+        // const diffTime = (max - min) / (1000 * 60 * 60)
+        // const zoomHours = 1000 * 60 * 60 * 3
+        // //const zoomHours = diffTime < 24 ? (1000 * 60 * 60) : diffTime < 24 * 7 ? (1000 * 60 * 60 * 24) : (1000 * 60 * 60)
 
-        chart.xAxis[0].setExtremes((min - zoomHours), (max + zoomHours));
+        // chart.xAxis[0].setExtremes((min - zoomHours), (max + zoomHours));
     }
 
 }

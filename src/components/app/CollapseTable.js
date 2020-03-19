@@ -64,7 +64,8 @@ const Row = props => {
         expand={expand}
         setExpand={setExpand}
         history={history}
-        setExpandedId={() => { 
+        setExpandedId={(e) => { 
+            e.preventDefault();
             if(expandedId !== id) {
               setExpandedId(id) 
               loadChartData(history)
