@@ -161,6 +161,7 @@ const TableRow = ({ history, setExpandedId, expandedId, id }) => {
 const ExpandedRow = ({ expand, data, history }) => {
   const startTs = getUnixTime(zonedTimeToUtc(history.startDate, "Europe/Lisbon"))*1000;
   const endTs = getUnixTime(zonedTimeToUtc(history.endDate, "Europe/Lisbon"))*1000;
+
   return (
     <tr>
       <td colSpan={7}>
@@ -174,7 +175,11 @@ const ExpandedRow = ({ expand, data, history }) => {
               handleFilterAnomalyData={() => null}
               selectedStartTs={startTs}
               selectedEndTs={endTs}
-              history={history}
+              history={{
+                user: history.labeledBy,
+                createdTs: history.time,
+                remark: history.remark,
+              }}
               navigatorDisabled
             />
           }
