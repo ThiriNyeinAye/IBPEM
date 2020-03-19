@@ -136,7 +136,7 @@ class AnormaliesHistory extends Component {
     return (
       <div className="container-fluid">
         <div className="row justify-content-center">
-          <div className="col-xl-10 py-5">
+          <div className="col-xl-10 py-3">
             <Navbar.LogoNavbar />
           </div>
         </div>
@@ -144,7 +144,7 @@ class AnormaliesHistory extends Component {
           <div className="col-xl-10">
             <div className="d-flex flex-row justify-content-between py-4">
               <div>
-                <div className="h3 text-dark">History</div>
+                <div className="h2 text-dark">History</div>
                 <div className="text-secondary">
                   {"1293 Anomalies have been reviewed"}
                 </div>
