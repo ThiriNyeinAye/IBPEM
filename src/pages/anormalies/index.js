@@ -320,7 +320,7 @@ class Anormalies extends Component {
         const endTs = getUnixTime(zonedTimeToUtc(value.endDate, "Europe/Lisbon")) * 1000
 
         areaChart.setZoom(startTs, endTs)
-        areaChart.createSelecedArea({ startTs, endTs })
+        areaChart.createSelecedArea({ startTs, endTs, history: value })
 
         return this.setState({
             anomalyDataByEquipment,

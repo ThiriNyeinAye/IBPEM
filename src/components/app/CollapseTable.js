@@ -90,10 +90,11 @@ const TableRow = ({ history, setExpandedId, expandedId, id }) => {
     <tr
       className="historyRow"
       style={{
-        background: "#f5f5f5",
+        background: expandedId !== id ? "#f5f5f5" : "#ffffff",
         cursor: "pointer",
         padding: 0,
-        borderRadius: 6
+        borderRadius: 6,
+        boxShadow: expandedId !== id ? "none" : "1px 1px 4px #d5d5d5"
       }}
       onClick={setExpandedId}
     >
@@ -173,6 +174,7 @@ const ExpandedRow = ({ expand, data, history }) => {
               handleFilterAnomalyData={() => null}
               selectedStartTs={startTs}
               selectedEndTs={endTs}
+              history={history}
               navigatorDisabled
             />
           }
@@ -180,11 +182,12 @@ const ExpandedRow = ({ expand, data, history }) => {
             <div>
               <span>{history.labeledBy}</span>
               <span className="text-secondary px-2">
-                {history.equipmentType} show some issues due to water pump{" "}
+                {/* {history.equipmentType} show some issues due to water pump{" "} */}
+                { history.remark }
               </span>
             </div>
             <div className="d-flex align-items-center">
-              <div className="pr-3" className="btn" onClick={() => alert(JSON.stringify('Show Similarity'), null, 2)}>Show Similar</div>
+              {/* <div className="pr-3" className="btn" onClick={() => alert(JSON.stringify('Show Similarity'), null, 2)}>Show Similar</div> */}
               <div className="pl-3 ">
                 <button
                   type="button"

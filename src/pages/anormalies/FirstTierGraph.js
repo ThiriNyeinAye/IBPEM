@@ -227,7 +227,19 @@ class Background extends Component {
                             className="rec8day"
                             onClick={e => this.props.handleClickOn8DaysData(v2.startDate, v2.endDate, e)} 
                             style={{ cursor: "default" }}>
-                            <title>{v2.startDate} ~ {v2.endDate}</title>
+                            <title>
+                                { 
+                                    JSON.stringify({ 
+                                        "Start Date": v2.startDate,
+                                        "End  Date": v2.endDate
+                                    }, null, '\n\t') 
+                                    .replace(/\":/g, ":\t")
+                                    .replace(/\"/g, "")
+                                    .replace(/\"/g, "")
+                                    .replace(/,/g, "")
+                                }
+                                {/* {v2.startDate} ~ {v2.endDate} */}
+                            </title>
                             <rect 
                                 sd={v2.startDate}
                                 ed={v2.endDate}

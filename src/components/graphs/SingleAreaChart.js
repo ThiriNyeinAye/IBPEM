@@ -26,10 +26,11 @@ class SingleAreaChart extends Component {
 
     //=========================================================================================
 
-    createSelecedArea = ({ startTs, endTs, navigatorDisabled=false }) => {
+    createSelecedArea = ({ startTs, endTs, history=null,  navigatorDisabled=false }) => {
+        if(this.chartRef.current===null) return;
         const rect = d3.select(".highcharts-plot-border")
         if(d3.select("#selectedSvg").node()!==null) d3.select("#selectedSvg").node().remove()
-   
+
         const xValue = this.tsToPixels(startTs)
         const endXValue = this.tsToPixels(endTs)
         const width = endXValue-xValue
@@ -60,6 +61,20 @@ class SingleAreaChart extends Component {
             .attr("y", 0)
             .attr("width", g.attr("width"))
             .attr("height", g.attr("height"))
+            .append("svg:title")
+            .text(`${history===null 
+                ? 'No data to show'
+                : JSON.stringify({
+                    'Last Edited User ': history.user,
+                    'Remark Message ': history.remark.replace('\n'),
+                    '        Created Date ': history.createdTs,
+                }, null, '\n\t')
+                .replace(/\":/g, ":\t")
+                .replace(/\"/g, "")
+                .replace(/\"/g, "")
+                .replace(/,/g, "")
+                
+            }`)
 
         g.append("rect")
             .attr("id", "slider-left-bar")
@@ -325,21 +340,16 @@ class SingleAreaChart extends Component {
             return this.createSelecedArea({ startTs: this.pixelToTs(e.offsetX-20), endTs: this.pixelToTs(e.offsetX+20)})
         }
 
-        chart.container.children[0].onmousemove = e => {
-        }
+        chart.container.children[0].onmousemove = e => { }
 
-        chart.container.children[0].ontouchmove = e => {
-         
-        }
+        chart.container.children[0].ontouchmove = e => { }
 
-        chart.container.onclick = e => {
-           
-        }
+        chart.container.onclick = e => { }
 
         if(this.props.selectedStartTs && this.props.selectedEndTs) {
             setTimeout(() => {
-                this.createSelecedArea({ startTs: this.props.selectedStartTs, endTs: this.props.selectedEndTs, navigatorDisabled: true })
-            }, 1000)
+                this.createSelecedArea({ startTs: this.props.selectedStartTs, history: this.props.history, endTs: this.props.selectedEndTs, navigatorDisabled: true })
+            },1400)
         }        
 
     } // end Did mount
