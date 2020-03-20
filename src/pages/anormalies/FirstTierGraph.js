@@ -18,6 +18,13 @@ export default class DragTest extends Component {
         this.ref1TierGraph = React.createRef(null)
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if(!deepEqual(this.props.yearlyData,prevProps.yearlyData)) {
+            // console.log("notequl: \n", this.props.yearlyData, prevProps.yearlyData)
+            this.setState({ yearlyData: this.props.yearlyData })
+        } 
+    }
+
     componentDidMount() {
         
     }
@@ -148,6 +155,13 @@ class Background extends Component {
         }
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if(!deepEqual(this.props.yearlyData,prevProps.yearlyData)) {
+            // console.log("notequl: \n", this.props.yearlyData, prevProps.yearlyData)
+            this.setState({ yearlyData: this.props.yearlyData })
+        } 
+    }
+
     componentDidMount() {        
         let startDate = startOfYear(new Date())
         let endDate = endOfYear(new Date())
@@ -217,7 +231,7 @@ class Background extends Component {
                 fill={"#44aa4440"} 
                 vectorsSelected={this.state.vectorsSelected} vectors={this.state.vectors} />             
         ))
-        const yearlyData = this.state.yearlyData.map((v1, k1) => {
+        const yearlyData = this.props.yearlyData.map((v1, k1) => {
             return v1.data.map((v2, k2) => {
                 const dataState = v2.dataState[1]
                 if(v2.count>0) {

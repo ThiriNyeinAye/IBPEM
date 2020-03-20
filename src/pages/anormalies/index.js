@@ -86,13 +86,12 @@ class Anormalies extends Component {
                 severity: [],
                 sensorSignal: [],
             },
-            graphShowData: [],
+            graphShowData: [{ name: "Input Temperature", selected: false }, { name: "Output Temperature", selected: false }],
             dimensions: null,
             yearlyData: null,
             firstTierStartDate: "2020-02-18",
             firstTierEndDate: "2020-02-25",
-            changeView:3,
-            selected:3
+            changeView: 1,
         }
         this.singleAreaChartRef = React.createRef()
         this.sidebarRef = React.createRef()
@@ -105,7 +104,7 @@ class Anormalies extends Component {
                 severity: [],
                 sensorSignal: [],
             },
-            graphShowData: [],
+            graphShowData: [{ name: "Input Temperature", selected: false }, { name: "Output Temperature", selected: false }],
         })
     }
 
@@ -114,7 +113,6 @@ class Anormalies extends Component {
             this.setState({
                 ...this.state,
                 changeView:view,
-                selected: view
             })
         }
     }
@@ -298,7 +296,7 @@ class Anormalies extends Component {
             return CreateAnomalyData(anomalyData, (error, data) => {
                 if (error === null) {
                     this.readDataFromApi()
-                    callback()
+                    // callback()
                 } else console.log("Anomaly Create: ERROR: ", error)
             })
         } else {
@@ -315,7 +313,9 @@ class Anormalies extends Component {
             R[c] = data
             return R
         }, {})
-        const graphShowData = value.additionalGraphs.map(v => ({ selected: true, name: v }))
+        const graphShowData = this.state.graphShowData.map(v1 => {
+            return value.additionalGraphs.findIndex(n => n===v1.name)!==-1 ? ({ ...v1, selected: true }) : ({ ...v1, selected: false })
+        })
         const anomalyInputData = {
             faultType: value.faultType,
             severity: value.severity,
@@ -418,8 +418,8 @@ class Anormalies extends Component {
                                     anomalyInputData={anomalyInputData}
                                     onAnormalyInputChanged={this.onAnormalyInputChanged}
                                     toggle={this.toggle}
-                                    changeView={this.state.changeView}
-                                    selected={this.state.selected}
+                                    selected={this.state.changeView}
+                                    graphShowData={this.state.graphShowData}
                                 />
                             </div>
 

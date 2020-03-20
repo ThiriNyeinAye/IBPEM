@@ -320,14 +320,20 @@ class SingleAreaChart extends Component {
             return true
         } else if(!deepEqual(this.props.datum, nextProps.datum)) {
             return true
-        } else {
+        } else if(!deepEqual(this.props.anomalyDataByTime, nextProps.anomalyDataByTime)) {
+            return true
+        }else {
             return false
         }
     }
 
     componentDidUpdate(prevProps, prevState) {  
         const empty = this.props.data.length===0 && this.props.anomalyDataByTime.length===0    
-        if (!empty && (!deepEqual(prevProps.data, this.props.data) || !deepEqual(prevProps.datum, this.props.datum)) && this.chartRef.current !== null) {
+        if (
+            (!empty 
+            && (!deepEqual(prevProps.data, this.props.data) || !deepEqual(prevProps.datum, this.props.datum)) 
+            && this.chartRef.current !== null) || (!deepEqual(prevProps.anomalyDataByTime, this.props.anomalyDataByTime))
+        ) {
             this.setChartOption()
         }    
     }

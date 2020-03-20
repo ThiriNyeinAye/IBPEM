@@ -11,21 +11,16 @@ const HOST = {
 }
 
 const DropdownContainerAnormaly = props => {
-    const {selected} = props
-    const { handleGraphDataChart } = props
+    const {selected, graphShowData, handleGraphDataChart} = props
+
     const [showEditAllDropdown, setShowEditAllDropdown] = useState(false)
-    const [graphs, setGraphs] = useState([{ name: "Input Temperature", selected: false }, { name: "Output Temperature", selected: false }])
+    // const [graphs, setGraphs] = useState([{ name: "Input Temperature", selected: false }, { name: "Output Temperature", selected: false }])
     const [dropdownHandler, setdropdownHandler] = useState(false)
     const { anomalyInputData, onAnormalyInputChanged } = props
     const [faultTypeLabel, setFaultTypeLabel] = useState([])
     const [severityLabel, setSeverityLabel] = useState([])
     const [sensorSignalLabel, setSensorSignalLabel] = useState([])
     const [addCustom] = ["Add custom"]
-
-    const showGraphClick = (e, g) => {
-        setdropdownHandler(false)
-        handleGraphDataChart(g)
-    }
     
     const CustomDataFetcher = (callback) => {
         const getURL = `${HOST.test}/labels`
@@ -108,9 +103,8 @@ const DropdownContainerAnormaly = props => {
                     <AddGraphView
                         dropdownHandler={dropdownHandler}
                         setdropdownHandler={setdropdownHandler}
-                        graphs={graphs}
-                        setGraphs={setGraphs}
-                        showGraphClick={showGraphClick}
+                        graphs={graphShowData}
+                        setGraphs={handleGraphDataChart}
                     />
                     <div className='p-1 justify-content-center' >
                         <div className='d-flex justify-content-around align-items-center '>

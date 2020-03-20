@@ -7,13 +7,12 @@ const AddGraphView = props =>{
         setdropdownHandler,
         graphs,
         setGraphs,
-        showGraphClick,
     }=props
     return(
         <OutsideClickHandler
         onOutsideClick={() => setdropdownHandler(false)  }
       >
-<div className={`dropdown rounded ${dropdownHandler ? 'none' : 'show'}`}>
+    <div className={`dropdown rounded ${dropdownHandler ? 'none' : 'show'}`}>
                         <div className="d-flex flex-column border rounded bg-light">
                             <div className="btn dropdown-toggle px-3 " onClick={e => setdropdownHandler(!dropdownHandler)}>Add Graph</div>
                         </div>
@@ -28,14 +27,14 @@ const AddGraphView = props =>{
                                     </div>
                                 ))
                             }
-                            <div className=" py-2">
+                            {/* <div className=" py-2">
                                 <div className="border border-left-0 border-right-0 border-top-0"></div>
-                            </div>
-                            <div className=" d-flex flex-row justify-content-center px-2">
+                            </div> */}
+                            {/* <div className=" d-flex flex-row justify-content-center px-2">
                                 <div className="btn text-white px-3 btn-block" type="button" style={{ backgroundColor: '#23c49e' }} onClick={(e) => showGraphClick(e, graphs)}>
                                     Show Graph
                                  </div>
-                            </div>
+                            </div> */}
                         </div>
                     </div>
              </OutsideClickHandler>
