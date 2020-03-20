@@ -168,8 +168,8 @@ class MultiAreaChart extends Component {
         console.log('data1: ', props.data1+ '\ndata2: '+ props.data2)
         const anomalyDataByTimeProps = props.anomalyDataByTime === undefined ? [] : props.anomalyDataByTime /*@lucy */
         const anomalyDataByTime = anomalyDataByTimeProps.map(v => ({ 
-            startDate: getUnixTime(zonedTimeToUtc(v.startDate, "Europe/Lisbon")) * 1000,
-            endDate: getUnixTime(zonedTimeToUtc(v.endDate, "Europe/Lisbon")) *1000
+            startDate: getUnixTime(zonedTimeToUtc(v.startDate, "Asia/Singapore")) * 1000,
+            endDate: getUnixTime(zonedTimeToUtc(v.endDate, "Asia/Singapore")) *1000
         }))
         console.log('anomalyDataByTimeProps: ', anomalyDataByTimeProps)
 

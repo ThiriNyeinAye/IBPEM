@@ -10,8 +10,8 @@ const SimpleSingleAreaChart = (props) => {
 
     const anomalyDataByTimeProps = props.anomalyDataByTime === undefined ? [] : props.anomalyDataByTime
     const anomalyDataByTime = anomalyDataByTimeProps.map(v => ({
-        startDate: getUnixTime(zonedTimeToUtc(v.startDate, "Europe/Lisbon")) * 1000,
-        endDate: getUnixTime(zonedTimeToUtc(v.endDate, "Europe/Lisbon")) *1000
+        startDate: getUnixTime(zonedTimeToUtc(v.startDate, "Asia/Singapore")) * 1000,
+        endDate: getUnixTime(zonedTimeToUtc(v.endDate, "Asia/Singapore")) *1000
     }))
     const sortDate = anomalyDataByTime.reverse()
     const zoneColors = sortDate.reduce((r,v, arr) => {

@@ -81,18 +81,18 @@ class AnormaliesHistory extends Component {
   };
 
   loadChartData = (historyData) => {
-    let startTs = getUnixTime(zonedTimeToUtc(historyData.startDate, "Europe/Lisbon"));
-    let endTs = getUnixTime(zonedTimeToUtc(historyData.endDate, "Europe/Lisbon"));
+    let startTs = getUnixTime(zonedTimeToUtc(historyData.startDate, "Asia/Singapore"));
+    let endTs = getUnixTime(zonedTimeToUtc(historyData.endDate, "Asia/Singapore"));
     const diff = endTs - startTs
 
-    const startDate = format(fromUnixTime(startTs - (diff*6)), "yyyy-MM-dd",  'Europe/Lisbon')
-    const endDate = format(fromUnixTime(endTs + (diff*6)), "yyyy-MM-dd",  'Europe/Lisbon')
+    const startDate = format(fromUnixTime(startTs - (diff*6)), "yyyy-MM-dd",  'Asia/Singapore')
+    const endDate = format(fromUnixTime(endTs + (diff*6)), "yyyy-MM-dd",  'Asia/Singapore')
 
     return DataFetcher({ startDate, endDate }, (error, data) => {
       if (error) console.log("Error: ", error);
       else {
         const rawData = data.payload.map( v=> {
-            return [getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000, v.efficiency]
+            return [getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000, v.efficiency]
           })
         this.setState({ data: rawData })
         // const ChartElement = props => (
@@ -118,15 +118,15 @@ class AnormaliesHistory extends Component {
   //  console.log(HistoryTableData)
   
     // const data0 = data.map(v => [
-    //   getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000,
+    //   getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000,
     //   v.efficiency
     // ]);
     // const data1 = data.map(v => [
-    //   getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000,
+    //   getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000,
     //   v.evaInput
     // ]);
     // const data2 = data.map(v => [
-    //   getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000,
+    //   getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000,
     //   v.evaOutput
     // ]);
 

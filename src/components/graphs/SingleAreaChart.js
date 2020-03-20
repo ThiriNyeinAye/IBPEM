@@ -1,8 +1,8 @@
 import React, { Component, PureComponent, useState, useEffect, useRef } from 'react'
 import Highcharts, { Axis } from 'highcharts/highstock'
 import HighchartsReact from 'highcharts-react-official'
-import { format, getUnixTime } from 'date-fns'
-import { zonedTimeToUtc } from "date-fns-tz"
+import { getUnixTime,fromUnixTime } from 'date-fns'
+import { zonedTimeToUtc, utcToZonedTime, format } from "date-fns-tz"
 import deepEqual from "deep-equal"
 import * as d3 from "d3"
 
@@ -27,6 +27,7 @@ class SingleAreaChart extends Component {
     //=========================================================================================
 
     createSelecedArea = ({ startTs, endTs, history=null,  navigatorDisabled=false }) => {
+        
         if(this.chartRef.current===null) return;
         const rect = d3.select(".highcharts-plot-border")
         if(d3.select("#selectedSvg").node()!==null) d3.select("#selectedSvg").node().remove()
@@ -396,8 +397,8 @@ class SingleAreaChart extends Component {
     initChartOption = (chart, props) => {
         const anomalyDataByTimeProps = props.anomalyDataByTime === undefined ? [] : props.anomalyDataByTime /*@lucy */
         const anomalyDataByTime = anomalyDataByTimeProps.map(v => ({ 
-            startDate: getUnixTime(zonedTimeToUtc(v.startDate, "Europe/Lisbon")) * 1000,
-            endDate: getUnixTime(zonedTimeToUtc(v.endDate, "Europe/Lisbon")) *1000
+            startDate: getUnixTime(zonedTimeToUtc(v.startDate, "Asia/Singapore")) * 1000,
+            endDate: getUnixTime(zonedTimeToUtc(v.endDate, "Asia/Singapore")) *1000
         }))
 
         const sortDate = anomalyDataByTime.reverse()
@@ -433,6 +434,10 @@ class SingleAreaChart extends Component {
             scrollbar: {
                 enabled: false
             },
+            time: {
+                // timezone: 'Asia/Singapore'
+                timezoneOffset: -8 * 60
+            },
             chart: {
                 lineColor: '#00BF8E',
                 spacing: [
@@ -450,8 +455,11 @@ class SingleAreaChart extends Component {
             tooltip: {
                 split: 'true',
                 formatter: function() {
-                    return Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x) + '<br />' +
+                    return (/*Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x)*/ 
+                        format(utcToZonedTime(fromUnixTime(this.x / 1000), "Asia/Singapore"), "yyyy-MM-dd HH:mm:ss" )
+                         + '<br />' +
                         Highcharts.numberFormat(this.y, 2)*1 + ' °C'
+                    )
                 }
             },
             title: {

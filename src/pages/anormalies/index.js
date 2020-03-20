@@ -1,6 +1,6 @@
 import React, { Component, useState, useRef, useEffect, Fragment } from "react"
 import { format, getUnixTime,fromUnixTime } from 'date-fns'
-import { zonedTimeToUtc } from "date-fns-tz"
+import { zonedTimeToUtc, utcToZonedTime } from "date-fns-tz"
 import Draggable from 'react-draggable'
 
 import SingleAreaChart from "../../components/graphs/SingleAreaChart.js"
@@ -143,9 +143,13 @@ class Anormalies extends Component {
             else {
                 const { data0, data1, data2 } = data.payload.reduce((r, v) => {
                     const R = {...r}
-                    R.data0.push([getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000, v.efficiency])
-                    R.data1.push([getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000, v.evaInput])
-                    R.data2.push([getUnixTime(zonedTimeToUtc(v.ts, "Europe/Lisbon")) * 1000, v.evaOutput])
+                    R.data0.push([getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000, v.efficiency])
+                    R.data1.push([getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000, v.evaInput])
+                    R.data2.push([getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000, v.evaOutput])
+                    // console.log("unix: ",v.ts, getUnixTime(new Date(v.ts)), new Date(v.ts))
+                    // R.data0.push([getUnixTime(new Date(v.ts)) * 1000, v.efficiency])
+                    // R.data1.push([getUnixTime(new Date(v.ts)) * 1000, v.evaInput])
+                    // R.data2.push([getUnixTime(new Date(v.ts)) * 1000, v.evaOutput])
                     return R
                 }, { data0: [], data1: [], data2: [] })
             
@@ -207,8 +211,10 @@ class Anormalies extends Component {
                         selected: false,
                         date: `${format(new Date(c.startDate), 'do MMM, yy')} ~ ${format(new Date(c.endDate), 'do MMM, yy')}`,
                         time: `${format(new Date(c.startDate), 'HH:mm')} ~ ${format(new Date(c.endDate), 'HH:mm')}`,
-                        startTs: getUnixTime(zonedTimeToUtc(c.startDate, "Europe/Lisbon")) * 1000,
-                        endTs: getUnixTime(zonedTimeToUtc(c.endDate, "Europe/Lisbon")) * 1000
+                        // startTs: getUnixTime(zonedTimeToUtc(c.startDate, "Asia/Singapore")) * 1000,
+                        // endTs: getUnixTime(zonedTimeToUtc(c.endDate, "Asia/Singapore")) * 1000
+                        startTs: getUnixTime(new Date(c.startDate)) * 1000,
+                        endTs: getUnixTime(new Date(c.endDate)) * 1000
                     }
                     if (R[c.deviceType] === undefined) R[c.deviceType] = [value]
                     else R[c.deviceType].push(value)
@@ -283,8 +289,8 @@ class Anormalies extends Component {
                 faultType: anomalyInputData.faultType,
                 severity: anomalyInputData.severity,
                 sensorSignal: anomalyInputData.sensorSignal,
-                startDate :  format(fromUnixTime(offsetLeftRight.startTs / 1000), "yyyy-MM-dd HH:mm:ss",  'Europe/Berlin' ),
-                endDate :  format(fromUnixTime(offsetLeftRight.endTs / 1000), "yyyy-MM-dd HH:mm:ss",  'Europe/Berlin' ),
+                startDate :  format(utcToZonedTime(fromUnixTime(offsetLeftRight.startTs / 1000), "Asia/Singapore"), "yyyy-MM-dd HH:mm:ss" ),//format(fromUnixTime(offsetLeftRight.startTs / 1000), "yyyy-MM-dd HH:mm:ss",  'Asia/Singapore' ),
+                endDate :  format(utcToZonedTime(fromUnixTime(offsetLeftRight.endTs / 1000), "Asia/Singapore"), "yyyy-MM-dd HH:mm:ss" ),//format(fromUnixTime(offsetLeftRight.endTs / 1000), "yyyy-MM-dd HH:mm:ss",  'Asia/Singapore' ),
                 additionalGraphs: graphShowData.filter(v => v.selected).map(v => v.name),
                 remark: message,
             }
@@ -316,8 +322,8 @@ class Anormalies extends Component {
             sensorSignal: value.sensorSignal,
         }
         const areaChart = this.singleAreaChartRef.current
-        const startTs = getUnixTime(zonedTimeToUtc(value.startDate, "Europe/Lisbon")) * 1000
-        const endTs = getUnixTime(zonedTimeToUtc(value.endDate, "Europe/Lisbon")) * 1000
+        const startTs = getUnixTime(zonedTimeToUtc(value.startDate, "Asia/Singapore")) * 1000
+        const endTs = getUnixTime(zonedTimeToUtc(value.endDate, "Asia/Singapore")) * 1000
 
         areaChart.setZoom(startTs, endTs)
         areaChart.createSelecedArea({ startTs, endTs, history: value })

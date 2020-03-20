@@ -160,8 +160,8 @@ const TableRow = ({ history, setExpandedId, expandedId, id }) => {
 };
 
 const ExpandedRow = ({ expand, data, history }) => {
-  const startTs = getUnixTime(zonedTimeToUtc(history.startDate, "Europe/Lisbon"))*1000;
-  const endTs = getUnixTime(zonedTimeToUtc(history.endDate, "Europe/Lisbon"))*1000;
+  const startTs = getUnixTime(zonedTimeToUtc(history.startDate, "Asia/Singapore"))*1000;
+  const endTs = getUnixTime(zonedTimeToUtc(history.endDate, "Asia/Singapore"))*1000;
 
   return (
     <tr>
