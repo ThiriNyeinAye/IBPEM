@@ -29,7 +29,8 @@ export default class DragTest extends Component {
         
     }
     
-    handleClickOn8DaysData = (startDate, endDate) => {
+    handleClickOn8DaysData = (startDate, endDate, e) => {
+        e.preventDefault()
         // alert("click on rect "+ startDate +" - "+ endDate)
         this.props.handleFirstTierDateRangeChange({ startDate, endDate })
     }

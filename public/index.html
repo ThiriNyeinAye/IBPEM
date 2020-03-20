@@ -36,6 +36,7 @@
   </head>
   <body style="background-color: #edeff5" class="h-100">
     <noscript>You need to enable JavaScript to run this app.</noscript>
+    
     <div 
       id="loadingDivId"
       style="z-index: 2147483647;position: absolute;left: 0; right: 0; top: 0; bottom: 0; background-color: #00102233; display: none;" >
@@ -47,6 +48,12 @@
           </div>
     </div>
     <div id="root" class="h-100"></div>
+    <script>
+      document.getElementById("loadingDivId").addEventListener("click", function(event) {
+        event.preventDefault()
+        event.stopPropagation()
+      })
+    </script>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

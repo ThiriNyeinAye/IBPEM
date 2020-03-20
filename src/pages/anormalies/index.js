@@ -224,8 +224,10 @@ class Anormalies extends Component {
                     anomalyDataByEquipmentOriginal: {...anomalyDataByEquipment},
                 }, () => {
                     const areaChart = this.singleAreaChartRef.current
+                    const singlerAreaChart = this.singleAreaChartRef.current
+                    console.log("Area: ", areaChart.chartRef.current.chart)
                     if (areaChart !== null) {
-                        areaChart.removeSelectedArea()
+                        areaChart.removeSelectedArea() //TODO::
                     }
                 })
             } else {
@@ -342,6 +344,7 @@ class Anormalies extends Component {
             firstTierEndDate: endDate!==undefined ? endDate : prev.firstTierEndDate
         }), () => {
             const singlerAreaChart = this.singleAreaChartRef.current
+            console.log(singlerAreaChart.chartRef.current.chart)
             if(singlerAreaChart!==null) singlerAreaChart.setLoading(true)
             this.readDataFromApi()
         })
