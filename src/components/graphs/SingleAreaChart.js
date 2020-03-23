@@ -380,6 +380,8 @@ class SingleAreaChart extends Component {
             // console.log("Going to the Anomaly Page: \n "+ JSON.stringify(history, null, 2), "\nhistory: ", this.props.history)
             // return routeTo.anomaliesWithoutRouter(window, { aid: history.id, sd: history.startDate, ed: history.endDate }) // navigate route to the anomaly page
             return routeTo.anomalies({history: this.props.historyNaviation},{ aid: history.id, sd: history.startDate, ed: history.endDate })
+        } else {
+            console.log("Clicked on Anomaly: ", history.id)
         }
     }
 

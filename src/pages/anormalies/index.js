@@ -509,8 +509,8 @@ class Anormalies extends Component {
                                                 data={data0} 
                                                 datum={this.state.changeView===2 ? [ data0, data2 ] : []} 
                                                 handleFilterAnomalyData={this.handleFilterAnomalyData} 
-                                                selectedStartTs={startTs}
-                                                selectedEndTs={endTs}
+                                                // selectedStartTs={startTs}
+                                                // selectedEndTs={endTs}
                                                 // historyNaviation={{...this.props.history}}
                                             />
                                        )}
