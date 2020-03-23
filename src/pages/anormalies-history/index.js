@@ -85,8 +85,8 @@ class AnormaliesHistory extends Component {
     let endTs = getUnixTime(zonedTimeToUtc(historyData.endDate, "Asia/Singapore"));
     const diff = endTs - startTs
 
-    const startDate = format(fromUnixTime(startTs - (diff*6)), "yyyy-MM-dd",  'Asia/Singapore')
-    const endDate = format(fromUnixTime(endTs + (diff*6)), "yyyy-MM-dd",  'Asia/Singapore')
+    const startDate = format(fromUnixTime(startTs - (diff*4)), "yyyy-MM-dd",  'Asia/Singapore')
+    const endDate = format(fromUnixTime(endTs + (diff*4)), "yyyy-MM-dd",  'Asia/Singapore')
 
     return DataFetcher({ startDate, endDate }, (error, data) => {
       if (error) console.log("Error: ", error);
@@ -95,19 +95,6 @@ class AnormaliesHistory extends Component {
             return [getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000, v.efficiency]
           })
         this.setState({ data: rawData })
-        // const ChartElement = props => (
-        //   <div>
-        //       <div className="p-1">
-        //         Data: 
-        //         <pre>{ JSON.stringify(historyData, null, 2) }</pre>
-        //       </div>
-        //       <SingleAreaChart data={rawData} datum={[]} anomalyDataByTime={[]} navigatorDisabled />
-        //   </div>
-        // )
-        // ReactDOM.render(
-        //   <ChartElement />
-        //   , document.getElementById("history-chart-container")
-        // )
       }
     })
     

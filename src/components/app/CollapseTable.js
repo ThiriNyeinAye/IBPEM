@@ -176,7 +176,10 @@ const ExpandedRow = ({ expand, data, history }) => {
               handleFilterAnomalyData={() => null}
               selectedStartTs={startTs}
               selectedEndTs={endTs}
-              history={{
+              anoHistory={{
+                id: history.id,
+                startDate: history.startDate,
+                endDate: history.endDate,
                 user: history.labeledBy,
                 createdTs: history.time,
                 remark: history.remark,
