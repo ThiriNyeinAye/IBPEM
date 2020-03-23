@@ -334,7 +334,15 @@ class Anormalies extends Component {
         const areaChart = this.singleAreaChartRef.current
         const offsetLeftRight = areaChart.readSelectedAreaValues()
 
-        if (areaChart !== null && offsetLeftRight !== null) {
+        console.log("byUser", byUser)
+
+        const inputValid = anomalyInputData.faultType && anomalyInputData.faultType.length>0 
+            && anomalyInputData.severity && anomalyInputData.severity.length>0 
+            && anomalyInputData.sensorSignal && anomalyInputData.sensorSignal.length>0 
+            && message && message.length>0
+            && byUser && byUser.length>0
+
+        if (areaChart !== null && offsetLeftRight !== null && inputValid) {
             const anomalyData = {
                 user: byUser,
                 deviceType: "Chiller 3",
@@ -348,6 +356,7 @@ class Anormalies extends Component {
                 additionalGraphs: graphShowData.filter(v => v.selected).map(v => v.name),
                 remark: message,
             }
+            
 
             return CreateAnomalyData(anomalyData, (error, data) => {
                 if (error === null) {
