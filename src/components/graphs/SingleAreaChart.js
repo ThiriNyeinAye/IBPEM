@@ -73,6 +73,7 @@ class SingleAreaChart extends Component {
             .text(`${anoHistory===null 
                 ? 'No data to show'
                 : JSON.stringify({
+                    'ID': anoHistory.id,
                     'Last Edited User ': anoHistory.user,
                     'Remark Message ': anoHistory.remark,//.replace('\n'),
                     '        Created Date ': anoHistory.createdTs,
