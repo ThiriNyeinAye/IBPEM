@@ -5,6 +5,8 @@ import { getUnixTime,fromUnixTime } from 'date-fns'
 import { zonedTimeToUtc, utcToZonedTime, format } from "date-fns-tz"
 import deepEqual from "deep-equal"
 import * as d3 from "d3"
+import routeTo from "../../helper/routeTo.js"
+import { withRouter } from "react-router-dom"
 
 const AppConst = {
     CREATE: 2,
@@ -26,12 +28,13 @@ class SingleAreaChart extends Component {
 
     //=========================================================================================
 
-    createSelecedArea = ({ startTs, endTs, history=null,  navigatorDisabled=false }) => {
+    createSelecedArea = ({ startTs, endTs, anoHistory=null,  navigatorDisabled=false }) => {
         
         if(this.chartRef.current===null) return;
         const rect = d3.select(".highcharts-plot-border")
         if(d3.select("#selectedSvg").node()!==null) d3.select("#selectedSvg").node().remove()
 
+        const navigateToAnomalyPage = () => this.navigateToAnomalyPage(anoHistory)
         const xValue = this.tsToPixels(startTs)
         const endXValue = this.tsToPixels(endTs)
         const width = endXValue-xValue
@@ -55,20 +58,25 @@ class SingleAreaChart extends Component {
             .attr("stroke", "#28a745")
             .attr("stroke-width", 0)
             .attr("transform", `translate (${xValue} ${rect.attr("y")})`)
-            
-        g.append("rect")
+       
+        const bodyRect = g.append("rect")
             .attr("id", "rect-body")
             .attr("x", 0)
             .attr("y", 0)
             .attr("width", g.attr("width"))
             .attr("height", g.attr("height"))
+            .on("click", function() {
+                d3.event.stopPropagation();
+                navigateToAnomalyPage()
+            })
             .append("svg:title")
-            .text(`${history===null 
+            .text(`${anoHistory===null 
                 ? 'No data to show'
                 : JSON.stringify({
-                    'Last Edited User ': history.user,
-                    'Remark Message ': history.remark.replace('\n'),
-                    '        Created Date ': history.createdTs,
+                    'ID': anoHistory.id,
+                    'Last Edited User ': anoHistory.user,
+                    'Remark Message ': anoHistory.remark,//.replace('\n'),
+                    '        Created Date ': anoHistory.createdTs,
                 }, null, '\n\t')
                 .replace(/\":/g, ":\t")
                 .replace(/\"/g, "")
@@ -227,7 +235,6 @@ class SingleAreaChart extends Component {
             .attr("x", 0)
             .attr("y", 0)
             .attr("width", g.attr("width"))
-            // .attr("height", g.attr("height"))
 
         g.select("#slider-left-bar")
             .attr("x", 0)
@@ -322,7 +329,9 @@ class SingleAreaChart extends Component {
             return true
         } else if(!deepEqual(this.props.anomalyDataByTime, nextProps.anomalyDataByTime)) {
             return true
-        }else {
+        } /*else if(!deepEqual(this.props.historyNaviation,nextProps.historyNaviation)) {
+            return true
+        } */else {
             return false
         }
     }
@@ -344,7 +353,9 @@ class SingleAreaChart extends Component {
         this.setChartOption()
 
         chart.container.ondblclick = (e) => {
-            return this.createSelecedArea({ startTs: this.pixelToTs(e.offsetX-20), endTs: this.pixelToTs(e.offsetX+20)})
+            if(!this.props.selectedStartTs || !this.props.selectedEndTs) {
+                return this.createSelecedArea({ startTs: this.pixelToTs(e.offsetX-20), endTs: this.pixelToTs(e.offsetX+20)})
+            }
         }
 
         chart.container.children[0].onmousemove = e => { }
@@ -355,11 +366,22 @@ class SingleAreaChart extends Component {
 
         if(this.props.selectedStartTs && this.props.selectedEndTs) {
             setTimeout(() => {
-                this.createSelecedArea({ startTs: this.props.selectedStartTs, history: this.props.history, endTs: this.props.selectedEndTs, navigatorDisabled: true })
-            },1400)
+                this.createSelecedArea({ startTs: this.props.selectedStartTs, anoHistory: this.props.anoHistory, endTs: this.props.selectedEndTs, navigatorDisabled: true })
+            },1600)
         }   
 
     } // end Did mount
+
+    // TODO: currently editing
+    navigateToAnomalyPage = (history) => {
+        // console.log("hist: ", this.props.historyNaviation)
+        if(this.props.selectedStartTs && this.props.selectedEndTs) {
+            // console.log("loc: ", window.location)
+            // console.log("Going to the Anomaly Page: \n "+ JSON.stringify(history, null, 2), "\nhistory: ", this.props.history)
+            // return routeTo.anomaliesWithoutRouter(window, { aid: history.id, sd: history.startDate, ed: history.endDate }) // navigate route to the anomaly page
+            return routeTo.anomalies({history: this.props.historyNaviation},{ aid: history.id, sd: history.startDate, ed: history.endDate })
+        }
+    }
 
     render() {
         Highcharts.SVGRenderer.prototype.symbols.leftarrow = (x, y, w, h) => {
@@ -609,15 +631,15 @@ class SingleAreaChart extends Component {
     }
 
     setZoomOut = (chart) => {
-        chart.zoomOut()
-        // var min = chart.xAxis[0].getExtremes().min;
-        // var max = chart.xAxis[0].getExtremes().max;
+        // chart.zoomOut()
+        var min = chart.xAxis[0].getExtremes().min;
+        var max = chart.xAxis[0].getExtremes().max;
 
-        // const diffTime = (max - min) / (1000 * 60 * 60)
-        // const zoomHours = 1000 * 60 * 60 * 3
-        // //const zoomHours = diffTime < 24 ? (1000 * 60 * 60) : diffTime < 24 * 7 ? (1000 * 60 * 60 * 24) : (1000 * 60 * 60)
+        const diffTime = (max - min) / (1000 * 60 * 60)
+        const zoomHours = 1000 * 60 * 60 * 3
+        //const zoomHours = diffTime < 24 ? (1000 * 60 * 60) : diffTime < 24 * 7 ? (1000 * 60 * 60 * 24) : (1000 * 60 * 60)
 
-        // chart.xAxis[0].setExtremes((min - zoomHours), (max + zoomHours));
+        chart.xAxis[0].setExtremes((min - zoomHours), (max + zoomHours));
     }
 
 }

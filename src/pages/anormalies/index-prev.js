@@ -1,5 +1,5 @@
 import React, { Component, useState, useRef, useEffect, Fragment } from "react"
-import { format, getUnixTime,fromUnixTime, isBefore, isEqual } from 'date-fns'
+import { format, getUnixTime,fromUnixTime } from 'date-fns'
 import { zonedTimeToUtc, utcToZonedTime } from "date-fns-tz"
 import Draggable from 'react-draggable'
 
@@ -10,12 +10,9 @@ import SimpleSingleAreaChart from "../../components/graphs/SimpleSingleAreaChart
 import DialogNewAnormaly from "./DialogNewAnormaly.js";
 
 import { withLStorage } from "../../components/hoc.js"
-import { withRouter } from "react-router-dom"
 
 import FirstTierGraph from "./FirstTierGraph.js"
-import queryString from  "query-string"
-import routerTo from "../../helper/routeTo.js"
-import routeTo from "../../helper/routeTo.js"
+import queryString from  "querystring"
 
 const HOST = {
     local: "http://192.168.100.7:3003",
@@ -128,56 +125,16 @@ class Anormalies extends Component {
         
         const singlerAreaChart = this.singleAreaChartRef.current
         if(singlerAreaChart!==null) singlerAreaChart.setLoading(true)
-        // console.log("chart: ", singlerAreaChart)
-
-        YearlyDataFetcher((error, data) => {
-            if (error) console.log("Error:YearlyDataFetcher: ", error)
-            else {
-                const anoData = queryString.parse(this.props.history.location.search)
-                if(anoData.aid) {
-                    const sd = format(new Date(anoData.sd), "yyyy-MM-dd")
-                    const ed = format(new Date(anoData.ed), "yyyy-MM-dd")
-                    const firstTierDate = data.payload.reduce( (rd, yd) => {
-                        const R = {...rd}
-                        if(R.firstTierStartDate===null && R.firstTierEndDate===null) {
-                            const index = yd.data.findIndex(v => {
-                                return (
-                                    (isEqual(new Date(v.startDate), new Date(sd)) || isBefore(new Date(v.startDate), new Date(sd))) &&
-                                    (isEqual(new Date(v.endDate), new Date(ed)) || isBefore(new Date(ed), new Date(v.endDate)))
-                                )
-                            })
-                            if(index!==-1) {
-                                R.firstTierStartDate = yd.data[index].startDate
-                                R.firstTierEndDate = yd.data[index].endDate
-                            }
-                        }
-                        return R
-                    }, { firstTierStartDate: null, firstTierEndDate: null } )
-
-                    this.setState({ yearlyData: data.payload, ...firstTierDate }, () => {
-                        this.readDataFromApi()  
-                    })
-                } else {
-                    this.setState({ yearlyData: data.payload }, () => {
-                        this.readDataFromApi()  
-                    }) 
-                } 
-            }
-        }) 
-        this.readDataFromApi()  
-
+        this.readDataFromApi()        
     }
 
     readDataFromApi = () => {
-        // YearlyDataFetcher((error, data) => {
-        //     if (error) console.log("Error:YearlyDataFetcher: ", error)
-        //     else {
-        //         this.setState({ yearlyData: data.payload }, () => {
-                    
-        //         }) 
-        //     }
-        // })
-
+        YearlyDataFetcher((error, data) => {
+            if (error) console.log("Error:YearlyDataFetcher: ", error)
+            else {
+                this.setState({ yearlyData: data.payload }, )
+            }
+        })
         this.fetchAnomalyData()
         DataFetcher((error, data) => {
             if (error) console.log("Error:DataFetcher: ", error)
@@ -187,29 +144,17 @@ class Anormalies extends Component {
                     R.data0.push([getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000, v.efficiency])
                     R.data1.push([getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000, v.evaInput])
                     R.data2.push([getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000, v.evaOutput])
+                    // console.log("unix: ",v.ts, getUnixTime(new Date(v.ts)), new Date(v.ts))
+                    // R.data0.push([getUnixTime(new Date(v.ts)) * 1000, v.efficiency])
+                    // R.data1.push([getUnixTime(new Date(v.ts)) * 1000, v.evaInput])
+                    // R.data2.push([getUnixTime(new Date(v.ts)) * 1000, v.evaOutput])
                     return R
                 }, { data0: [], data1: [], data2: [] })
-                const singlerAreaChart = this.singleAreaChartRef.current
+            
                 this.setState({ data0, data1, data2 }, () => {
                     this.showLoading(false)
-                    if(singlerAreaChart!==null){ // create anomaly coming from history page
-                        singlerAreaChart.setLoading(false)  
-                    }
-                    // read data from History page
-                    const anoData = queryString.parse(this.props.history.location.search)
-                    if(anoData.aid) {
-                        // setTimeout(() => {
-                            const anomalyValue = Object.values(this.state.anomalyDataByEquipment).reduce( (r,c) => {
-                                let R = {...r}
-                                if(r===null) {
-                                    const i = c.findIndex( v=> v.id===anoData.aid)
-                                    if(i!==-1) R = {...c[i]}
-                                }
-                                return R
-                            }, null)
-                            this.handleAnomalyTimeClicked(anomalyValue, true)
-                        // }, 3000)
-                    }
+                    const singlerAreaChart = this.singleAreaChartRef.current
+                    if(singlerAreaChart!==null) singlerAreaChart.setLoading(false)
                 })
             }
         }, { startDate: this.state.firstTierStartDate, endDate: this.state.firstTierEndDate })
@@ -279,7 +224,8 @@ class Anormalies extends Component {
                     anomalyDataByEquipmentOriginal: {...anomalyDataByEquipment},
                 }, () => {
                     const areaChart = this.singleAreaChartRef.current
-                    // console.log("Area: ", areaChart.chartRef.current.chart)
+                    const singlerAreaChart = this.singleAreaChartRef.current
+                    console.log("Area: ", areaChart.chartRef.current.chart)
                     if (areaChart !== null) {
                         areaChart.removeSelectedArea() //TODO::
                     }
@@ -360,10 +306,8 @@ class Anormalies extends Component {
         }
     }
 
-    handleAnomalyTimeClicked = (value, fromHistory) => {
-        if(!fromHistory) {
-            routeTo.anomalies({history: this.props.history},{ aid: value.id, sd: value.startDate, ed: value.endDate })
-        }
+    handleAnomalyTimeClicked = value => {
+        
         const { anomalyDataByEquipment : anomalyDataByEquipment1 } = this.state
         const anomalyDataByEquipment = Object.keys(anomalyDataByEquipment1).reduce((r, c) => {
             const R = { ...r }
@@ -383,22 +327,13 @@ class Anormalies extends Component {
         const startTs = getUnixTime(zonedTimeToUtc(value.startDate, "Asia/Singapore")) * 1000
         const endTs = getUnixTime(zonedTimeToUtc(value.endDate, "Asia/Singapore")) * 1000
 
-        if(areaChart!==null) {
-            areaChart.setZoom(startTs, endTs)
-            areaChart.createSelecedArea({ startTs, endTs, anoHistory: value })
-        } else {
-            // console.log(areaChart)
-        }
+        areaChart.setZoom(startTs, endTs)
+        areaChart.createSelecedArea({ startTs, endTs, history: value })
 
         return this.setState({
             anomalyDataByEquipment,
             anomalyInputData,
             graphShowData,
-        }, () => {
-            // console.log("loc: ", this.props)
-            // this.props.location.search = ""
-            // window.location.search=""
-            // routeTo.anomalies(this.props)
         })
     }
 
@@ -409,7 +344,7 @@ class Anormalies extends Component {
             firstTierEndDate: endDate!==undefined ? endDate : prev.firstTierEndDate
         }), () => {
             const singlerAreaChart = this.singleAreaChartRef.current
-            // console.log(singlerAreaChart.chartRef.current.chart)
+            console.log(singlerAreaChart.chartRef.current.chart)
             if(singlerAreaChart!==null) singlerAreaChart.setLoading(true)
             this.readDataFromApi()
         })
@@ -451,10 +386,7 @@ class Anormalies extends Component {
             anomalyDataByEquipment
         } = this.state;
         const minorChartData = [data1, data2]
-        const anoData = queryString.parse(this.props.history.location.search)
-        const startTs = anoData.aid ? getUnixTime(zonedTimeToUtc(anoData.sd, "Asia/Singapore")) * 1000 : undefined
-        const endTs = anoData.aid ? getUnixTime(zonedTimeToUtc(anoData.ed, "Asia/Singapore")) * 1000 : undefined
-        // console.log("this.props.history:", this.props.history)
+          
         return (
             <div className="" style={{ overflow: 'auto' }}>
                 <div 
@@ -508,11 +440,8 @@ class Anormalies extends Component {
                                                 ref={this.singleAreaChartRef} 
                                                 data={data0} 
                                                 datum={this.state.changeView===2 ? [ data0, data2 ] : []} 
-                                                handleFilterAnomalyData={this.handleFilterAnomalyData} 
-                                                selectedStartTs={startTs}
-                                                selectedEndTs={endTs}
-                                                // historyNaviation={{...this.props.history}}
-                                            />
+                                                handleFilterAnomalyData={this.handleFilterAnomalyData} />
+                                          
                                        )}
                                     </div>
                                 </div>       
@@ -557,7 +486,7 @@ class Anormalies extends Component {
         )
     }
 }
-export default withRouter(withLStorage(Anormalies))
+export default withLStorage(Anormalies)
 
 const AnormalyControlPanel = props => {
     const [disabled,setDisabled]=useState(false)
