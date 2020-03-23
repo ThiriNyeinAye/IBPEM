@@ -128,7 +128,7 @@ class Anormalies extends Component {
         
         const singlerAreaChart = this.singleAreaChartRef.current
         if(singlerAreaChart!==null) singlerAreaChart.setLoading(true)
-        console.log("chart: ", singlerAreaChart)
+        // console.log("chart: ", singlerAreaChart)
 
         YearlyDataFetcher((error, data) => {
             if (error) console.log("Error:YearlyDataFetcher: ", error)
@@ -207,7 +207,7 @@ class Anormalies extends Component {
                                 }
                                 return R
                             }, null)
-                            this.handleAnomalyTimeClicked(anomalyValue)
+                            this.handleAnomalyTimeClicked(anomalyValue, true)
                         // }, 3000)
                     }
                 })
@@ -360,8 +360,10 @@ class Anormalies extends Component {
         }
     }
 
-    handleAnomalyTimeClicked = value => {
-        
+    handleAnomalyTimeClicked = (value, fromHistory) => {
+        if(!fromHistory) {
+            routeTo.anomalies({history: this.props.history},{ aid: value.id, sd: value.startDate, ed: value.endDate })
+        }
         const { anomalyDataByEquipment : anomalyDataByEquipment1 } = this.state
         const anomalyDataByEquipment = Object.keys(anomalyDataByEquipment1).reduce((r, c) => {
             const R = { ...r }
@@ -385,7 +387,7 @@ class Anormalies extends Component {
             areaChart.setZoom(startTs, endTs)
             areaChart.createSelecedArea({ startTs, endTs, anoHistory: value })
         } else {
-            console.log(areaChart)
+            // console.log(areaChart)
         }
 
         return this.setState({
@@ -393,7 +395,10 @@ class Anormalies extends Component {
             anomalyInputData,
             graphShowData,
         }, () => {
-            routeTo.anomalies(this.props)
+            // console.log("loc: ", this.props)
+            // this.props.location.search = ""
+            // window.location.search=""
+            // routeTo.anomalies(this.props)
         })
     }
 
@@ -449,7 +454,7 @@ class Anormalies extends Component {
         const anoData = queryString.parse(this.props.history.location.search)
         const startTs = anoData.aid ? getUnixTime(zonedTimeToUtc(anoData.sd, "Asia/Singapore")) * 1000 : undefined
         const endTs = anoData.aid ? getUnixTime(zonedTimeToUtc(anoData.ed, "Asia/Singapore")) * 1000 : undefined
-          
+        // console.log("this.props.history:", this.props.history)
         return (
             <div className="" style={{ overflow: 'auto' }}>
                 <div 
@@ -506,7 +511,7 @@ class Anormalies extends Component {
                                                 handleFilterAnomalyData={this.handleFilterAnomalyData} 
                                                 selectedStartTs={startTs}
                                                 selectedEndTs={endTs}
-                                                history={this.props.history}
+                                                // historyNaviation={{...this.props.history}}
                                             />
                                        )}
                                     </div>

@@ -328,7 +328,9 @@ class SingleAreaChart extends Component {
             return true
         } else if(!deepEqual(this.props.anomalyDataByTime, nextProps.anomalyDataByTime)) {
             return true
-        }else {
+        } /*else if(!deepEqual(this.props.historyNaviation,nextProps.historyNaviation)) {
+            return true
+        } */else {
             return false
         }
     }
@@ -371,10 +373,12 @@ class SingleAreaChart extends Component {
 
     // TODO: currently editing
     navigateToAnomalyPage = (history) => {
+        // console.log("hist: ", this.props.historyNaviation)
         if(this.props.selectedStartTs && this.props.selectedEndTs) {
-            console.log("loc: ", window.location)
+            // console.log("loc: ", window.location)
             // console.log("Going to the Anomaly Page: \n "+ JSON.stringify(history, null, 2), "\nhistory: ", this.props.history)
-            return routeTo.anomaliesWithoutRouter(window, { aid: history.id, sd: history.startDate, ed: history.endDate }) // navigate route to the anomaly page
+            // return routeTo.anomaliesWithoutRouter(window, { aid: history.id, sd: history.startDate, ed: history.endDate }) // navigate route to the anomaly page
+            return routeTo.anomalies({history: this.props.historyNaviation},{ aid: history.id, sd: history.startDate, ed: history.endDate })
         }
     }
 

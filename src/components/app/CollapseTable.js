@@ -2,6 +2,7 @@ import React, { useState, Fragment, useEffect } from "react";
 import SingleAreaChart from "../graphs/SingleAreaChart"
 import { format, getUnixTime,fromUnixTime } from 'date-fns'
 import { zonedTimeToUtc, utcToZonedTime } from "date-fns-tz"
+import { withRouter } from "react-router-dom"
 import "../../App.css"
 
 const CollapseTable = props => {
@@ -46,7 +47,7 @@ const CollapseTable = props => {
         </thead>
         <tbody>
           {HistoryTableData.map((v, k) => {
-            return <Row id={k + 1} expandedId={expandedId} setExpandedId={setExpandedId} data={data} history={v} key={k} loadChartData={loadChartData} />;
+            return <Row id={k + 1} expandedId={expandedId} setExpandedId={setExpandedId} data={data} history={v} key={k} loadChartData={loadChartData} historyNaviation={props.history} />;
           })}
         </tbody>
       </table>
@@ -56,7 +57,7 @@ const CollapseTable = props => {
 
 const Row = props => {
   const [expand, setExpand] = useState(false);
-  const { data, history, id, expandedId, setExpandedId, loadChartData } = props;
+  const { data, history, id, expandedId, setExpandedId, loadChartData, historyNaviation } = props;
 
   return (
     <Fragment>
@@ -80,6 +81,7 @@ const Row = props => {
         expand={expandedId === id}
         data={data}
         history={history}
+        historyNaviation={historyNaviation}
       />
     </Fragment>
   );
@@ -159,7 +161,7 @@ const TableRow = ({ history, setExpandedId, expandedId, id }) => {
   );
 };
 
-const ExpandedRow = ({ expand, data, history }) => {
+const ExpandedRow = ({ expand, data, history, historyNaviation }) => {
   const startTs = getUnixTime(zonedTimeToUtc(history.startDate, "Asia/Singapore"))*1000;
   const endTs = getUnixTime(zonedTimeToUtc(history.endDate, "Asia/Singapore"))*1000;
 
@@ -184,6 +186,7 @@ const ExpandedRow = ({ expand, data, history }) => {
                 createdTs: history.time,
                 remark: history.remark,
               }}
+              historyNaviation={{...historyNaviation}}
               navigatorDisabled
             />
           }
@@ -214,4 +217,4 @@ const ExpandedRow = ({ expand, data, history }) => {
   );
 };
 
-export default CollapseTable;
+export default withRouter(CollapseTable);
