@@ -334,8 +334,6 @@ class Anormalies extends Component {
         const areaChart = this.singleAreaChartRef.current
         const offsetLeftRight = areaChart.readSelectedAreaValues()
 
-        console.log("byUser", byUser)
-
         const inputValid = anomalyInputData.faultType && anomalyInputData.faultType.length>0 
             && anomalyInputData.severity && anomalyInputData.severity.length>0 
             && anomalyInputData.sensorSignal && anomalyInputData.sensorSignal.length>0 
