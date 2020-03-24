@@ -80,10 +80,6 @@ class Anormalies extends Component {
             anomalyDataByEquipment: {},
             height: 200,
             temp: 0,
-            isEmptystate: true,
-            isClicked: true,
-            isTripleSquareClicked:false,
-            isSquareClicked: false,
             anomalyInputData: {
                 faultType: [],
                 severity: [],
