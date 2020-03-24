@@ -210,16 +210,18 @@ class Anormalies extends Component {
                         const anoData = queryString.parse(this.props.history.location.search)
                         // console.log("CHARTTTTTT: : ", singlerAreaChart.chartRef.current, "\nRouter: ", this.props, "\nAno: ", anoData, "\nBoolean: ", window.location.search.length>0)
                         if(anoData.aid && window.location.search.length>0) {
-                            const anomalyValue = Object.values(this.state.anomalyDataByEquipment).reduce( (r,c) => {
-                                let R = {...r}
-                                if(r===null) {
-                                    const i = c.findIndex( v=> v.id===anoData.aid)
-                                    if(i!==-1) R = {...c[i]}
-                                }
-                                return R
-                            }, null)
-                            
-                            this.handleAnomalyTimeClicked(anomalyValue, true)
+                            setTimeout(() => {
+                                const anomalyValue = Object.values(this.state.anomalyDataByEquipment).reduce( (r,c) => {
+                                    let R = {...r}
+                                    if(r===null) {
+                                        const i = c.findIndex( v=> v.id===anoData.aid)
+                                        if(i!==-1) R = {...c[i]}
+                                    }
+                                    return R
+                                }, null)
+                                
+                                this.handleAnomalyTimeClicked(anomalyValue, true)
+                            }, 1000)
                         }
                     })
                 }
