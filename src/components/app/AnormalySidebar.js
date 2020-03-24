@@ -1,12 +1,13 @@
 import React, { useState, Fragment } from 'react'
 import {routeName} from '../../routes/index.js'
-import {Link} from 'react-router-dom'
+import {Link, withRouter} from 'react-router-dom'
 import { Progress } from 'reactstrap';
 import { ItemNavbar } from './Navbar.js';
 import OutsideClickHandler from "react-outside-click-handler";
 import { Scrollbars} from 'react-custom-scrollbars';
 
 import classes from "./app.module.css";
+import routeTo from '../../helper/routeTo.js';
 
 
 const AnormalySidebar = props => {
@@ -54,8 +55,8 @@ const AnormalySidebar = props => {
     };
     
     return (
-        <div className='bg-white shadow-lg py-3 rounded h-100 d-flex flex-column justify-content-between' >
-            <div className="">
+        <div className='my-2 rounded h-100 d-flex flex-column justify-content-between' style={{ background: "#ffffff00"}}>
+            <div className="bg-white py-3 pb-5 shadow-sm">
                 <div className="pl-3 pr-2 pb-3 d-flex flex-row flex-wrap justify-content-between">
                     <div>
                         <Link to="/" > <img src={"/ecomlogo.jpeg"} alt='LoGo' className='img-fluid' style={{cursor:'pointer'}} /> </Link>
@@ -93,23 +94,31 @@ const AnormalySidebar = props => {
                         )
                 }
 
-                <div className='px-3 d-flex py-3 pt-4 justify-content-between'>
+                <div className='px-3 d-flex py-3 mt-5 justify-content-between dropdown-item' style={{ cursor: "pointer", }} onClick={e => null /*routeTo.anomaliesHistory(this.props)*/ }>
                     <div className=''>New Detection</div>
                     <div className="px-1 rounded" value='text' style={{cursor:'pointer'}}>
                         <i className="fa fa-plus-square" style={{ color: '#23c49e', fontSize: 16 }}></i>
                     </div>
                 </div>
+
+                <div className='py-3 dropdown-item list-group-item border-bottom-0 border-left-0 border-right-0' style={{ cursor: "pointer", }} onClick={e => routeTo.anomaliesHistory(props)}>
+                    <div className="text text-secondary" >
+                        View History
+                        {/* <Link className="text-secondary" to={routeName.routeAnormaliesHistory} style={{textDecoration:"none" }}></Link> */}
+                    </div>
+                </div>
+
             </div>
-            <div className='py-4'>
+            {/* <div className='py-4'>
                 <div className="pt-4 border border-bottom-0 border-left-0 border-right-0 text-secondary text-center " style={{ cursor: "pointer", }}>
                     <Link className="text-secondary" to={routeName.routeAnormaliesHistory} style={{textDecoration:"none" }}> View History</Link> 
                 </div>
-            </div>
+            </div> */}
         </div>
     )
 }
 
-export default AnormalySidebar
+export default withRouter(AnormalySidebar)
 
 const AnormalyByTimeFrameItem = ({ id, selected = false, date = "", time = "", deletedIconShowed = false, onClick }) => {
     return (
