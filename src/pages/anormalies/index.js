@@ -15,7 +15,9 @@ import { withRouter } from "react-router-dom"
 import FirstTierGraph from "./FirstTierGraph.js"
 import queryString from  "query-string"
 import routeTo from "../../helper/routeTo.js"
-import { routeName } from "../../routes"
+// import { routeName } from "../../routes"
+
+import { withTheme } from "../../components/hoc/style.hoc.js"
 
 const HOST = {
     local: "http://192.168.100.7:3003",
@@ -559,7 +561,11 @@ class Anormalies extends Component {
         const anoData = queryString.parse(this.props.history.location.search)
         const startTs = anoData.aid ? getUnixTime(zonedTimeToUtc(anoData.sd, "Asia/Singapore")) * 1000 : undefined
         const endTs = anoData.aid ? getUnixTime(zonedTimeToUtc(anoData.ed, "Asia/Singapore")) * 1000 : undefined
-        // console.log("this.props.history:", this.props.history)
+        
+        console.log("themes: ", this.props.themes, "\nselectedTheme: ", this.props.selectedTheme)
+        
+        const { themes, selectedTheme } = this.props
+
         return (
             <div className="" style={{ overflow: 'auto' }}>
                 <div 
@@ -599,6 +605,11 @@ class Anormalies extends Component {
                                 cancelAnomaly={this.cancelAnomaly}
                                 showCancelBtn={this.state.showCancelBtn}
                             />
+                            </div>
+
+                            {/* TODO: TESTING Here */}
+                            <div className="m-3 p-3 w-100 border border-primary rounded" style={{ height: 100, backgroundColor: themes[selectedTheme].backgroundColor }} >
+                                ABCD
                             </div>
 
                             <div className="py-2 col-lg-12 col-12 " style={{ width: window.innerWidth<=1200 ? window.innerWidth : window.innerWidth-350 }}>
@@ -664,7 +675,7 @@ class Anormalies extends Component {
         )
     }
 }
-export default withRouter(withLStorage(Anormalies))
+export default withRouter(withLStorage(withTheme(Anormalies)))
 
 const AnormalyControlPanel = props => {
     const [disabled,setDisabled]=useState(false)
