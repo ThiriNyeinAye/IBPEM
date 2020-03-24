@@ -488,7 +488,7 @@ class SingleAreaChart extends Component {
                 split: 'true',
                 formatter: function() {
                     return (/*Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x)*/ 
-                        this.x //format(utcToZonedTime(fromUnixTime(this.x / 1000), "Asia/Singapore"), "yyyy-MM-dd HH:mm:ss" )
+                        format(utcToZonedTime(fromUnixTime(this.x / 1000), "Asia/Singapore"), "yyyy-MM-dd HH:mm" )
                          + '<br />' +
                         Highcharts.numberFormat(this.y, 2)*1 + ' °C'
                     )
@@ -527,7 +527,6 @@ class SingleAreaChart extends Component {
                     afterSetExtremes: e => {
                         const startTs = e.min
                         const endTs = e.max
-
                         // console.log("After: ", e)
 
                         if(startTs && endTs && e.trigger==="navigator") {

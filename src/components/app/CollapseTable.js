@@ -111,10 +111,10 @@ const TableRow = ({ history, setExpandedId, expandedId, id }) => {
         <div>{history.building} </div>
       </td>
       <td className="py-3">
-        <div> {history.equipmentType} </div>
+        <div> {history.deviceType} </div>
       </td>
       <td className="py-3">
-        <div> {history.time}</div>
+        <div> {history.createdTs}</div>
       </td>
       <td>
         <div className="d-flex flex-wrap">
