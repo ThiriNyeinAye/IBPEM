@@ -488,7 +488,7 @@ class SingleAreaChart extends Component {
                 split: 'true',
                 formatter: function() {
                     return (/*Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x)*/ 
-                        format(utcToZonedTime(fromUnixTime(this.x / 1000), "Asia/Singapore"), "yyyy-MM-dd HH:mm:ss" )
+                        this.x //format(utcToZonedTime(fromUnixTime(this.x / 1000), "Asia/Singapore"), "yyyy-MM-dd HH:mm:ss" )
                          + '<br />' +
                         Highcharts.numberFormat(this.y, 2)*1 + ' °C'
                     )
@@ -527,6 +527,9 @@ class SingleAreaChart extends Component {
                     afterSetExtremes: e => {
                         const startTs = e.min
                         const endTs = e.max
+
+                        // console.log("After: ", e)
+
                         if(startTs && endTs && e.trigger==="navigator") {
                             props.handleFilterAnomalyData(startTs, endTs)
                             this.updateSelectedAreaParent()
@@ -544,8 +547,8 @@ class SingleAreaChart extends Component {
                         ]
                     },
                     events: {
-                        afterAnimate: function () {
-                        }
+                        // afterAnimate: function () {
+                        // }
                     }
                 }
             },
@@ -618,7 +621,10 @@ class SingleAreaChart extends Component {
     setZoom = (startTime, endTime) => {
         const chart = this.chartRef.current.chart
         const diff = endTime-startTime
-        chart.xAxis[0].setExtremes(startTime-diff*4, endTime+diff*4);
+        const min = startTime-diff*4
+        const max = endTime+diff*4
+        chart.xAxis[0].setExtremes(min, max);
+        return ({ min, max })
     }
 
     setZoomIn = (chart) => {
@@ -631,7 +637,12 @@ class SingleAreaChart extends Component {
         const zoomHours = 1000* 60 * 60 * 3
         //const zoomHours = diffTime < 24 ? (1000 * 60 * 60) : diffTime < 24 * 7 ? (1000 * 60 * 60 * 24) : (1000 * 60 * 60)
 
-        diffTime < 6 ?  chart.xAxis[0].setExtremes((min + 0), (max - 0)) : chart.xAxis[0].setExtremes((min + zoomHours), (max - zoomHours))        
+        const min1 = diffTime < 6 ? (min + 0) : (min + zoomHours)
+        const max1 = diffTime < 6 ? (max - 0) : (max - zoomHours)
+
+        // diffTime < 6 ?  chart.xAxis[0].setExtremes((min + 0), (max - 0)) : chart.xAxis[0].setExtremes((min + zoomHours), (max - zoomHours))        
+        chart.xAxis[0].setExtremes(min1, max1)
+        return ({ min: min1, max: max1  })
     }
 
     setZoomOut = (chart) => {
@@ -643,8 +654,22 @@ class SingleAreaChart extends Component {
         const zoomHours = 1000 * 60 * 60 * 3
         //const zoomHours = diffTime < 24 ? (1000 * 60 * 60) : diffTime < 24 * 7 ? (1000 * 60 * 60 * 24) : (1000 * 60 * 60)
 
-        chart.xAxis[0].setExtremes((min - zoomHours), (max + zoomHours));
+        const min1 = min - zoomHours
+        const max1 = max + zoomHours
+
+        // chart.xAxis[0].setExtremes((min - zoomHours), (max + zoomHours));
+        chart.xAxis[0].setExtremes(min1, max1)
+        return ({ min: min1, max: max1 })
     }
+
+    // resetZoom = () => {
+    //     // console.log("reset: ", )
+    //     if(this.chartRef.current && this.chartRef.current.chart) {
+    //         // this.chartRef.current.chart.zoomOut()
+    //         const extremes = this.chartRef.current.chart.xAxis[0].getExtremes();
+    //         this.chartRef.current.chart.xAxis[0].setExtremes(extremes.min, extremes.max);
+    //     }
+    // }
 
 }
 

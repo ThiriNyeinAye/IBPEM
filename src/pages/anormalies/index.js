@@ -323,7 +323,8 @@ class Anormalies extends Component {
         if (areaChart !== null) {
             if (areaChart.chartRef.current !== null) {
                 const chart = areaChart.chartRef.current.chart
-                this.singleAreaChartRef.current.setZoomIn(chart)
+                const minMax = this.singleAreaChartRef.current.setZoomIn(chart)
+                return this.handleFilterAnomalyData(minMax.min, minMax.max)
             }
         }
     }
@@ -333,7 +334,8 @@ class Anormalies extends Component {
             if (areaChart.chartRef.current !== null) {
                 const chart = areaChart.chartRef.current.chart
                 if(this.state.temp > 0) {
-                    this.singleAreaChartRef.current.setZoomOut(chart)
+                    const minMax = this.singleAreaChartRef.current.setZoomOut(chart)
+                    this.handleFilterAnomalyData(minMax.min, minMax.max)
                     this.setState({temp: this.state.temp-1})
                 }                
             }
@@ -370,8 +372,7 @@ class Anormalies extends Component {
 
             return CreateAnomalyData(anomalyData, (error, data) => {
                 if (error === null) {
-                    this.readDataFromApi()
-                    // callback()
+                    return window.location.reload()
                 } else console.log("Anomaly Create: ERROR: ", error)
             })
         } else {
@@ -380,14 +381,19 @@ class Anormalies extends Component {
     }
 
     handleAnomalyTimeClicked = (value, fromHistory) => {
+        
+        if(Object.keys(value).length===0) {
+            routeTo.anomalies(this.props)
+            return window.location.reload()
+        }
         if(!fromHistory) {
             routeTo.anomalies({history: this.props.history},{ aid: value.id, sd: value.startDate, ed: value.endDate })
         }
-        const { anomalyDataByEquipment : anomalyDataByEquipment1 } = this.state
-        const anomalyDataByEquipment = Object.keys(anomalyDataByEquipment1).reduce((r, c) => {
+        const { anomalyDataByEquipmentOriginal } = this.state
+        const anomalyDataByEquipment = Object.keys(anomalyDataByEquipmentOriginal).reduce((r, c) => {
             const R = { ...r }
-            const data = anomalyDataByEquipment1[c].map(v => v.id === value.id ? { ...v, selected: true } : { ...v, selected: false })
-            R[c] = data
+            const data = anomalyDataByEquipmentOriginal[c].map(v => v.id === value.id ? { ...v, selected: true } : { ...v, selected: false })
+            R[c] = data            
             return R
         }, {})
         const graphShowData = this.state.graphShowData.map(v1 => {
@@ -403,8 +409,9 @@ class Anormalies extends Component {
         const startTs = getUnixTime(zonedTimeToUtc(value.startDate, "Asia/Singapore")) * 1000
         const endTs = getUnixTime(zonedTimeToUtc(value.endDate, "Asia/Singapore")) * 1000
 
+        let minMax = {}
         if(areaChart!==null) {
-            areaChart.setZoom(startTs, endTs)
+            minMax = areaChart.setZoom(startTs, endTs)
             areaChart.createSelecedArea({ startTs, endTs, anoHistory: value })
         } else {
             // console.log(areaChart)
@@ -415,10 +422,7 @@ class Anormalies extends Component {
             anomalyInputData,
             graphShowData,
         }, () => {
-            // console.log("loc: ", this.props)
-            // this.props.location.search = ""
-            // window.location.search=""
-            // routeTo.anomalies(this.props)
+            this.handleFilterAnomalyData(minMax.min, minMax.max)
         })
     }
 
@@ -445,7 +449,7 @@ class Anormalies extends Component {
         */
     }
     
-    handleFilterAnomalyData = (startDate, endDate) =>{
+    handleFilterAnomalyData = (startDate, endDate) => {
         const selectedAnomaly = Object.keys(this.state.anomalyDataByEquipment).reduce((r, d) => {
             if(r!==null) return r
             else {
@@ -459,7 +463,7 @@ class Anormalies extends Component {
             const R = {...r}
             const filteredData = this.state.anomalyDataByEquipmentOriginal[device]
                 .filter(v => v.startTs>=startDate && v.endTs<=endDate)
-                .map(v => (selectedAnomaly!==null && v.id===selectedAnomaly.id) ? ({ ...v, selected: true }) : v)
+                .map(v => (selectedAnomaly!==null && v.id===selectedAnomaly.id) ? ({ ...v, selected: true }) : ({ ...v, selected: false }))
             
             R[device] = filteredData
             return R
