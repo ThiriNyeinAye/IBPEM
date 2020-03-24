@@ -14,8 +14,8 @@ import { withRouter } from "react-router-dom"
 
 import FirstTierGraph from "./FirstTierGraph.js"
 import queryString from  "query-string"
-import routerTo from "../../helper/routeTo.js"
 import routeTo from "../../helper/routeTo.js"
+import { routeName } from "../../routes"
 
 const HOST = {
     local: "http://192.168.100.7:3003",
@@ -157,6 +157,10 @@ class Anormalies extends Component {
                     this.setState({ yearlyData: data.payload, ...firstTierDate }, () => {
                         this.readDataFromApi()  
                     })
+                } else if(anoData.fsd && anoData.fed) {
+                    this.setState({ yearlyData: data.payload, firstTierStartDate: anoData.fsd, firstTierEndDate: anoData.fed }, () => {
+                        this.readDataFromApi()  
+                    })
                 } else {
                     this.setState({ yearlyData: data.payload }, () => {
                         this.readDataFromApi()  
@@ -189,16 +193,23 @@ class Anormalies extends Component {
                     R.data2.push([getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000, v.evaOutput])
                     return R
                 }, { data0: [], data1: [], data2: [] })
+                
                 const singlerAreaChart = this.singleAreaChartRef.current
-                this.setState({ data0, data1, data2 }, () => {
-                    this.showLoading(false)
-                    if(singlerAreaChart!==null){ // create anomaly coming from history page
-                        singlerAreaChart.setLoading(false)  
-                    }
-                    // read data from History page
-                    const anoData = queryString.parse(this.props.history.location.search)
-                    if(anoData.aid) {
-                        // setTimeout(() => {
+
+                // console.log("CHARTTTTTT: : ", singlerAreaChart.chartRef.current.chart.series, "\n DDD: ", Object.keys(singlerAreaChart.chartRef.current.chart))
+
+                if(singlerAreaChart.chartRef.current.chart!==null) {
+                    
+                    this.setState({ data0, data1, data2 }, () => {
+                        this.showLoading(false)
+                        if(singlerAreaChart.chartRef.current.chart!==null){ // create anomaly coming from history page
+                            singlerAreaChart.setLoading(false)  
+                        }
+                        
+                        // read data from History page
+                        const anoData = queryString.parse(this.props.history.location.search)
+                        // console.log("CHARTTTTTT: : ", singlerAreaChart.chartRef.current, "\nRouter: ", this.props, "\nAno: ", anoData, "\nBoolean: ", window.location.search.length>0)
+                        if(anoData.aid && window.location.search.length>0) {
                             const anomalyValue = Object.values(this.state.anomalyDataByEquipment).reduce( (r,c) => {
                                 let R = {...r}
                                 if(r===null) {
@@ -207,10 +218,11 @@ class Anormalies extends Component {
                                 }
                                 return R
                             }, null)
+                            
                             this.handleAnomalyTimeClicked(anomalyValue, true)
-                        // }, 3000)
-                    }
-                })
+                        }
+                    })
+                }
             }
         }, { startDate: this.state.firstTierStartDate, endDate: this.state.firstTierEndDate })
         
@@ -379,7 +391,8 @@ class Anormalies extends Component {
             return R
         }, {})
         const graphShowData = this.state.graphShowData.map(v1 => {
-            return value.additionalGraphs.findIndex(n => n===v1.name)!==-1 ? ({ ...v1, selected: true }) : ({ ...v1, selected: false })
+                if(!value.additionalGraphs) return ({ ...v1, selected: false })
+                else return value.additionalGraphs.findIndex(n => n===v1.name)!==-1 ? ({ ...v1, selected: true }) : ({ ...v1, selected: false })
         })
         const anomalyInputData = {
             faultType: value.faultType,
@@ -410,17 +423,26 @@ class Anormalies extends Component {
     }
 
     handleFirstTierDateRangeChange = ({ startDate, endDate }) => {
+        routeTo.anomalies(this.props, { fsd: startDate, fed: endDate })
+        // console.log(this.props)
+        // this.props.location.reload()
+        return window.location.reload()
+        /*const singlerAreaChart = this.singleAreaChartRef.current
+        
         this.showLoading(true)
+        
         this.setState(prev => ({ 
             firstTierStartDate: startDate!==undefined ? startDate : prev.firstTierStartDate ,
             firstTierEndDate: endDate!==undefined ? endDate : prev.firstTierEndDate
         }), () => {
-            const singlerAreaChart = this.singleAreaChartRef.current
-            // console.log(singlerAreaChart.chartRef.current.chart)
-            if(singlerAreaChart!==null) singlerAreaChart.setLoading(true)
-            this.readDataFromApi()
+            if(singlerAreaChart!==null) {
+                // singlerAreaChart.setLoading(true)
+                // singlerAreaChart.removeSelectedArea()
+                // window.history.pushState({}, document.title, routeName.routeAnormalies); 
+                this.readDataFromApi()
+            }                     
         })
-
+        */
     }
     
     handleFilterAnomalyData = (startDate, endDate) =>{
@@ -492,13 +514,13 @@ class Anormalies extends Component {
                         <div className="row ">
                             <div className="py-2 col-lg-12 col-12">
                             <DropdownContainerAnormaly
-                                    handleGraphDataChart={this.handleGraphDataChart}
-                                    anomalyInputData={anomalyInputData}
-                                    onAnormalyInputChanged={this.onAnormalyInputChanged}
-                                    toggle={this.toggle}
-                                    selected={this.state.changeView}
-                                    graphShowData={this.state.graphShowData}
-                                />
+                                handleGraphDataChart={this.handleGraphDataChart}
+                                anomalyInputData={anomalyInputData}
+                                onAnormalyInputChanged={this.onAnormalyInputChanged}
+                                toggle={this.toggle}
+                                selected={this.state.changeView}
+                                graphShowData={this.state.graphShowData}
+                            />
                             </div>
 
                             <div className="py-2 col-lg-12 col-12 " style={{ width: window.innerWidth<=1200 ? window.innerWidth : window.innerWidth-350 }}>
@@ -585,7 +607,7 @@ const AnormalyControlPanel = props => {
                                 <div className='px-3'>
                                     Similar Detections
                                 </div>
-                                <div className='py-1 px-2 rounded' style={{backgroundColor:'#DDF5E9'}} onClick={()=>{setOpen(false);console.log('Open',Open); document.getElementById('dialog').style.display='none'}}>
+                                <div className='py-1 px-2 rounded' style={{backgroundColor:'#DDF5E9'}} onClick={()=>{setOpen(false); document.getElementById('dialog').style.display='none'}}>
                                     <i className='fa fa-times' style={{color:'#23c49e'}}></i>
                                 </div>
                             </div>

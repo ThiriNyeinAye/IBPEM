@@ -323,15 +323,17 @@ class SingleAreaChart extends Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
+        // console.log("Chart Current: ", this.chartRef.current.chart)
+
         if(!deepEqual(this.props.data, nextProps.data)) {
             return true
         } else if(!deepEqual(this.props.datum, nextProps.datum)) {
             return true
         } else if(!deepEqual(this.props.anomalyDataByTime, nextProps.anomalyDataByTime)) {
             return true
-        } /*else if(!deepEqual(this.props.historyNaviation,nextProps.historyNaviation)) {
+        } else if(!deepEqual(this.props.historyNaviation,nextProps.historyNaviation)) {
             return true
-        } */else {
+        } else {
             return false
         }
     }
@@ -381,7 +383,7 @@ class SingleAreaChart extends Component {
             // return routeTo.anomaliesWithoutRouter(window, { aid: history.id, sd: history.startDate, ed: history.endDate }) // navigate route to the anomaly page
             return routeTo.anomalies({history: this.props.historyNaviation},{ aid: history.id, sd: history.startDate, ed: history.endDate })
         } else {
-            console.log("Clicked on Anomaly: ", history.id)
+            console.log("Clicked on Anomaly: ", history ? history.id : 'NaN')
         }
     }
 

@@ -17,7 +17,8 @@ export const DropDown = props => {
    outsideClick,
    outsideClickControl
  } = props;
- const defaultValueData = defaultValue[dataType].reduce(
+ const defaultValueOfDataType = !defaultValue[dataType] ? [] : defaultValue[dataType]
+ const defaultValueData = defaultValueOfDataType.reduce(
    (r, c) => `${r}${c}`,
    ""
  );
@@ -105,7 +106,7 @@ export const DropDown = props => {
             : 
              <div 
                key={k} 
-               className={`dropdown-item ${defaultValue[dataType].findIndex(v1=>v1===v)>-1 ? 'bg-success text-light' : ''}`} 
+               className={`dropdown-item ${defaultValueOfDataType.findIndex(v1=>v1===v)>-1 ? 'bg-success text-light' : ''}`} 
                onClick={e=> { 
                  onDropDownItemClicked(v, dataType); 
                  setMenuShow(false)
@@ -134,7 +135,8 @@ export const DropDownBlock = props => {
     handleAddData,
     dataType
  } = props;
- const defaultValueData = defaultValue[dataType].reduce((r,c) => `${r} ${c}`,"")
+ const defaultValueOfDataType = !defaultValue[dataType] ? [] : defaultValue[dataType]
+ const defaultValueData = defaultValueOfDataType.reduce((r,c) => `${r} ${c}`,"")
 
  const [inputData,setInputData]  = useState('')
  const [menuShow, setMenuShow] = useState(false)
@@ -204,7 +206,7 @@ export const DropDownBlock = props => {
             : 
              <div 
                key={k} 
-               className={`dropdown-item ${defaultValue[dataType].findIndex(v1=>v1===v)>-1 ? 'bg-success text-light' : ''}`} 
+               className={`dropdown-item ${defaultValueOfDataType.findIndex(v1=>v1===v)>-1 ? 'bg-success text-light' : ''}`} 
                onClick={e=> { 
                  onDropDownItemClicked(v, dataType); 
                  setMenuShow(false)

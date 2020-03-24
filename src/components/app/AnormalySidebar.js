@@ -18,14 +18,16 @@ const AnormalySidebar = props => {
     const [anormalyBy, setAnormalyBy] = useState(1)
     const anormalyByEquipmentList = Object.keys(anomalyDataByEquipment).map((v, key) => (
         <AnormalyByEquipmentItem 
-            key={key} 
+            key={key}
+            id={anomalyDataByEquipment[v].id}
             deviceName={v} 
             anormalyData={anomalyDataByEquipment[v]}
             onClick={handleAnomalyTimeClicked} />
     ))
     const AnormalyByTimeFrameList = Object.values(anomalyDataByEquipment).reduce((r, c) => [...r, ...c], []).map((v, key) => (
         <AnormalyByTimeFrameItem 
-            key={key} 
+            key={v.id} 
+            id={v.id}
             date={v.date} 
             time={v.time} 
             selected={v.selected} 
@@ -109,9 +111,9 @@ const AnormalySidebar = props => {
 
 export default AnormalySidebar
 
-const AnormalyByTimeFrameItem = ({ selected = false, date = "", time = "", deletedIconShowed = false, onClick }) => {
+const AnormalyByTimeFrameItem = ({ id, selected = false, date = "", time = "", deletedIconShowed = false, onClick }) => {
     return (
-        <div className='px-3 d-flex border border-top-0 border-left-0 border-right-0 justify-content-between py-2' onClick={onClick} style={{ cursor: "pointer" }}>
+        <div title={`${id}`} className='px-3 d-flex border border-top-0 border-left-0 border-right-0 justify-content-between py-2' onClick={onClick} style={{ cursor: "pointer" }}>
             <div className="d-flex">
                 <div className="">
                     {selected
@@ -149,7 +151,8 @@ const AnormalyByEquipmentItem = props => {
                 {
                     anormalyData.map((v, key) => (
                         <AnormalyByTimeFrameItem 
-                            key={key} 
+                            key={anormalyData.id} 
+                            id={anormalyData.id}
                             date={v.date} 
                             time={v.time} 
                             selected={v.selected} 

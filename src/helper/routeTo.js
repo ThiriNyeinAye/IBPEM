@@ -16,9 +16,16 @@ const  anomalies=(props, query=null)=> {
     })
 }
 
+const  anomaliesRewrite=(props, query=null)=> {
+    props.history.replace({
+        pathname: routeName.routeAnormalies,
+        search: queryString.stringify(query)
+    })
+}
+
 const  anomaliesWithoutRouter=(window, query=null)=> {
     // window.location.search = queryString.stringify(query)
-    console.log(routeName.routeAnormalies + "?" + queryString.stringify(query))
+    // console.log(routeName.routeAnormalies + "?" + queryString.stringify(query))
     window.location.pathname = routeName.routeAnormalies// + "?" + queryString.stringify(query)
     // props.history.push({
     //     pathname: routeName.routeAnormalies,
@@ -38,6 +45,7 @@ export default {
     login,
     solutions,
     anomalies,
+    anomaliesRewrite,
     anomaliesHistory,
     anomaliesDevices,
     anomaliesWithoutRouter
