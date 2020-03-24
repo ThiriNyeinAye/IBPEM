@@ -192,25 +192,41 @@ const ExpandedRow = ({ expand, data, history, historyNaviation }) => {
           }
           <div className="d-flex justify-content-between align-items-center">
             <div>
-              <span>{history.labeledBy}</span>
-              <span className="text-secondary px-2">
-                {/* {history.equipmentType} show some issues due to water pump{" "} */}
-                { history.remark }
-              </span>
+              <div className="d-flex flex-row">
+
+                <div className="d-flex flex-column py-2">
+                  <div className="font-weight-bold py-2">{history.labeledBy}</div> 
+                  { 
+                    history.previousRemark.map((v,k) => (
+                      <div key={`usr-${k}`} className="font-weight-bold py-2">{v.labeledBy}</div>
+                    ))
+                  }
+                </div>
+
+                <div className="d-flex flex-column py-2 pl-3">
+                  <div className="text-secondary py-2">{ history.remark }</div>
+                  { 
+                    history.previousRemark.map((v,k) => (
+                      <div key={`rmk-${k}`} className="text-secondary py-2">{v.remark}</div>
+                    ))
+                  }
+                </div>
+                
+              </div>
             </div>
-            <div className="d-flex align-items-center">
+            <div className="d-flex align-items-start align-self-stretch py-2">
               {/* <div className="pr-3" className="btn" onClick={() => alert(JSON.stringify('Show Similarity'), null, 2)}>Show Similar</div> */}
               <div className="pl-3 ">
                 <button
                   type="button"
-                  className="btn"
+                  className="btn text-white"
                   style={{ background: "#32c18c" }}
                 >
                   Remove Anomaly
                 </button>
               </div>
             </div>
-          </div>
+            </div>
         </div>
       </td>
     </tr>

@@ -38,7 +38,6 @@ class AnormaliesHistory extends Component {
         equipmentType:null,
         dateTime: null
       },
-      // HistoryTableData: [...HistoryTableDataOrignal]
       HistoryTableData:[],
       HistoryTableDataOrigin: null,
   
@@ -46,10 +45,6 @@ class AnormaliesHistory extends Component {
   }
 
   componentDidMount() {
-    // DataFetcher((error, data) => {
-    //   if (error) console.log("Error: ", error);
-    //   else this.setState({ data: data.payload });
-    // });
     GetHistoryData((error,data)=>{
       if(error)console.log("Error :",error)
       else{
@@ -58,11 +53,9 @@ class AnormaliesHistory extends Component {
       } 
     })
   }
-  //   changeSampleDropDown = stateData => {  return this.setState({ FilteronChangeValue: stateData }); };
 
   handleDoFilter = () => {
     const HistoryTableData =this.state.HistoryTableDataOrigin.filter(v => {
-    //  return this.state.filter.user === null  ? true:  v.labeledBy === this.state.filter.user 
     if(this.state.filter.user !== null && this.state.filter.equipmentType !== null){
       return (v.labeledBy === this.state.filter.user && v.equipmentType === this.state.filter.equipmentType)
     }
@@ -101,21 +94,7 @@ class AnormaliesHistory extends Component {
   }
 
   render() {
-    const { data, FilteronChangeValue, filter, HistoryTableData ,HistoryTableDataOrigin, selectedFilter} = this.state;
-  //  console.log(HistoryTableData)
-  
-    // const data0 = data.map(v => [
-    //   getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000,
-    //   v.efficiency
-    // ]);
-    // const data1 = data.map(v => [
-    //   getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000,
-    //   v.evaInput
-    // ]);
-    // const data2 = data.map(v => [
-    //   getUnixTime(zonedTimeToUtc(v.ts, "Asia/Singapore")) * 1000,
-    //   v.evaOutput
-    // ]);
+    const { data, FilteronChangeValue, filter, HistoryTableData ,HistoryTableDataOrigin } = this.state;
 
     if ( HistoryTableDataOrigin===null )
       return <div className="text-center p-4">Loading...</div>;
@@ -136,7 +115,7 @@ class AnormaliesHistory extends Component {
                   {"1293 Anomalies have been reviewed"}
                 </div>
               </div>
-  {/* ======================= */}
+              {/* ======================= */}
               <div
                 className=""
                 style={{ cursor: "pointer" }}

@@ -11,7 +11,7 @@ const HOST = {
 }
 
 const DropdownContainerAnormaly = props => {
-    const {selected, graphShowData, handleGraphDataChart} = props
+    const {selected, graphShowData, handleGraphDataChart, showCancelBtn, cancelAnomaly} = props
 
     const [showEditAllDropdown, setShowEditAllDropdown] = useState(false)
     // const [graphs, setGraphs] = useState([{ name: "Input Temperature", selected: false }, { name: "Output Temperature", selected: false }])
@@ -88,13 +88,23 @@ const DropdownContainerAnormaly = props => {
          <div className='d-flex flex-row flex-wrap p-1 justify-content-between ' /*onClick={e => setShowEditAllDropdown(false)}*/  >
 
             <div className="d-flex flex-column" style={{ position: "relative" }}>
-                <NormalDropDownView handleAddData={handleAddData} anomalyInputData={anomalyInputData} FaultTypeLabel={FaultTypeLabel} severityLabel={severityLabel} sensorSignalLabel={sensorSignalLabel} onAnormalyInputChanged={onAnormalyInputChanged} setShowEditAllDropdown={setShowEditAllDropdown} />
+                <div className='d-flex flex-row flex-wrap'>
+                    {showCancelBtn?
+                    <div className='align-self-center btn btn-sm bg-danger' data-toggle='tooltip' onClick={()=>cancelAnomaly()} title="Cancel Labellling">
+                        <i className="fas fa-times" style={{color:'white',fontSize:18}}></i>   
+                    </div>:
+                    null}
+                    <div className=''>
+                        <NormalDropDownView handleAddData={handleAddData} anomalyInputData={anomalyInputData} FaultTypeLabel={FaultTypeLabel} severityLabel={severityLabel} sensorSignalLabel={sensorSignalLabel} onAnormalyInputChanged={onAnormalyInputChanged} setShowEditAllDropdown={setShowEditAllDropdown} showCancelBtn={showCancelBtn}/>
 
-                {showEditAllDropdown &&
-                    <div className="" style={{ position: "absolute", left: 0, right: 0, top: 0, zIndex: 20, }} onClick={e => { e.stopPropagation() }}>
-                        <AllDropdownBlockView handleAddData={handleAddData} anomalyInputData={anomalyInputData} FaultTypeLabel={FaultTypeLabel} severityLabel={severityLabel} sensorSignalLabel={sensorSignalLabel} onAnormalyInputChanged={onAnormalyInputChanged} showEditAllDropdown={showEditAllDropdown} setShowEditAllDropdown={setShowEditAllDropdown} />
+                        {showEditAllDropdown &&
+                            <div className="" style={{ position: "absolute", left: 0, right: 0, top: 0, zIndex: 20, }} onClick={e => { e.stopPropagation() }}>
+                                <AllDropdownBlockView handleAddData={handleAddData} anomalyInputData={anomalyInputData} FaultTypeLabel={FaultTypeLabel} severityLabel={severityLabel} sensorSignalLabel={sensorSignalLabel} onAnormalyInputChanged={onAnormalyInputChanged} showEditAllDropdown={showEditAllDropdown} setShowEditAllDropdown={setShowEditAllDropdown} />
+                            </div>
+                        }
                     </div>
-                }
+                    
+                </div>
             </div>
 
 

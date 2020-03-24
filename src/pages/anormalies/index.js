@@ -57,7 +57,23 @@ const CreateAnomalyData = (data, callback) => {
         .then(data => callback(null, data))
         .catch(error => callback(error, null))
 }
-
+const UpdateAnormalyData = (anomalyData, callback) => {
+    
+    // const queryParamString=queryString.stringify(queryParams)
+        return fetch(`${HOST.test}/anomalies/${anomalyData.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': "application/json"
+            },
+            body: JSON.stringify(anomalyData)
+        }) 
+            .then(res => res.json())
+            .then(anomalyData => callback(null, anomalyData))
+            .catch(error => callback(error, null))
+            // fc216f10-6cc8-11ea-8c24-bff5fefca19b
+           
+    
+    }
 const ReadAnomalyData = (callback, queryParams) => {
     const queryParamString = queryString.stringify(queryParams)
     return fetch(`${HOST.test}/anomalies?${queryParamString}`)
@@ -91,6 +107,8 @@ class Anormalies extends Component {
             firstTierStartDate: "2020-02-18",
             firstTierEndDate: "2020-02-25",
             changeView: 1,
+            // anomalyData:[],
+            showCancelBtn:false
         }
         this.singleAreaChartRef = React.createRef()
         this.sidebarRef = React.createRef()
@@ -307,10 +325,33 @@ class Anormalies extends Component {
             this.setState({ anomalyInputData })
         } else if (value.trim() !== "") {
             anomalyInputData[dataType] = [value]
-            this.setState({ anomalyInputData })
+            this.setState({ 
+                anomalyInputData,
+                showCancelBtn:true 
+            })
         }
     }
+    cancelAnomaly=()=>{
+        const selectedAnomalData = Object.keys(this.state.anomalyDataByEquipment).reduce((r,d) => {
+            if(r !== null) return r
+            else {
+                const i = this.state.anomalyDataByEquipment[d].findIndex(v => v.selected)
+                if(i!==-1) return this.state.anomalyDataByEquipment[d][i]
+                else return r
+            }
+        }, null)
+        
+        this.setState({
+            showCancelBtn:false,
+            anomalyInputData: {
+                faultType: selectedAnomalData.faultType,
+                severity: selectedAnomalData.severity,
+                sensorSignal: selectedAnomalData.sensorSignal,
+               
+            }
+        })
 
+    }
     handleGraphDataChart = (g) => {
         this.setState({ graphShowData: g })
     }
@@ -339,8 +380,8 @@ class Anormalies extends Component {
             }
         }
     }
-    //Anomaly Dialog
-    onSubmitAnomaly = (message, byUser, callback = () => null) => {
+
+    onSubmitAnomaly = (message, byUser, callback = () =>null) => {
         const { anomalyInputData, graphShowData } = this.state
 
         const areaChart = this.singleAreaChartRef.current
@@ -351,8 +392,16 @@ class Anormalies extends Component {
             && anomalyInputData.sensorSignal && anomalyInputData.sensorSignal.length>0 
             && message && message.length>0
             && byUser && byUser.length>0
-
-        if (areaChart !== null && offsetLeftRight !== null && inputValid) {
+        const selectedAnomalData = Object.keys(this.state.anomalyDataByEquipment).reduce((r,d) => {
+            if(r !== null) return r
+            else {
+                const i = this.state.anomalyDataByEquipment[d].findIndex(v => v.selected)
+                if(i!==-1) return this.state.anomalyDataByEquipment[d][i]
+                else return r
+            }
+        }, null)
+    
+        if (areaChart !== null && offsetLeftRight !== null && inputValid && selectedAnomalData===null) {
             const anomalyData = {
                 user: byUser,
                 deviceType: "Chiller 3",
@@ -367,17 +416,42 @@ class Anormalies extends Component {
                 remark: message,
             }
             
-
             return CreateAnomalyData(anomalyData, (error, data) => {
                 if (error === null) {
                     return window.location.reload()
                 } else console.log("Anomaly Create: ERROR: ", error)
             })
-        } else {
+        } else if(areaChart !== null && offsetLeftRight !== null && inputValid && selectedAnomalData!==null && selectedAnomalData.selected===true){
+            const id=selectedAnomalData.id;
+            const anomalyData = {
+             id:id,
+             user: byUser,
+             deviceType: "Chiller 3",
+             deviceId: "CH3",
+             anomalyState: 1,
+             faultType: anomalyInputData.faultType,
+             severity: anomalyInputData.severity,
+             sensorSignal: anomalyInputData.sensorSignal,
+             startDate :  format(fromUnixTime(offsetLeftRight.startTs / 1000), "yyyy-MM-dd HH:mm:ss",  'Europe/Berlin' ),
+             endDate :  format(fromUnixTime(offsetLeftRight.endTs / 1000), "yyyy-MM-dd HH:mm:ss",  'Europe/Berlin' ),
+             additionalGraphs: graphShowData.filter(v => v.selected).map(v => v.name),
+             remark: message, 
+             createdTs: anomalyInputData.createdTs,
+             building: "star vista"
+         }
+         
+         return UpdateAnormalyData(anomalyData,(error,data)=>{
+            if (error === null) {
+                return window.location.reload()
+            } else console.log("Anomaly Create: ERROR: ", error)
+         })
+        }
+        else {
             alert("Please required input!")
         }
     }
 
+    
     handleAnomalyTimeClicked = (value, fromHistory) => {
         
         if(Object.keys(value).length===0) {
@@ -522,6 +596,8 @@ class Anormalies extends Component {
                                 toggle={this.toggle}
                                 selected={this.state.changeView}
                                 graphShowData={this.state.graphShowData}
+                                cancelAnomaly={this.cancelAnomaly}
+                                showCancelBtn={this.state.showCancelBtn}
                             />
                             </div>
 
