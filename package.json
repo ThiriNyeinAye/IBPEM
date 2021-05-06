@@ -13,7 +13,7 @@
     "date-fns-tz": "^1.0.10",
     "deep-equal": "^2.0.1",
     "express": "^4.17.1",
-    "highcharts": "^8.0.4",
+    "highcharts": "^9.0.0",
     "highcharts-exporting": "^0.1.7",
     "highcharts-histogram-bellcurve": "^0.1.7",
     "highcharts-more": "^0.1.7",
